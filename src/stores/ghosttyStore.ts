@@ -15,6 +15,8 @@ interface GhosttyState {
     addKeybind: (kb: string) => void;
     removeKeybind: (kb: string) => void;
     applyTheme: (t: RouteTheme) => void;
+    /** 색·팔레트만 기본값으로 되돌림 (테마 "Default" 선택 시) */
+    resetColors: () => void;
     importText: (text: string) => {ok: boolean; unknownLines: string[]};
     exportText: () => string;
     resetAll: () => void;
@@ -64,6 +66,20 @@ export const useGhosttyStore = create<GhosttyState>()(
                         palette: p
                     };
                 }),
+
+            resetColors: () =>
+                set(s => ({
+                    config: {
+                        ...s.config,
+                        background: defaults["background"],
+                        foreground: defaults["foreground"],
+                        "cursor-color": defaults["cursor-color"],
+                        "selection-background": defaults["selection-background"],
+                        "selection-foreground": defaults["selection-foreground"],
+                        theme: defaults["theme"]
+                    },
+                    palette: paletteDefaultsConst.slice()
+                })),
 
             importText: (text) => {
                 const parsed = parseGhosttyConfig(text);

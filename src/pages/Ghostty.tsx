@@ -33,7 +33,8 @@ const FONTS = [
 ];
 
 export function GhosttyPage() {
-    const {config, palette, setField, applyTheme, importText, exportText} = useGhosttyStore();
+    const {config, palette, setField, applyTheme, resetColors, importText, exportText} =
+        useGhosttyStore();
     const save = useRoutesStore(s => s.save);
     const routesCount = useRoutesStore(s => s.routes.length);
     const navigate = useNavigate();
@@ -57,11 +58,12 @@ export function GhosttyPage() {
     const blur = String(config["background-blur"] ?? "false") !== "false";
     const titlebarHidden = String(config["macos-titlebar-style"] ?? "transparent") === "hidden";
 
-    // 노선 스타일 — 매핑: store의 background와 테마 카탈로그의 background로 현재 테마 추론
+    // 터미널 스타일 — 현재 background와 테마 카탈로그의 background를 매칭.
+    // 일치하는 테마가 없으면 "default" (ghostty 무설정 상태)로 표기.
     const currentThemeId = useMemo(() => {
         const bg = String(config["background"] ?? "").toLowerCase();
         const match = themes.find(t => t.background.toLowerCase() === bg);
-        return match?.id ?? "tokyo-night";
+        return match?.id ?? "default";
     }, [config]);
 
     const exported = useMemo(() => exportText(), [config, palette, exportText]);
@@ -71,6 +73,11 @@ export function GhosttyPage() {
         setField("adjust-cell-height", pct === 0 ? "" : `${pct}%`);
     }
     function setTheme(id: string) {
+        if (id === "default") {
+            resetColors();
+            toast("터미널 색상을 기본값으로 되돌렸어요.", "info");
+            return;
+        }
         const t = themes.find(x => x.id === id);
         if (!t) return;
         applyTheme(t);
@@ -267,6 +274,7 @@ export function GhosttyPage() {
                                     value={currentThemeId}
                                     onChange={e => setTheme(e.target.value)}
                                 >
+                                    <option value="default">Default (테마 없음)</option>
                                     {themes.map(t => (
                                         <option key={t.id} value={t.id}>
                                             {t.ko}
