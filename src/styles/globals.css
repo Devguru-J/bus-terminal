@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    color-scheme: dark;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    @apply bg-ink-900 text-white/90 font-sans antialiased;
+    background-image:
+        radial-gradient(1200px 600px at 80% -10%, rgba(155, 140, 255, 0.12), transparent 60%),
+        radial-gradient(900px 500px at -10% 10%, rgba(0, 224, 164, 0.08), transparent 60%),
+        radial-gradient(800px 400px at 50% 110%, rgba(92, 182, 255, 0.07), transparent 60%);
+}
+
+::selection {
+    background: rgba(0, 224, 164, 0.35);
+    color: #fff;
+}
+
+/* glass card */
+.glass {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.04),
+        rgba(255, 255, 255, 0.015) 40%,
+        rgba(255, 255, 255, 0.01)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.led-text {
+    font-family: "JetBrains Mono", monospace;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 6px currentColor, 0 0 14px rgba(255, 176, 46, 0.35);
+}
+
+/* 출발 전광판 도트 패턴 */
+.dot-matrix {
+    background-image:
+        radial-gradient(rgba(255, 176, 46, 0.18) 1px, transparent 1.2px);
+    background-size: 6px 6px;
+    background-position: 0 0;
+}
+
+/* 깔끔한 스크롤바 */
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.16);
+}

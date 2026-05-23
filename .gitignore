@@ -1,0 +1,10 @@
+node_modules
+dist
+.DS_Store
+*.local
+.vscode
+.idea
+tsconfig.tsbuildinfo
+
+# 레퍼런스 원본 (분석용 로컬 보관, 리포에는 커밋하지 않음)
+reference/
