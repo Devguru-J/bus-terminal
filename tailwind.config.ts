@@ -106,9 +106,15 @@ export default {
                     "0 0 0 1px rgba(0,229,91,0.18), 0 12px 40px -16px rgba(0,229,91,0.35)"
             },
             keyframes: {
+                /** FIDS 전광판 — 형광등 결손처럼 불규칙 깜빡임 (제목/상태 전용) */
                 flicker: {
                     "0%, 19%, 21%, 23%, 25%, 54%, 56%, 100%": {opacity: "1"},
                     "20%, 24%, 55%": {opacity: "0.55"}
+                },
+                /** 표준 터미널 커서 — 50/50 매끈한 on/off (스텝 방식) */
+                "cursor-blink": {
+                    "0%, 49%": {opacity: "1"},
+                    "50%, 100%": {opacity: "0"}
                 },
                 "drive-bus": {
                     "0%": {transform: "translateX(-110%) scale(0.92)", opacity: "0"},
@@ -123,6 +129,7 @@ export default {
             },
             animation: {
                 flicker: "flicker 2.4s infinite",
+                "cursor-blink": "cursor-blink 1.06s steps(2, end) infinite",
                 "drive-bus": "drive-bus 3.6s ease-in-out infinite",
                 "pulse-dot": "pulse-dot 1.6s ease-in-out infinite"
             }

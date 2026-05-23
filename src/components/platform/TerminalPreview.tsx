@@ -236,7 +236,7 @@ export function TerminalPreview({
                         className={cn(
                             "inline-block shrink-0",
                             cursorAlign,
-                            cursorBlink && "animate-flicker"
+                            cursorBlink && "animate-cursor-blink"
                         )}
                         style={{
                             background: cursor,
