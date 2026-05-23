@@ -17,7 +17,7 @@ export interface RouteTheme {
 export const themes: RouteTheme[] = [
     {
         id: "tokyo-night",
-        ko: "도쿄 야간선",
+        ko: "Tokyo Night",
         description: "심야의 도쿄. 보라빛 형광등 같은 톤.",
         background: "#1a1b26",
         foreground: "#c0caf5",
@@ -34,7 +34,7 @@ export const themes: RouteTheme[] = [
     },
     {
         id: "gruvbox-dark",
-        ko: "그루브박스 시내노선",
+        ko: "Gruvbox Dark",
         description: "따뜻한 갈색 톤. 눈이 편안한 클래식.",
         background: "#282828",
         foreground: "#ebdbb2",
@@ -51,7 +51,7 @@ export const themes: RouteTheme[] = [
     },
     {
         id: "catppuccin-mocha",
-        ko: "카푸치노 모카선",
+        ko: "Catppuccin Mocha",
         description: "달콤한 모카 라떼. 부드럽고 따뜻한 파스텔.",
         background: "#1e1e2e",
         foreground: "#cdd6f4",
@@ -68,7 +68,7 @@ export const themes: RouteTheme[] = [
     },
     {
         id: "nord",
-        ko: "노르드 북극선",
+        ko: "Nord",
         description: "북극 얼음의 청량함. 차분한 블루.",
         background: "#2e3440",
         foreground: "#d8dee9",
@@ -85,7 +85,7 @@ export const themes: RouteTheme[] = [
     },
     {
         id: "rose-pine",
-        ko: "로즈파인 정원선",
+        ko: "Rosé Pine",
         description: "장미 정원의 황혼. 부드러운 핑크와 머스타드.",
         background: "#191724",
         foreground: "#e0def4",
@@ -102,7 +102,7 @@ export const themes: RouteTheme[] = [
     },
     {
         id: "solarized-light",
-        ko: "솔라라이즈드 주간선",
+        ko: "Solarized Light",
         description: "한낮의 햇살. 종이같은 라이트 톤.",
         background: "#fdf6e3",
         foreground: "#586e75",
