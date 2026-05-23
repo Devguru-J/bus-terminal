@@ -8,3 +8,6 @@ tsconfig.tsbuildinfo
 
 # 레퍼런스 원본 (분석용 로컬 보관, 리포에는 커밋하지 않음)
 reference/
+
+# Playwright MCP 임시 파일
+.playwright-mcp/
