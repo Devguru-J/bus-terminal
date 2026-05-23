@@ -9,6 +9,8 @@ interface Props {
     selectionFg: string;
     fontFamily: string;
     fontSize: number;
+    /** 1.0 = 기본 줄간격, 1.5 = 50% 더 띄움 */
+    lineHeight?: number;
     paddingX: number;
     paddingY: number;
     opacity: number;
@@ -64,6 +66,7 @@ export function TerminalPreview({
     selectionFg,
     fontFamily,
     fontSize,
+    lineHeight = 1.5,
     paddingX,
     paddingY,
     opacity,
@@ -124,8 +127,9 @@ export function TerminalPreview({
                     // 시각적 효과로 약간 saturated 처리 + 보더 글로우 추가.
                     background,
                     color: foreground,
-                    fontFamily: `${fontFamily}, ui-monospace, monospace`,
+                    fontFamily: `'${fontFamily}', ui-monospace, monospace`,
                     fontSize: `${fontSize}px`,
+                    lineHeight,
                     padding: `${paddingY}px ${paddingX}px`,
                     opacity,
                     filter: blur ? "saturate(1.1)" : "none",
@@ -133,7 +137,7 @@ export function TerminalPreview({
                         ? "inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 60px rgba(255,255,255,0.02)"
                         : "none"
                 }}
-                className="min-h-[420px] leading-relaxed transition-colors"
+                className="min-h-[420px] transition-colors"
             >
                 <div className="flex gap-2 items-center">
                     <span style={{color: cursor}}>user@busterminal:~$</span>
@@ -142,14 +146,11 @@ export function TerminalPreview({
                 <div className="flex gap-6 mt-3">
                     <pre
                         className="whitespace-pre"
-                        style={{color: cursor, opacity: 0.85, lineHeight: 1.15}}
+                        style={{color: cursor, opacity: 0.85}}
                     >
                         {NEOFETCH.join("\n")}
                     </pre>
-                    <pre
-                        className="whitespace-pre"
-                        style={{color: foreground, lineHeight: 1.5}}
-                    >
+                    <pre className="whitespace-pre" style={{color: foreground}}>
                         {INFO.join("\n")}
                     </pre>
                 </div>

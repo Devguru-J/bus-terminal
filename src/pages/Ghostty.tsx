@@ -22,7 +22,15 @@ import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
 
-const FONTS = ["JetBrains Mono", "Fira Code", "Cascadia Code", "Geist Mono", "Iosevka"];
+// Google Fonts에 실제로 로드되는 폰트만 노출. (Cascadia/Iosevka는 GF에 없음)
+const FONTS = [
+    "JetBrains Mono",
+    "Fira Code",
+    "Geist Mono",
+    "IBM Plex Mono",
+    "Source Code Pro",
+    "Roboto Mono"
+];
 
 export function GhosttyPage() {
     const {config, palette, setField, applyTheme, importText, exportText} = useGhosttyStore();
@@ -38,7 +46,8 @@ export function GhosttyPage() {
     const fontFamily = String(config["font-family"] ?? "JetBrains Mono");
     const fontSize = Number(config["font-size"] ?? 14);
     const lineHeightPct = parseInt(String(config["adjust-cell-height"] ?? "0"), 10) || 0;
-    const lineHeightSlider = 100 + lineHeightPct;
+    const lineHeightSlider = 100 + lineHeightPct; // 100 == 기본(1.0배), 200 == 2.0배
+    const lineHeightFactor = lineHeightSlider / 100; // 미리보기에 전달용
     const cursorStyle = String(config["cursor-style"] ?? "block") as "block" | "bar" | "underline";
     const cursorBlink = String(config["cursor-style-blink"] ?? "true") === "true";
     const paddingX = Number(config["window-padding-x"] ?? 16);
@@ -186,8 +195,8 @@ export function GhosttyPage() {
                         </div>
                     </Panel>
 
-                    {/* 3. 커서 깜빡임 — (윈도우 설정) */}
-                    <Panel title="커서 깜빡임">
+                    {/* 3. 윈도우 */}
+                    <Panel title="윈도우">
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <Label>패딩 X</Label>
@@ -302,6 +311,7 @@ export function GhosttyPage() {
                             selectionFg={String(config["selection-foreground"] ?? "#ffffff")}
                             fontFamily={fontFamily}
                             fontSize={fontSize}
+                            lineHeight={lineHeightFactor}
                             paddingX={paddingX}
                             paddingY={paddingY}
                             opacity={opacity}
