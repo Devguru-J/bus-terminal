@@ -24,6 +24,7 @@ export interface TmuxStatusConfig {
     prefix: string; // 예: "C-a"
     mouse: boolean;
     baseIndex: number; // 0 or 1
+    statusInterval: number; // status-bar 갱신 주기(초)
     statusPosition: "top" | "bottom";
     statusStyle: string; // fg=...,bg=...
     leftSegments: string[];
@@ -35,6 +36,7 @@ export const tmuxStatusDefault: TmuxStatusConfig = {
     prefix: "C-a",
     mouse: true,
     baseIndex: 1,
+    statusInterval: 1,
     statusPosition: "top",
     statusStyle: "fg=#cdd6f4,bg=#1e1e2e",
     leftSegments: ["#[fg=#a6e3a1] #S "],
@@ -54,6 +56,7 @@ export function serializeTmuxConf(c: TmuxStatusConfig): string {
     lines.push(`set -g mouse ${c.mouse ? "on" : "off"}`);
     lines.push(`set -g base-index ${c.baseIndex}`);
     lines.push("setw -g pane-base-index 1");
+    lines.push(`set -g status-interval ${c.statusInterval}`);
     lines.push("set -g renumber-windows on");
     lines.push("set -g escape-time 10");
     lines.push("");

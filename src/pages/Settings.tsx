@@ -4,12 +4,16 @@ import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useTmuxStore} from "@/stores/tmuxStore";
+import {useNeovimStore} from "@/stores/neovimStore";
+import {useZshStore} from "@/stores/zshStore";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
 
 export function SettingsPage() {
     const resetGhostty = useGhosttyStore(s => s.resetAll);
     const resetTmux = useTmuxStore(s => s.reset);
+    const resetNvim = useNeovimStore(s => s.reset);
+    const resetZsh = useZshStore(s => s.reset);
     const clearRoutes = useRoutesStore(s => s.clear);
 
     return (
@@ -28,6 +32,8 @@ export function SettingsPage() {
                 <ul className="font-mono text-[12px] text-on-surface-variant space-y-1">
                     <li>bus-terminal:ghostty — Ghostty 설정</li>
                     <li>bus-terminal:tmux — tmux 설정</li>
+                    <li>bus-terminal:neovim — Neovim 설정</li>
+                    <li>bus-terminal:zsh — Zsh 설정</li>
                     <li>bus-terminal:routes — 차고 보관 노선</li>
                 </ul>
             </ConfigPanel>
@@ -51,6 +57,26 @@ export function SettingsPage() {
                             if (confirm("tmux 설정을 모두 초기화할까요?")) {
                                 resetTmux();
                                 toast("tmux 노선을 초기화했어요.", "success");
+                            }
+                        }}
+                    />
+                    <DangerRow
+                        title="Neovim 노선 초기화"
+                        desc="플러그인 선택과 키 매핑을 기본값으로 되돌립니다."
+                        onClick={() => {
+                            if (confirm("Neovim 설정을 모두 초기화할까요?")) {
+                                resetNvim();
+                                toast("Neovim 노선을 초기화했어요.", "success");
+                            }
+                        }}
+                    />
+                    <DangerRow
+                        title="Zsh 노선 초기화"
+                        desc="프롬프트·히스토리·별칭을 기본값으로 되돌립니다."
+                        onClick={() => {
+                            if (confirm("Zsh 설정을 모두 초기화할까요?")) {
+                                resetZsh();
+                                toast("Zsh 노선을 초기화했어요.", "success");
                             }
                         }}
                     />

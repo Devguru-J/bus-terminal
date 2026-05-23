@@ -305,9 +305,12 @@ export function GhosttyPage() {
                             paddingX={paddingX}
                             paddingY={paddingY}
                             opacity={opacity}
-                            title={`user@busterminal:~ — ghostty${
-                                titlebarHidden ? " (titlebar hidden)" : ""
-                            }`}
+                            cursorStyle={cursorStyle}
+                            cursorBlink={cursorBlink}
+                            blur={blur}
+                            hideTitlebar={titlebarHidden}
+                            tabPosition={tabPosition}
+                            title="user@busterminal:~ — ghostty"
                         />
                     </motion.div>
                 </section>

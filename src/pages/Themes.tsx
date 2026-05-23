@@ -7,12 +7,33 @@ import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
 import {themes} from "@/data/themes";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
+import {useTmuxStore} from "@/stores/tmuxStore";
+import {useNeovimStore} from "@/stores/neovimStore";
+import {NVIM_COLORSCHEMES, type NvimColorscheme} from "@/data/neovim";
 import {toast} from "@/stores/toastStore";
 
 const TARGETS = ["Ghostty", "tmux", "Neovim", "Zsh"] as const;
 
+/** theme.id → Neovim colorscheme name (가장 가까운 것) */
+function themeToNvimColorscheme(id: string): NvimColorscheme {
+    const map: Record<string, NvimColorscheme> = {
+        "tokyo-night": "tokyonight",
+        "gruvbox-dark": "gruvbox",
+        "catppuccin-mocha": "catppuccin",
+        "nord": "nord",
+        "rose-pine": "rose-pine",
+        "solarized-light": "default"
+    };
+    const candidate = map[id];
+    return NVIM_COLORSCHEMES.includes(candidate as NvimColorscheme)
+        ? (candidate as NvimColorscheme)
+        : "default";
+}
+
 export function ThemesPage() {
-    const applyTheme = useGhosttyStore(s => s.applyTheme);
+    const applyGhostty = useGhosttyStore(s => s.applyTheme);
+    const setTmuxField = useTmuxStore(s => s.setField);
+    const setNvimField = useNeovimStore(s => s.setField);
     const navigate = useNavigate();
     const [active, setActive] = useState(themes[1]?.id ?? themes[0].id);
     const [target, setTarget] = useState<(typeof TARGETS)[number]>("Ghostty");
@@ -20,12 +41,41 @@ export function ThemesPage() {
     const activeTheme = themes.find(t => t.id === active) ?? themes[0];
 
     function broadcast() {
-        if (target === "Ghostty") {
-            applyTheme(activeTheme);
-            toast(`Ghostty 노선이 "${activeTheme.ko}"으로 환승했어요.`, "success");
-            setTimeout(() => navigate("/ghostty"), 350);
-        } else {
-            toast(`${target} 환승은 준비 중이에요.`, "warn");
+        switch (target) {
+            case "Ghostty":
+                applyGhostty(activeTheme);
+                toast(`Ghostty 노선이 "${activeTheme.ko}"으로 환승했어요.`, "success");
+                setTimeout(() => navigate("/ghostty"), 350);
+                break;
+            case "tmux":
+                setTmuxField(
+                    "statusStyle",
+                    `fg=${activeTheme.foreground},bg=${activeTheme.background}`
+                );
+                setTmuxField("leftSegments", [
+                    `#[fg=${activeTheme.accent}] #S `,
+                    `#[fg=${activeTheme.foreground}] | `
+                ]);
+                setTmuxField("rightSegments", [
+                    `#[fg=${activeTheme.foreground}] %Y-%m-%d `,
+                    `#[fg=${activeTheme.accent}] %H:%M `
+                ]);
+                toast(`tmux 상태바가 "${activeTheme.ko}"으로 환승했어요.`, "success");
+                setTimeout(() => navigate("/tmux"), 350);
+                break;
+            case "Neovim": {
+                const cs = themeToNvimColorscheme(activeTheme.id);
+                setNvimField("colorscheme", cs);
+                toast(`Neovim 컬러스킴이 "${cs}"으로 환승했어요.`, "success");
+                setTimeout(() => navigate("/neovim"), 350);
+                break;
+            }
+            case "Zsh":
+                toast(
+                    "Zsh는 색 테마 대신 프롬프트 테마(/zsh)로 운영됩니다.",
+                    "info"
+                );
+                break;
         }
     }
 

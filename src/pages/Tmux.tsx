@@ -5,6 +5,7 @@ import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {Label, TextInput, NumberInput, Segmented, Toggle} from "@/components/ui/Field";
+import {TmuxPreview} from "@/components/platform/TmuxPreview";
 import {Badge} from "@/components/ui/Badge";
 import {tmuxPlugins} from "@/data/tmux";
 import {useTmuxStore} from "@/stores/tmuxStore";
@@ -63,13 +64,13 @@ export function TmuxPage() {
                                 />
                             </div>
                             <div>
-                                <Label hint="base-index">Refresh Interval (sec)</Label>
+                                <Label hint="status-interval">Refresh Interval (sec)</Label>
                                 <NumberInput
-                                    value={config.baseIndex}
+                                    value={config.statusInterval}
                                     min={0}
-                                    max={10}
+                                    max={60}
                                     onChange={e =>
-                                        setField("baseIndex", Number(e.target.value))
+                                        setField("statusInterval", Number(e.target.value) || 0)
                                     }
                                 />
                             </div>
@@ -87,12 +88,23 @@ export function TmuxPage() {
                     </ConfigPanel>
 
                     <ConfigPanel title="Layout / Behavior">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                             <div>
                                 <Label hint="prefix">Prefix Key</Label>
                                 <TextInput
                                     value={config.prefix}
                                     onChange={e => setField("prefix", e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <Label hint="base-index">Base Index</Label>
+                                <NumberInput
+                                    value={config.baseIndex}
+                                    min={0}
+                                    max={1}
+                                    onChange={e =>
+                                        setField("baseIndex", Number(e.target.value) || 0)
+                                    }
                                 />
                             </div>
                             <div>
@@ -163,35 +175,7 @@ export function TmuxPage() {
                         title="실시간 미리보기"
                         actions={<Badge tone="info">tmux</Badge>}
                     >
-                        <div className="rounded-lg bg-[#0e0e0e] border border-white/10 overflow-hidden font-mono text-[12px]">
-                            <div
-                                className={cn(
-                                    "px-3 py-1.5 flex items-center justify-between text-on-surface border-white/5",
-                                    config.statusPosition === "top"
-                                        ? "border-b"
-                                        : "border-t order-2"
-                                )}
-                                style={{background: "#1e1e2e"}}
-                            >
-                                <span className="text-primary-fixed-dim">[dev]</span>
-                                <span className="text-on-surface-variant">
-                                    win-1 · win-2 · win-3
-                                </span>
-                                <span className="text-secondary-fixed-dim">14:00</span>
-                            </div>
-                            <div className="p-4 text-on-surface/80 h-[260px]">
-                                <div># package.json</div>
-                                <div className="opacity-60">
-                                    {"{"} "name": "buster", "version": "0.1.0",
-                                </div>
-                                <div className="opacity-60">
-                                    "scripts": {"{"} "dev": "vite" {"}"} {"}"}
-                                </div>
-                                <div className="opacity-30 mt-3">
-                                    ──────────────── tmux ────────────────
-                                </div>
-                            </div>
-                        </div>
+                        <TmuxPreview config={config} />
                     </ConfigPanel>
 
                     <ConfigPanel

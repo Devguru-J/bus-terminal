@@ -4,7 +4,15 @@ import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
 import {useRoutesStore} from "@/stores/routesStore";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
+import {downloadText} from "@/lib/download";
 import {toast} from "@/stores/toastStore";
+
+const FILENAME: Record<string, string> = {
+    ghostty: "ghostty-config",
+    tmux: ".tmux.conf",
+    neovim: "init.lua",
+    zsh: ".zshrc"
+};
 
 export function MyRoutesPage() {
     const {routes, remove} = useRoutesStore();
@@ -32,9 +40,11 @@ export function MyRoutesPage() {
                         toast(`"${r.name}"으로 환승했어요.`, "success");
                     }
                     else {
+                        // 다른 플랫폼은 import 파서가 없으므로 즉시 다운로드로 출발시킴
+                        downloadText(FILENAME[r.platform] ?? r.platform, r.text);
                         toast(
-                            `${r.platform} 노선은 다운로드만 가능해요. 출발 안내로 이동하세요.`,
-                            "info"
+                            `"${r.name}" 노선을 ${FILENAME[r.platform]} 파일로 출발시켰어요.`,
+                            "success"
                         );
                     }
                 }}
