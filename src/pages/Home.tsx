@@ -1,10 +1,23 @@
 import {Link} from "react-router-dom";
 import {motion} from "framer-motion";
 import {Button} from "@/components/ui/Button";
+import {MagneticButton} from "@/components/ui/MagneticButton";
 import {DepartureStatus} from "@/components/platform/DepartureStatus";
 import {PlatformCard} from "@/components/platform/PlatformCard";
 import {Icon} from "@/components/ui/Icon";
 import {useRoutesStore} from "@/stores/routesStore";
+
+const gridParent = {
+    show: {transition: {staggerChildren: 0.08, delayChildren: 0.1}}
+};
+const gridItem = {
+    hidden: {opacity: 0, y: 16},
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: {type: "spring" as const, stiffness: 180, damping: 22}
+    }
+};
 
 export function HomePage() {
     const routes = useRoutesStore(s => s.routes);
@@ -26,17 +39,21 @@ export function HomePage() {
                         탑승하고, 출발하세요.
                     </p>
                     <div className="flex flex-wrap items-center gap-3 pt-1">
-                        <Link to="/ghostty">
-                            <Button size="lg">
-                                <Icon name="login" className="text-[16px]" /> 탑승 시작
-                            </Button>
-                        </Link>
-                        <Link to="/themes">
-                            <Button size="lg" variant="outline">
-                                <Icon name="palette" className="text-[16px]" />
-                                노선 둘러보기
-                            </Button>
-                        </Link>
+                        <MagneticButton>
+                            <Link to="/ghostty">
+                                <Button size="lg">
+                                    <Icon name="login" className="text-[16px]" /> 탑승 시작
+                                </Button>
+                            </Link>
+                        </MagneticButton>
+                        <MagneticButton strength={0.18}>
+                            <Link to="/themes">
+                                <Button size="lg" variant="outline">
+                                    <Icon name="palette" className="text-[16px]" />
+                                    노선 둘러보기
+                                </Button>
+                            </Link>
+                        </MagneticButton>
                     </div>
                 </div>
             </section>
@@ -59,48 +76,63 @@ export function HomePage() {
                         <Icon name="arrow_forward" className="text-[14px]" />
                     </Link>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <PlatformCard
-                        platformNo="01"
-                        title="Ghostty 승강장"
-                        description="폰트·색·창 패딩을 슬라이더로 맞추고 미리보기에서 바로 확인. 완성하면 ghostty config 한 줄로 출발."
-                        to="/ghostty"
-                        icon="terminal"
-                        departure="14:00 DEPART"
-                        snippet="> ghostty --config"
-                        status="active"
-                    />
-                    <PlatformCard
-                        platformNo="02"
-                        title="tmux 승강장"
-                        description="prefix · 상태바 · 플러그인을 체크박스로 조립. 결과는 라이브 상태바로 미리 보고 ~/.tmux.conf 로 도착."
-                        to="/tmux"
-                        icon="grid_view"
-                        departure="14:15 DEPART"
-                        snippet="> tmux attach -t dev"
-                        status="ready"
-                    />
-                    <PlatformCard
-                        platformNo="03"
-                        title="Neovim 승강장"
-                        description="lazy.nvim 기반. 옵션 토글·플러그인 선택·키 매핑 추가만으로 init.lua 한 벌이 완성됩니다."
-                        to="/neovim"
-                        icon="edit_note"
-                        departure="14:30 DEPART"
-                        snippet="> nvim ."
-                        status="ready"
-                    />
-                    <PlatformCard
-                        platformNo="04"
-                        title="Zsh 승강장"
-                        description="프롬프트 · 히스토리 · oh-my-zsh 플러그인 · alias를 하나의 ~/.zshrc 출발권으로 묶어냅니다."
-                        to="/zsh"
-                        icon="code_blocks"
-                        departure="14:45 DEPART"
-                        snippet="> zsh"
-                        status="ready"
-                    />
-                </div>
+                <motion.div
+                    initial="hidden"
+                    animate="show"
+                    variants={gridParent}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-5"
+                >
+                    {([
+                        {
+                            platformNo: "01",
+                            title: "Ghostty 승강장",
+                            description:
+                                "폰트·색·창 패딩을 슬라이더로 맞추고 미리보기에서 바로 확인. 완성하면 ghostty config 한 줄로 출발.",
+                            to: "/ghostty",
+                            icon: "terminal",
+                            departure: "14:00 DEPART",
+                            snippet: "> ghostty --config",
+                            status: "active" as const
+                        },
+                        {
+                            platformNo: "02",
+                            title: "tmux 승강장",
+                            description:
+                                "prefix · 상태바 · 플러그인을 체크박스로 조립. 결과는 라이브 상태바로 미리 보고 ~/.tmux.conf 로 도착.",
+                            to: "/tmux",
+                            icon: "grid_view",
+                            departure: "14:15 DEPART",
+                            snippet: "> tmux attach -t dev",
+                            status: "ready" as const
+                        },
+                        {
+                            platformNo: "03",
+                            title: "Neovim 승강장",
+                            description:
+                                "lazy.nvim 기반. 옵션 토글·플러그인 선택·키 매핑 추가만으로 init.lua 한 벌이 완성됩니다.",
+                            to: "/neovim",
+                            icon: "edit_note",
+                            departure: "14:30 DEPART",
+                            snippet: "> nvim .",
+                            status: "ready" as const
+                        },
+                        {
+                            platformNo: "04",
+                            title: "Zsh 승강장",
+                            description:
+                                "프롬프트 · 히스토리 · oh-my-zsh 플러그인 · alias를 하나의 ~/.zshrc 출발권으로 묶어냅니다.",
+                            to: "/zsh",
+                            icon: "code_blocks",
+                            departure: "14:45 DEPART",
+                            snippet: "> zsh",
+                            status: "ready" as const
+                        }
+                    ]).map(card => (
+                        <motion.div key={card.platformNo} variants={gridItem}>
+                            <PlatformCard {...card} />
+                        </motion.div>
+                    ))}
+                </motion.div>
             </section>
         </div>
     );

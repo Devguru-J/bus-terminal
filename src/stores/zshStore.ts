@@ -53,6 +53,10 @@ export const useZshStore = create<ZshState>()(
             exportText: () => serializeZshConfig(get().config),
             reset: () => set({config: {...zshDefault}})
         }),
-        {name: "bus-terminal:zsh", version: 2}
+        {
+            name: "bus-terminal:zsh",
+            version: 2,
+            migrate: () => ({config: {...zshDefault}})
+        }
     )
 );

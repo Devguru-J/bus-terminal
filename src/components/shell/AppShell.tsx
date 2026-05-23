@@ -6,7 +6,7 @@ import {BottomFooter} from "./BottomFooter";
 /** Persistent chrome: sidebar + topbar + footer. */
 export function AppShell({children}: {children: ReactNode}) {
     return (
-        <div className="min-h-screen flex bg-background text-on-background ambient-glow">
+        <div className="min-h-[100dvh] flex bg-background text-on-background ambient-glow">
             <a
                 href="#main"
                 className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-3 focus-visible:left-3 focus-visible:z-50 focus-visible:rounded focus-visible:bg-primary-fixed-dim focus-visible:text-on-primary focus-visible:px-3 focus-visible:py-2 focus-visible:font-mono focus-visible:text-label-xs focus-visible:uppercase focus-visible:tracking-[0.14em]"

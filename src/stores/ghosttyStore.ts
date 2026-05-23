@@ -131,7 +131,17 @@ export const useGhosttyStore = create<GhosttyState>()(
                     rawExtras: {}
                 })
         }),
-        {name: "bus-terminal:ghostty", version: 2}
+        {
+            name: "bus-terminal:ghostty",
+            version: 2,
+            // v2 이전 데이터는 기본값으로 초기화 (필드 의미가 바뀌어 보존 불가)
+            migrate: () => ({
+                config: {...defaults},
+                palette: PALETTE_DEFAULT.slice(),
+                keybinds: [],
+                rawExtras: {}
+            })
+        }
     )
 );
 

@@ -52,6 +52,10 @@ export const useNeovimStore = create<NeovimState>()(
             exportText: () => serializeNvimConfig(get().config),
             reset: () => set({config: {...nvimDefault}})
         }),
-        {name: "bus-terminal:neovim", version: 2}
+        {
+            name: "bus-terminal:neovim",
+            version: 2,
+            migrate: () => ({config: {...nvimDefault}})
+        }
     )
 );
