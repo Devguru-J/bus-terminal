@@ -1,102 +1,95 @@
-import {motion} from "framer-motion";
-import {ArrowRight, Sparkles} from "lucide-react";
-import {Card} from "@/components/ui/Card";
-import {Badge} from "@/components/ui/Badge";
-import {Button} from "@/components/ui/Button";
-import {PaletteStrip} from "@/components/platform/PaletteStrip";
-import {themes, themeToConfigSnippet} from "@/data/themes";
-import {useGhosttyStore} from "@/stores/ghosttyStore";
-import {copyText} from "@/lib/download";
-import {toast} from "@/stores/toastStore";
+import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {motion} from "framer-motion";
+import {StationHeader} from "@/components/shell/StationHeader";
+import {ThemeCard} from "@/components/platform/ThemeCard";
+import {Button} from "@/components/ui/Button";
+import {Icon} from "@/components/ui/Icon";
+import {themes} from "@/data/themes";
+import {useGhosttyStore} from "@/stores/ghosttyStore";
+import {toast} from "@/stores/toastStore";
+
+const TARGETS = ["Ghostty", "tmux", "Neovim", "Zsh"] as const;
 
 export function ThemesPage() {
     const applyTheme = useGhosttyStore(s => s.applyTheme);
     const navigate = useNavigate();
+    const [active, setActive] = useState(themes[1]?.id ?? themes[0].id);
+    const [target, setTarget] = useState<(typeof TARGETS)[number]>("Ghostty");
+
+    const activeTheme = themes.find(t => t.id === active) ?? themes[0];
+
+    function broadcast() {
+        if (target === "Ghostty") {
+            applyTheme(activeTheme);
+            toast(`Ghostty 노선이 "${activeTheme.ko}"으로 환승했어요.`, "success");
+            setTimeout(() => navigate("/ghostty"), 350);
+        } else {
+            toast(`${target} 환승은 준비 중이에요.`, "warn");
+        }
+    }
 
     return (
-        <div className="mx-auto max-w-7xl px-5 pt-10 pb-16">
-            <div className="flex items-end justify-between gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                    <span className="led-text text-3xl text-route-theme">3번</span>
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">테마 환승센터</h1>
-                        <p className="text-sm text-white/45 mt-1">
-                            노선 스타일을 한 번에 환승하세요. 클릭하면 Ghostty 노선에 즉시 적용됩니다.
-                        </p>
-                    </div>
-                </div>
-                <Badge tone="amber">
-                    <Sparkles size={10} /> {themes.length}개 노선 운행
-                </Badge>
-            </div>
+        <div className="max-w-7xl mx-auto">
+            <StationHeader
+                title="테마 환승센터"
+                eyebrow="노선 스타일 (THEME)"
+                subtitle="A curated gallery of global color schemes designed for extreme legibility and minimal eye strain across all terminal interfaces. Select a theme to broadcast globally to Ghostty, tmux, Neovim, and Zsh."
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                {themes.map((t, i) => (
-                    <motion.div
+                {themes.map(t => (
+                    <ThemeCard
                         key={t.id}
-                        initial={{opacity: 0, y: 12}}
-                        animate={{opacity: 1, y: 0}}
-                        transition={{delay: i * 0.05}}
-                    >
-                        <Card className="overflow-hidden">
-                            {/* preview surface */}
-                            <div
-                                className="p-5 border-b border-line"
-                                style={{background: t.background, color: t.foreground}}
-                            >
-                                <div className="flex items-center justify-between text-[11px] font-mono">
-                                    <span style={{color: t.accent}}>● {t.ko}</span>
-                                    <span style={{opacity: 0.5}}>{t.id}</span>
-                                </div>
-                                <div className="mt-3 font-mono text-sm leading-relaxed">
-                                    <div>
-                                        <span style={{color: t.accent}}>❯</span> echo "탑승 환영합니다"
-                                    </div>
-                                    <div style={{opacity: 0.7}}>탑승 환영합니다</div>
-                                    <div className="mt-1">
-                                        <span style={{color: t.accent}}>❯</span>{" "}
-                                        <span
-                                            className="rounded px-1"
-                                            style={{background: t.selectionBg, color: t.selectionFg}}
-                                        >
-                                            git push
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="p-4 space-y-3">
-                                <h3 className="text-base font-semibold">{t.ko}</h3>
-                                <p className="text-xs text-white/55 leading-relaxed">{t.description}</p>
-                                <PaletteStrip colors={t.palette16} />
-                                <div className="flex items-center gap-2 pt-1">
-                                    <Button
-                                        size="sm"
-                                        onClick={() => {
-                                            applyTheme(t);
-                                            toast(`"${t.ko}"으로 환승했어요.`, "success");
-                                            setTimeout(() => navigate("/ghostty"), 350);
-                                        }}
-                                    >
-                                        탑승 완료 <ArrowRight size={14} />
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() =>
-                                            copyText(themeToConfigSnippet(t)).then(() =>
-                                                toast("스니펫을 복사했어요.", "success")
-                                            )
-                                        }
-                                    >
-                                        스니펫 복사
-                                    </Button>
-                                </div>
-                            </div>
-                        </Card>
-                    </motion.div>
+                        theme={t}
+                        active={t.id === active}
+                        onClick={() => setActive(t.id)}
+                    />
                 ))}
             </div>
+
+            {/* Bottom action dock */}
+            <motion.div
+                layout
+                className="sticky bottom-12 mt-8 rounded-xl border border-white/[0.08] bg-surface-container/80 backdrop-blur-md p-4 flex flex-col sm:flex-row items-center gap-3"
+            >
+                <div className="flex items-center gap-3">
+                    <div
+                        className="h-8 w-8 rounded border border-white/10"
+                        style={{background: activeTheme.background}}
+                    />
+                    <div>
+                        <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant">
+                            Selected
+                        </div>
+                        <div className="text-code-sm text-on-surface">{activeTheme.ko}</div>
+                    </div>
+                </div>
+                <div className="sm:ml-auto flex items-center gap-2 flex-wrap">
+                    <span className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant">
+                        적용 대상
+                    </span>
+                    <div className="inline-flex rounded border border-white/[0.06] bg-surface-container-lowest p-0.5">
+                        {TARGETS.map(t => (
+                            <button
+                                key={t}
+                                type="button"
+                                onClick={() => setTarget(t)}
+                                className={`h-8 px-3 rounded-[2px] font-mono text-label-xs uppercase tracking-[0.12em] transition ${
+                                    target === t
+                                        ? "bg-primary-fixed-dim text-on-primary"
+                                        : "text-on-surface-variant hover:text-on-surface"
+                                }`}
+                            >
+                                {t}
+                            </button>
+                        ))}
+                    </div>
+                    <Button onClick={broadcast}>
+                        <Icon name="cell_tower" className="text-[16px]" /> 전체 적용
+                    </Button>
+                </div>
+            </motion.div>
         </div>
     );
 }

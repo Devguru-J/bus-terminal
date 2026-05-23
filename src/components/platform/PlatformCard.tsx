@@ -1,55 +1,81 @@
-import {motion} from "framer-motion";
-import {ArrowRight} from "lucide-react";
 import {Link} from "react-router-dom";
-import {cn} from "@/lib/utils";
+import {motion} from "framer-motion";
+import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
 
 interface Props {
-    platform: string; // 1번 승강장
+    platformNo: string; // "01"
     title: string;
     description: string;
     to: string;
-    accent: string;
-    status?: "운행중" | "준비중";
-    tag?: string;
+    icon: string;
+    departure: string; // "14:00 DEPART"
+    snippet: string; // "> ghostty --config"
+    status?: "active" | "ready" | "soon";
 }
 
-export function PlatformCard({platform, title, description, to, accent, status = "운행중", tag}: Props) {
+const STATUS_META = {
+    active: {tone: "active" as const, label: "Active"},
+    ready: {tone: "info" as const, label: "Ready"},
+    soon: {tone: "muted" as const, label: "Soon"}
+};
+
+/** Departure platform card for the home FIDS grid. */
+export function PlatformCard({
+    platformNo,
+    title,
+    description,
+    to,
+    icon,
+    departure,
+    snippet,
+    status = "ready"
+}: Props) {
+    const meta = STATUS_META[status];
     return (
         <Link to={to} className="group">
-            <motion.div
-                whileHover={{y: -4}}
+            <motion.article
+                whileHover={{y: -3}}
                 transition={{type: "spring", stiffness: 320, damping: 24}}
-                className={cn(
-                    "relative overflow-hidden rounded-xl2 border border-line-strong p-6 h-full glass shadow-glass",
-                    "before:absolute before:inset-0 before:opacity-0 group-hover:before:opacity-100 before:transition-opacity",
-                    "before:bg-gradient-to-br before:from-white/[0.04] before:to-transparent"
-                )}
-                style={{boxShadow: `0 30px 60px -30px ${accent}40`}}
+                className="relative rounded-xl border border-white/[0.06] bg-surface-container-low/60 backdrop-blur-md p-5 h-full overflow-hidden flex flex-col gap-4"
             >
                 <div
-                    className="absolute -top-px left-0 h-px w-24"
-                    style={{background: `linear-gradient(to right, transparent, ${accent}, transparent)`}}
+                    className="absolute -inset-px rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition"
+                    style={{
+                        background:
+                            "radial-gradient(600px circle at 50% -10%, rgba(0,229,91,0.08), transparent 60%)"
+                    }}
                 />
-                <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                        <span
-                            className="led-text text-2xl font-bold"
-                            style={{color: accent}}
-                        >
-                            {platform}
-                        </span>
-                        {tag && <Badge tone="default">{tag}</Badge>}
-                    </div>
-                    <Badge tone={status === "운행중" ? "green" : "amber"}>{status}</Badge>
+                <header className="flex items-start justify-between">
+                    <span className="font-mono text-label-xs uppercase tracking-[0.18em] text-on-surface-variant">
+                        Platform {platformNo}
+                    </span>
+                    <span className="font-mono text-label-xs uppercase tracking-[0.18em] text-primary-fixed-dim">
+                        {departure}
+                    </span>
+                </header>
+
+                <div className="flex items-center gap-2">
+                    <Icon
+                        name={icon}
+                        fill
+                        className="text-[26px] text-primary-fixed-dim"
+                    />
+                    <h3 className="font-display text-headline-sm text-on-surface tracking-tight">
+                        {title}
+                    </h3>
                 </div>
-                <h3 className="mt-4 text-xl font-semibold tracking-tight">{title}</h3>
-                <p className="mt-1.5 text-sm text-white/55 leading-relaxed">{description}</p>
-                <div className="mt-6 inline-flex items-center gap-1.5 text-sm text-white/70 group-hover:text-white transition">
-                    탑승하기
-                    <ArrowRight size={14} className="group-hover:translate-x-0.5 transition" />
+                <p className="text-body-md text-on-surface-variant leading-relaxed line-clamp-2">
+                    {description}
+                </p>
+
+                <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/[0.05]">
+                    <span className="font-mono text-code-sm text-primary-fixed-dim/90 truncate">
+                        {snippet}
+                    </span>
+                    <Badge tone={meta.tone}>{meta.label}</Badge>
                 </div>
-            </motion.div>
+            </motion.article>
         </Link>
     );
 }

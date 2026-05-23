@@ -1,7 +1,7 @@
 import {forwardRef, type ButtonHTMLAttributes} from "react";
 import {cn} from "@/lib/utils";
 
-type Variant = "primary" | "ghost" | "outline" | "danger";
+type Variant = "primary" | "outline" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -9,19 +9,19 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
     size?: Size;
 }
 
-const variants: Record<Variant, string> = {
+const VARIANTS: Record<Variant, string> = {
     primary:
-        "bg-led-green text-ink-900 hover:bg-led-green/90 shadow-[0_8px_24px_-8px_rgba(0,224,164,0.6)]",
-    ghost: "bg-white/5 text-white hover:bg-white/10",
+        "bg-primary-fixed-dim text-on-primary hover:bg-primary-fixed shadow-glow-primary",
     outline:
-        "border border-line-strong bg-transparent text-white hover:bg-white/5",
-    danger: "bg-led-red/90 text-white hover:bg-led-red"
+        "border border-white/10 bg-white/[0.02] text-on-surface hover:bg-white/[0.06]",
+    ghost: "text-on-surface-variant hover:text-on-surface hover:bg-white/5",
+    danger: "bg-error/90 text-on-error hover:bg-error"
 };
 
-const sizes: Record<Size, string> = {
-    sm: "h-8 px-3 text-sm",
-    md: "h-10 px-4 text-sm",
-    lg: "h-12 px-6 text-base"
+const SIZES: Record<Size, string> = {
+    sm: "h-8 px-3 text-[11px] tracking-[0.08em] uppercase font-semibold",
+    md: "h-10 px-4 text-[11px] tracking-[0.08em] uppercase font-semibold",
+    lg: "h-12 px-6 text-[11px] tracking-[0.1em] uppercase font-semibold"
 };
 
 export const Button = forwardRef<HTMLButtonElement, Props>(
@@ -29,9 +29,9 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
         <button
             ref={ref}
             className={cn(
-                "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed",
-                variants[variant],
-                sizes[size],
+                "inline-flex items-center justify-center gap-2 rounded font-mono transition active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed",
+                VARIANTS[variant],
+                SIZES[size],
                 className
             )}
             {...rest}

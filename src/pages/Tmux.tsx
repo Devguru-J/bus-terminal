@@ -1,18 +1,21 @@
 import {useMemo} from "react";
-import {Copy, FileDown, Save, RotateCcw, Plug} from "lucide-react";
+import {useNavigate} from "react-router-dom";
+import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
-import {Card, CardHeader, CardBody, CardTitle, CardSubtitle} from "@/components/ui/Card";
-import {Label, TextInput, NumberInput, Select, Toggle} from "@/components/ui/Field";
+import {Icon} from "@/components/ui/Icon";
+import {ConfigPanel} from "@/components/platform/ConfigPanel";
+import {Label, TextInput, NumberInput, Segmented, Toggle} from "@/components/ui/Field";
 import {Badge} from "@/components/ui/Badge";
 import {tmuxPlugins} from "@/data/tmux";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useRoutesStore} from "@/stores/routesStore";
-import {downloadText, copyText} from "@/lib/download";
 import {toast} from "@/stores/toastStore";
+import {cn} from "@/lib/utils";
 
 export function TmuxPage() {
-    const {config, setField, togglePlugin, exportText, reset} = useTmuxStore();
+    const {config, setField, togglePlugin, exportText} = useTmuxStore();
     const save = useRoutesStore(s => s.save);
+    const navigate = useNavigate();
 
     const exported = useMemo(() => exportText(), [config, exportText]);
 
@@ -24,130 +27,94 @@ export function TmuxPage() {
     }
 
     return (
-        <div className="mx-auto max-w-7xl px-5 pt-10 pb-16">
-            <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                    <span className="led-text text-3xl text-route-tmux">2번</span>
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">tmux 승강장</h1>
-                        <p className="text-sm text-white/45 mt-1">
-                            상태바와 플러그인을 조합형 카드로 빠르게 구성하세요.
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={reset}>
-                        <RotateCcw size={14} /> 초기화
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleSave}>
-                        <Save size={14} /> 차고 보관
-                    </Button>
-                </div>
-            </div>
+        <div className="max-w-7xl mx-auto">
+            <StationHeader
+                title="tmux 승강장"
+                eyebrow="Platform 2 Active"
+                subtitle="전문가용 tmux 세션 인터페이스 및 실시간 미리보기. 변경사항은 다음 출발 때 적용됩니다."
+                actions={
+                    <>
+                        <Button variant="outline" size="sm" onClick={handleSave}>
+                            <Icon name="bookmark_add" className="text-[16px]" /> 차고 보관
+                        </Button>
+                        <Button size="sm" onClick={() => navigate("/export")}>
+                            <Icon name="rocket_launch" className="text-[16px]" /> 출발 완료
+                        </Button>
+                    </>
+                }
+            />
 
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-6">
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>기본 동작</CardTitle>
-                            <CardSubtitle>프리픽스 키와 인덱스를 정해요.</CardSubtitle>
-                        </CardHeader>
-                        <CardBody className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
+                <div className="space-y-5 min-w-0">
+                    <ConfigPanel
+                        title="Status Bar"
+                        actions={<span className="font-mono text-[10px] text-on-surface-variant/60">tmux.conf</span>}
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
-                                <Label hint="prefix">프리픽스 키</Label>
-                                <TextInput
-                                    value={config.prefix}
-                                    onChange={e => setField("prefix", e.target.value)}
-                                    placeholder="C-a"
+                                <Label hint="status-position">Position</Label>
+                                <Segmented
+                                    value={config.statusPosition}
+                                    onChange={v => setField("statusPosition", v)}
+                                    options={[
+                                        {value: "top", label: "Top"},
+                                        {value: "bottom", label: "Bottom"}
+                                    ]}
                                 />
                             </div>
                             <div>
-                                <Label hint="base-index">시작 인덱스</Label>
+                                <Label hint="base-index">Refresh Interval (sec)</Label>
                                 <NumberInput
                                     value={config.baseIndex}
                                     min={0}
-                                    max={1}
-                                    onChange={e => setField("baseIndex", Number(e.target.value))}
+                                    max={10}
+                                    onChange={e =>
+                                        setField("baseIndex", Number(e.target.value))
+                                    }
                                 />
                             </div>
-                            <div>
-                                <Label hint="mouse">마우스</Label>
-                                <div className="h-10 flex items-center">
-                                    <Toggle
-                                        checked={config.mouse}
-                                        onChange={v => setField("mouse", v)}
-                                        label={config.mouse ? "사용" : "사용 안 함"}
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <Label hint="status-position">상태바 위치</Label>
-                                <Select
-                                    value={config.statusPosition}
-                                    onChange={e =>
-                                        setField("statusPosition", e.target.value as "top" | "bottom")
-                                    }
-                                >
-                                    <option value="top">위</option>
-                                    <option value="bottom">아래</option>
-                                </Select>
-                            </div>
-                        </CardBody>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>상태바 디자인</CardTitle>
-                            <CardSubtitle>
-                                tmux 포맷 문자열을 그대로 씁니다. 예:{" "}
-                                <code className="text-led-amber font-mono">{`#[fg=#a6e3a1] #S `}</code>
-                            </CardSubtitle>
-                        </CardHeader>
-                        <CardBody className="space-y-4">
-                            <div>
-                                <Label>전체 스타일</Label>
+                            <div className="sm:col-span-2">
+                                <Label hint="status-style">Status Style</Label>
                                 <TextInput
                                     value={config.statusStyle}
                                     onChange={e => setField("statusStyle", e.target.value)}
                                 />
                             </div>
-                            <div>
-                                <Label>왼쪽 영역</Label>
-                                <TextInput
-                                    value={config.leftSegments.join("")}
-                                    onChange={e => setField("leftSegments", [e.target.value])}
-                                />
-                            </div>
-                            <div>
-                                <Label>오른쪽 영역</Label>
-                                <TextInput
-                                    value={config.rightSegments.join("")}
-                                    onChange={e =>
-                                        setField("rightSegments", e.target.value.split("|"))
-                                    }
-                                />
-                                <p className="text-[11px] text-white/40 mt-1.5">
-                                    파이프(<code className="text-led-amber font-mono">|</code>)로 세그먼트를 나눠요.
-                                </p>
-                            </div>
-                        </CardBody>
-                    </Card>
+                        </div>
+                        <pre className="mt-4 rounded-lg bg-surface-container-lowest border border-white/[0.06] p-3 text-[12px] font-mono text-on-surface-variant whitespace-pre-wrap">
+                            {`set-option -g status-position ${config.statusPosition}\nset-option -g status-interval 1\nset -g status-style "${config.statusStyle}"`}
+                        </pre>
+                    </ConfigPanel>
 
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle>플러그인 (TPM)</CardTitle>
-                                    <CardSubtitle>
-                                        체크한 플러그인을 자동 등록합니다. TPM은 기본 포함.
-                                    </CardSubtitle>
-                                </div>
-                                <Badge tone="amber">
-                                    <Plug size={10} /> {config.plugins.length}개 선택
-                                </Badge>
+                    <ConfigPanel title="Layout / Behavior">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <Label hint="prefix">Prefix Key</Label>
+                                <TextInput
+                                    value={config.prefix}
+                                    onChange={e => setField("prefix", e.target.value)}
+                                />
                             </div>
-                        </CardHeader>
-                        <CardBody className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <Label hint="mouse">Mouse</Label>
+                                <div className="h-10 flex items-center">
+                                    <Toggle
+                                        checked={config.mouse}
+                                        onChange={v => setField("mouse", v)}
+                                        label={config.mouse ? "ON" : "OFF"}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </ConfigPanel>
+
+                    <ConfigPanel
+                        title="Plugins (TPM)"
+                        actions={
+                            <Badge tone="active">{config.plugins.length} selected</Badge>
+                        }
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {tmuxPlugins.map(p => {
                                 const on = config.plugins.includes(p.id);
                                 return (
@@ -155,94 +122,111 @@ export function TmuxPage() {
                                         key={p.id}
                                         type="button"
                                         onClick={() => togglePlugin(p.id)}
-                                        className={`text-left rounded-xl border p-3 transition ${
+                                        className={cn(
+                                            "text-left rounded-lg border p-3 transition",
                                             on
-                                                ? "border-led-green/40 bg-led-green/5"
-                                                : "border-line hover:border-line-strong bg-ink-700/40"
-                                        }`}
+                                                ? "border-primary-fixed-dim/40 bg-primary-fixed-dim/[0.06]"
+                                                : "border-white/[0.06] bg-surface-container-lowest/60 hover:border-white/15"
+                                        )}
                                     >
                                         <div className="flex items-center justify-between">
-                                            <span className="font-medium">{p.ko}</span>
+                                            <span className="font-mono text-code-sm text-on-surface truncate">
+                                                {p.name}
+                                            </span>
                                             <span
-                                                className={`h-4 w-4 rounded-full border ${
+                                                className={cn(
+                                                    "h-3 w-3 rounded-full border",
                                                     on
-                                                        ? "bg-led-green border-led-green"
+                                                        ? "bg-primary-fixed-dim border-primary-fixed-dim"
                                                         : "border-white/30"
-                                                }`}
+                                                )}
                                             />
                                         </div>
-                                        <p className="text-xs text-white/50 mt-1">{p.desc}</p>
-                                        <p className="text-[10px] text-white/30 mt-1 font-mono">{p.name}</p>
+                                        <p className="text-[11px] text-on-surface-variant mt-1">
+                                            {p.desc}
+                                        </p>
                                     </button>
                                 );
                             })}
-                        </CardBody>
-                    </Card>
+                            <button
+                                type="button"
+                                className="rounded-lg border border-dashed border-white/15 p-3 text-on-surface-variant/60 hover:border-white/30 hover:text-on-surface transition flex items-center justify-center gap-2 font-mono text-label-xs uppercase tracking-[0.12em]"
+                            >
+                                <Icon name="add" className="text-[16px]" /> Add Plugin
+                            </button>
+                        </div>
+                    </ConfigPanel>
                 </div>
 
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>승차 미리보기</CardTitle>
-                            <CardSubtitle>상태바가 이렇게 보입니다.</CardSubtitle>
-                        </CardHeader>
-                        <CardBody>
+                <div className="space-y-5">
+                    <ConfigPanel
+                        title="실시간 미리보기"
+                        actions={<Badge tone="info">tmux</Badge>}
+                    >
+                        <div className="rounded-lg bg-[#0e0e0e] border border-white/10 overflow-hidden font-mono text-[12px]">
                             <div
-                                className="rounded-xl overflow-hidden border border-line-strong bg-[#1e1e2e] text-[#cdd6f4]"
-                                style={{
-                                    fontFamily: "JetBrains Mono, monospace"
-                                }}
+                                className={cn(
+                                    "px-3 py-1.5 flex items-center justify-between text-on-surface border-white/5",
+                                    config.statusPosition === "top"
+                                        ? "border-b"
+                                        : "border-t order-2"
+                                )}
+                                style={{background: "#1e1e2e"}}
                             >
-                                <div className="px-3 py-1.5 text-xs font-mono border-b border-white/5 flex items-center justify-between">
-                                    <span className="text-led-green">{config.leftSegments.join("")}</span>
-                                    <span className="text-white/40">window 1 · 2 · 3</span>
-                                    <span className="text-led-blue">{config.rightSegments.join("")}</span>
+                                <span className="text-primary-fixed-dim">[dev]</span>
+                                <span className="text-on-surface-variant">
+                                    win-1 · win-2 · win-3
+                                </span>
+                                <span className="text-secondary-fixed-dim">14:00</span>
+                            </div>
+                            <div className="p-4 text-on-surface/80 h-[260px]">
+                                <div># package.json</div>
+                                <div className="opacity-60">
+                                    {"{"} "name": "buster", "version": "0.1.0",
                                 </div>
-                                <div className="p-4 text-xs leading-relaxed text-white/60 min-h-[140px]">
-                                    <div>prefix: <span className="text-led-amber">{config.prefix}</span></div>
-                                    <div>mouse: {config.mouse ? "on" : "off"}</div>
-                                    <div>base-index: {config.baseIndex}</div>
+                                <div className="opacity-60">
+                                    "scripts": {"{"} "dev": "vite" {"}"} {"}"}
+                                </div>
+                                <div className="opacity-30 mt-3">
+                                    ──────────────── tmux ────────────────
                                 </div>
                             </div>
-                        </CardBody>
-                    </Card>
+                        </div>
+                    </ConfigPanel>
 
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle>출발권 · ~/.tmux.conf</CardTitle>
-                                    <CardSubtitle>홈 디렉터리에 저장하고 tmux를 다시 시작하세요.</CardSubtitle>
-                                </div>
-                                <Badge tone="green">READY</Badge>
-                            </div>
-                        </CardHeader>
-                        <CardBody>
-                            <pre className="rounded-xl bg-ink-900/80 border border-line p-3 text-[11.5px] font-mono text-white/75 max-h-[300px] overflow-auto whitespace-pre-wrap">
-                                {exported}
-                            </pre>
-                            <div className="mt-3 grid grid-cols-2 gap-2">
-                                <Button onClick={() => downloadText(".tmux.conf", exported)}>
-                                    <FileDown size={14} /> 다운로드
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    onClick={() =>
-                                        copyText(exported).then(ok =>
-                                            toast(
-                                                ok ? "출발권을 복사했어요." : "복사 실패.",
-                                                ok ? "success" : "error"
-                                            )
-                                        )
-                                    }
-                                >
-                                    <Copy size={14} /> 클립보드 복사
-                                </Button>
-                            </div>
-                        </CardBody>
-                    </Card>
+                    <ConfigPanel
+                        title="Key Bindings"
+                        actions={
+                            <button className="text-on-surface-variant hover:text-on-surface text-[14px]">
+                                <Icon name="refresh" />
+                            </button>
+                        }
+                    >
+                        <div className="space-y-3">
+                            <KeyBinding label="Prefix Key" sub="Main trigger" combo={config.prefix} />
+                            <KeyBinding label="Split Horizontal" sub="New pane" combo="%" />
+                            <KeyBinding label="Split Vertical" sub="New pane" combo='"' />
+                            <button className="w-full rounded-lg border border-dashed border-white/15 px-3 py-3 font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hover:text-on-surface hover:border-white/30 transition inline-flex items-center justify-center gap-2">
+                                <Icon name="add" className="text-[16px]" /> Add Binding
+                            </button>
+                        </div>
+                    </ConfigPanel>
                 </div>
             </div>
+        </div>
+    );
+}
+
+function KeyBinding({label, sub, combo}: {label: string; sub: string; combo: string}) {
+    return (
+        <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-surface-container-lowest px-3 py-2.5">
+            <div>
+                <div className="text-code-sm text-on-surface">{label}</div>
+                <div className="text-[11px] text-on-surface-variant">{sub}</div>
+            </div>
+            <span className="font-mono text-code-sm px-2 py-1 rounded bg-primary-fixed-dim/15 text-primary-fixed-dim border border-primary-fixed-dim/30">
+                {combo}
+            </span>
         </div>
     );
 }
