@@ -143,7 +143,7 @@ export function GhosttyPage() {
                             ))}
                         </Select>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
+                            <div className="min-w-0">
                                 <Label>폰트 크기</Label>
                                 <RangeInput
                                     value={fontSize}
@@ -152,7 +152,7 @@ export function GhosttyPage() {
                                     onChange={v => setField("font-size", v)}
                                 />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                                 <Label>줄간격</Label>
                                 <RangeInput
                                     value={lineHeightSlider}
@@ -198,7 +198,7 @@ export function GhosttyPage() {
                     {/* 3. 윈도우 */}
                     <Panel title="윈도우">
                         <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div>
+                            <div className="min-w-0">
                                 <Label>패딩 X</Label>
                                 <RangeInput
                                     value={paddingX}
@@ -207,7 +207,7 @@ export function GhosttyPage() {
                                     onChange={v => setField("window-padding-x", v)}
                                 />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                                 <Label>패딩 Y</Label>
                                 <RangeInput
                                     value={paddingY}

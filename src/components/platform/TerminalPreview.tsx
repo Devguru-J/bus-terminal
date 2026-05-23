@@ -1,3 +1,4 @@
+import {useRef, useState, type KeyboardEvent} from "react";
 import {motion} from "framer-motion";
 import {cn} from "@/lib/utils";
 
@@ -44,6 +45,22 @@ const NEOFETCH = [
     "             ..yyyy.."
 ];
 
+/** 미리보기용 fake shell — 몇 가지 명령에 응답한다. */
+function runFakeShell(cmd: string): string {
+    const c = cmd.trim();
+    if (!c) return "";
+    if (c === "ls") return "Documents  Downloads  ghostty-config  init.lua  .zshrc";
+    if (c === "pwd") return "/Users/buster";
+    if (c === "whoami") return "buster";
+    if (c === "date") return new Date().toString();
+    if (c === "echo") return "";
+    if (c.startsWith("echo ")) return c.slice(5);
+    if (c === "help")
+        return "available: ls, pwd, whoami, date, echo <text>, clear, neofetch";
+    if (c === "neofetch") return "user@busterminal · ghostty · zsh 5.9";
+    return `zsh: command not found: ${c}`;
+}
+
 const INFO = [
     "user@busterminal",
     "----------------",
@@ -77,10 +94,27 @@ export function TerminalPreview({
     hideTitlebar = false,
     tabPosition = "none"
 }: Props) {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [typed, setTyped] = useState("");
+    const [history, setHistory] = useState<string[]>([]);
+
     // 커서 모양별 dimensions
     const cursorWidth = cursorStyle === "bar" ? "2px" : `${fontSize * 0.5}px`;
     const cursorHeight = cursorStyle === "underline" ? "2px" : `${fontSize}px`;
-    const cursorAlign = cursorStyle === "underline" ? "self-end mt-1" : "self-center";
+    const cursorAlign = cursorStyle === "underline" ? "self-end mb-0.5" : "self-center";
+
+    function handleKey(e: KeyboardEvent<HTMLInputElement>) {
+        if (e.key === "Enter") {
+            const cmd = typed.trim();
+            if (cmd === "clear") {
+                setHistory([]);
+            }
+            else {
+                setHistory(h => [...h, `$ ${typed}`, runFakeShell(cmd)]);
+            }
+            setTyped("");
+        }
+    }
 
     const tabs = (
         <div
@@ -122,6 +156,7 @@ export function TerminalPreview({
 
             {/* terminal canvas */}
             <div
+                onClick={() => inputRef.current?.focus()}
                 style={{
                     // blur는 backdrop-filter라 배경이 비쳐야 하는데 우리 미리보기는 단색이라
                     // 시각적 효과로 약간 saturated 처리 + 보더 글로우 추가.
@@ -137,7 +172,7 @@ export function TerminalPreview({
                         ? "inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 60px rgba(255,255,255,0.02)"
                         : "none"
                 }}
-                className="min-h-[420px] transition-colors"
+                className="min-h-[420px] transition-colors cursor-text"
             >
                 <div className="flex gap-2 items-center">
                     <span style={{color: cursor}}>user@busterminal:~$</span>
@@ -163,10 +198,46 @@ export function TerminalPreview({
                         ls
                     </span>
                 </div>
+
+                {/* History (Enter로 입력한 라인들) */}
+                {history.map((line, i) => (
+                    <div
+                        key={i}
+                        className="whitespace-pre-wrap"
+                        style={{color: line.startsWith("$") ? cursor : foreground, opacity: 0.85}}
+                    >
+                        {line}
+                    </div>
+                ))}
+
+                {/* 실제 입력 가능한 프롬프트 */}
                 <div className="flex gap-2 mt-2 items-end">
                     <span style={{color: cursor}}>user@busterminal:~$</span>
+                    <input
+                        ref={inputRef}
+                        value={typed}
+                        onChange={e => setTyped(e.target.value)}
+                        onKeyDown={handleKey}
+                        spellCheck={false}
+                        autoComplete="off"
+                        className="bg-transparent outline-none border-none p-0 m-0"
+                        style={{
+                            color: foreground,
+                            fontFamily: "inherit",
+                            fontSize: "inherit",
+                            lineHeight: "inherit",
+                            caretColor: "transparent",
+                            width: `${Math.max(typed.length, 1)}ch`,
+                            minWidth: "1ch"
+                        }}
+                        aria-label="terminal-input"
+                    />
                     <span
-                        className={cn("inline-block", cursorAlign, cursorBlink && "animate-flicker")}
+                        className={cn(
+                            "inline-block shrink-0",
+                            cursorAlign,
+                            cursorBlink && "animate-flicker"
+                        )}
                         style={{
                             background: cursor,
                             width: cursorWidth,

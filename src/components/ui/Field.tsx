@@ -142,7 +142,7 @@ export function RangeInput({
     suffix?: string;
 }) {
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
             <input
                 type="range"
                 min={min}
@@ -150,9 +150,9 @@ export function RangeInput({
                 step={step ?? 1}
                 value={value}
                 onChange={e => onChange(Number(e.target.value))}
-                className="flex-1 h-1 rounded-full bg-white/10 appearance-none accent-primary-fixed-dim"
+                className="flex-1 min-w-0 h-1 rounded-full bg-white/10 appearance-none accent-primary-fixed-dim cursor-pointer"
             />
-            <span className="font-mono text-code-sm text-on-surface min-w-[3rem] text-right">
+            <span className="font-mono text-code-sm text-on-surface w-12 text-right shrink-0 tabular-nums">
                 {value}
                 {suffix}
             </span>
