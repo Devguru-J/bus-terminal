@@ -6,6 +6,10 @@
     color-scheme: dark;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 html,
 body,
 #root {
@@ -15,6 +19,29 @@ body,
 body {
     @apply bg-background text-on-background font-body antialiased;
     font-feature-settings: "ss01", "ss02";
+}
+
+h1,
+h2,
+h3 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
 }
 
 ::selection {

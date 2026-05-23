@@ -63,7 +63,7 @@ export function HomePage() {
                     <PlatformCard
                         platformNo="01"
                         title="Ghostty 승강장"
-                        description="Next-gen GPU accelerated terminal emulator. Fast, native, and modern."
+                        description="폰트·색·창 패딩을 슬라이더로 맞추고 미리보기에서 바로 확인. 완성하면 ghostty config 한 줄로 출발."
                         to="/ghostty"
                         icon="terminal"
                         departure="14:00 DEPART"
@@ -73,7 +73,7 @@ export function HomePage() {
                     <PlatformCard
                         platformNo="02"
                         title="tmux 승강장"
-                        description="Terminal multiplexer. Manage multiple sessions, windows, and panes."
+                        description="prefix · 상태바 · 플러그인을 체크박스로 조립. 결과는 라이브 상태바로 미리 보고 ~/.tmux.conf 로 도착."
                         to="/tmux"
                         icon="grid_view"
                         departure="14:15 DEPART"
@@ -83,7 +83,7 @@ export function HomePage() {
                     <PlatformCard
                         platformNo="03"
                         title="Neovim 승강장"
-                        description="Hyperextensible Vim-based text editor. Powerful plugin ecosystem via Lua."
+                        description="lazy.nvim 기반. 옵션 토글·플러그인 선택·키 매핑 추가만으로 init.lua 한 벌이 완성됩니다."
                         to="/neovim"
                         icon="edit_note"
                         departure="14:30 DEPART"
@@ -93,7 +93,7 @@ export function HomePage() {
                     <PlatformCard
                         platformNo="04"
                         title="Zsh 승강장"
-                        description="Strong scripting shell with completion, history sharing, and a thriving plugin ecosystem."
+                        description="프롬프트 · 히스토리 · oh-my-zsh 플러그인 · alias를 하나의 ~/.zshrc 출발권으로 묶어냅니다."
                         to="/zsh"
                         icon="code_blocks"
                         departure="14:45 DEPART"

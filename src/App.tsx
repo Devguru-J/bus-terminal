@@ -11,6 +11,7 @@ import {MyRoutesPage} from "@/pages/MyRoutes";
 import {SettingsPage} from "@/pages/Settings";
 import {DiffPage} from "@/pages/Diff";
 import {ExportPage} from "@/pages/Export";
+import {NotFoundPage} from "@/pages/NotFound";
 
 export default function App() {
     return (
@@ -27,6 +28,7 @@ export default function App() {
                     <Route path="/diff" element={<DiffPage />} />
                     <Route path="/export" element={<ExportPage />} />
                     <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </AppShell>
             <ToastViewport />
