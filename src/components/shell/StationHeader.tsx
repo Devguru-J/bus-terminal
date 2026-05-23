@@ -2,7 +2,7 @@ import type {ReactNode} from "react";
 import {StatusDot} from "@/components/ui/Badge";
 
 interface Props {
-    title: string;
+    title: ReactNode;
     /** Small uppercase eyebrow (e.g. "PLATFORM 1 ACTIVE"). */
     eyebrow?: string;
     /** Optional description under title. */
