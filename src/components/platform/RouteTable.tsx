@@ -9,6 +9,13 @@ interface Props {
     onDelete: (r: SavedRoute) => void;
 }
 
+const PLATFORM_TONE: Record<SavedRoute["platform"], "active" | "info" | "warn" | "default"> = {
+    ghostty: "active",
+    tmux: "info",
+    neovim: "warn",
+    zsh: "default"
+};
+
 function fmtDate(ts: number): string {
     const d = new Date(ts);
     const pad = (n: number) => String(n).padStart(2, "0");
@@ -75,7 +82,7 @@ export function RouteTable({routes, onPlay, onDelete}: Props) {
                             {fmtDate(r.createdAt)}
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                            <Badge tone={r.platform === "ghostty" ? "active" : "info"}>
+                            <Badge tone={PLATFORM_TONE[r.platform] ?? "default"}>
                                 {r.platform}
                             </Badge>
                             <Badge>autosave</Badge>

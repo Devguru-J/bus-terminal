@@ -32,7 +32,10 @@ export function MyRoutesPage() {
                         toast(`"${r.name}"으로 환승했어요.`, "success");
                     }
                     else {
-                        toast("이 노선은 tmux 설정이라 다운로드만 가능해요.", "info");
+                        toast(
+                            `${r.platform} 노선은 다운로드만 가능해요. 출발 안내로 이동하세요.`,
+                            "info"
+                        );
                     }
                 }}
                 onDelete={r => {

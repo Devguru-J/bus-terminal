@@ -84,21 +84,21 @@ export function HomePage() {
                         platformNo="03"
                         title="Neovim 승강장"
                         description="Hyperextensible Vim-based text editor. Powerful plugin ecosystem via Lua."
-                        to="/"
+                        to="/neovim"
                         icon="edit_note"
                         departure="14:30 DEPART"
                         snippet="> nvim ."
-                        status="soon"
+                        status="ready"
                     />
                     <PlatformCard
                         platformNo="04"
-                        title="yazi 승강장"
-                        description="Blazing fast terminal file manager written in Rust, based on async I/O."
-                        to="/"
-                        icon="folder_open"
+                        title="Zsh 승강장"
+                        description="Strong scripting shell with completion, history sharing, and a thriving plugin ecosystem."
+                        to="/zsh"
+                        icon="code_blocks"
                         departure="14:45 DEPART"
-                        snippet="> yazi ~/projects"
-                        status="soon"
+                        snippet="> zsh"
+                        status="ready"
                     />
                 </div>
             </section>

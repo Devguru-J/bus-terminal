@@ -40,9 +40,9 @@ export function Sidebar() {
                 </div>
                 <PlatformNavItem to="/ghostty" label="Platform 1: Ghostty" icon="terminal" />
                 <PlatformNavItem to="/tmux" label="Platform 2: tmux" icon="grid_view" />
+                <PlatformNavItem to="/neovim" label="Platform 3: Neovim" icon="edit_note" />
+                <PlatformNavItem to="/zsh" label="Platform 4: Zsh" icon="code_blocks" />
                 <PlatformNavItem to="/themes" label="Theme Center" icon="palette" />
-                <NavDisabled label="Platform 3: Neovim" icon="edit_note" />
-                <NavDisabled label="Platform 4: Zsh" icon="code_blocks" />
             </nav>
 
             {/* Footer rail */}
@@ -72,16 +72,3 @@ export function Sidebar() {
     );
 }
 
-function NavDisabled({label, icon}: {label: string; icon: string}) {
-    return (
-        <div className="flex items-center gap-3 h-10 pl-5 pr-3 text-on-surface-variant/40 cursor-not-allowed">
-            <Icon name={icon} className="text-[18px]" />
-            <span className="font-mono text-label-xs uppercase tracking-[0.12em] flex-1">
-                {label}
-            </span>
-            <span className="text-[9px] uppercase tracking-wider text-on-surface-variant/40">
-                soon
-            </span>
-        </div>
-    );
-}
