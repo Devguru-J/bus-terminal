@@ -15,6 +15,8 @@
 
 ---
 
+**🚏 라이브 데모 → [bus-terminal.pages.dev](https://bus-terminal.pages.dev/)**
+
 [ 시작하기 ] · [ 문서 ] · [ 로드맵 ] · [ 이슈 제보 ]
 
 </div>
