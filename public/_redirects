@@ -1,0 +1,4 @@
+# Cloudflare Pages — SPA fallback
+# react-router BrowserRouter가 처리하는 /ghostty, /tmux 등 직접 URL 접근 시
+# 서버가 index.html을 반환하도록 함 (200 status).
+/*    /index.html   200
