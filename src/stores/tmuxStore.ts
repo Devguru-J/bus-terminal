@@ -30,6 +30,6 @@ export const useTmuxStore = create<TmuxState>()(
             exportText: () => serializeTmuxConf(get().config),
             reset: () => set({config: {...tmuxStatusDefault}})
         }),
-        {name: "bus-terminal:tmux"}
+        {name: "bus-terminal:tmux", version: 2}
     )
 );

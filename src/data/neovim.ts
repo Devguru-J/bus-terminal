@@ -53,22 +53,27 @@ export interface NvimConfig {
     keymaps: Array<{lhs: string; rhs: string; desc: string}>;
 }
 
+/**
+ * 진짜 vim/nvim의 무설정 기본값.
+ * - leader는 백슬래시 `\` (vim 기본)
+ * - 줄번호 OFF, 상대번호 OFF (vim 기본)
+ * - tabstop 8, expandtab OFF (vim 기본: 하드 탭)
+ * - 마우스 OFF
+ * - colorscheme "default", statusline "default" (lualine 없음)
+ * - 플러그인 없음, keymap 없음
+ */
 export const nvimDefault: NvimConfig = {
-    leaderKey: " ",
-    lineNumbers: true,
-    relativeNumbers: true,
-    tabWidth: 2,
-    expandTab: true,
-    mouse: true,
+    leaderKey: "\\",
+    lineNumbers: false,
+    relativeNumbers: false,
+    tabWidth: 8,
+    expandTab: false,
+    mouse: false,
     transparent: false,
-    colorscheme: "tokyonight",
-    statusline: "lualine",
-    plugins: ["lazy", "telescope", "treesitter", "lspconfig", "lualine", "tokyonight"],
-    keymaps: [
-        {lhs: "<leader>w", rhs: ":w<CR>", desc: "저장"},
-        {lhs: "<leader>q", rhs: ":q<CR>", desc: "종료"},
-        {lhs: "<leader>ff", rhs: ":Telescope find_files<CR>", desc: "파일 찾기"}
-    ]
+    colorscheme: "default",
+    statusline: "default",
+    plugins: [],
+    keymaps: []
 };
 
 /** init.lua 생성. */

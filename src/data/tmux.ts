@@ -32,16 +32,23 @@ export interface TmuxStatusConfig {
     plugins: string[]; // selected plugin ids
 }
 
+/**
+ * 진짜 tmux 기본값 (`man tmux` 기준).
+ * - prefix C-b, mouse off, base-index 0, status bottom, status-interval 15
+ * - 상태바: 검정 글씨 + 녹색 배경 (tmux의 트레이드마크)
+ * - 좌측: [#S] (세션명), 우측: "%H:%M %d-%b-%y"
+ * - 플러그인: 없음 (TPM 미설치 상태)
+ */
 export const tmuxStatusDefault: TmuxStatusConfig = {
-    prefix: "C-a",
-    mouse: true,
-    baseIndex: 1,
-    statusInterval: 1,
-    statusPosition: "top",
-    statusStyle: "fg=#cdd6f4,bg=#1e1e2e",
-    leftSegments: ["#[fg=#a6e3a1] #S "],
-    rightSegments: ["#[fg=#f5e0dc] %Y-%m-%d ", "#[fg=#89b4fa] %H:%M "],
-    plugins: ["tpm", "sensible", "yank", "catppuccin"]
+    prefix: "C-b",
+    mouse: false,
+    baseIndex: 0,
+    statusInterval: 15,
+    statusPosition: "bottom",
+    statusStyle: "fg=black,bg=green",
+    leftSegments: ["[#S] "],
+    rightSegments: ["%H:%M %d-%b-%y"],
+    plugins: []
 };
 
 export function serializeTmuxConf(c: TmuxStatusConfig): string {

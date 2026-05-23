@@ -258,11 +258,11 @@ export function GhosttyPage() {
                         </div>
                     </Panel>
 
-                    {/* 4. 노선 스타일 */}
-                    <Panel title="노선 스타일">
+                    {/* 4. 터미널 스타일 */}
+                    <Panel title="터미널 스타일">
                         <div className="space-y-4">
                             <div>
-                                <Label>스타일</Label>
+                                <Label>테마</Label>
                                 <Select
                                     value={currentThemeId}
                                     onChange={e => setTheme(e.target.value)}

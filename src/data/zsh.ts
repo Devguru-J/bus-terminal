@@ -39,7 +39,8 @@ export const zshPlugins: ZshPlugin[] = [
 ];
 
 export const ZSH_PROMPTS = [
-    {id: "starship", ko: "Starship (권장)", desc: "Rust 기반 다국적 프롬프트"},
+    {id: "default", ko: "기본 (default)", desc: "zsh 무설정 상태 — %m%# 프롬프트"},
+    {id: "starship", ko: "Starship", desc: "Rust 기반 다국적 프롬프트 (권장)"},
     {id: "pure", ko: "Pure", desc: "단정한 미니멀"},
     {id: "agnoster", ko: "Agnoster", desc: "powerline 스타일 (oh-my-zsh)"},
     {id: "robbyrussell", ko: "Robbyrussell", desc: "oh-my-zsh 기본"},
@@ -59,20 +60,22 @@ export interface ZshConfig {
     aliases: Array<{name: string; value: string}>;
 }
 
+/**
+ * 진짜 zsh의 무설정 기본값.
+ * - HISTSIZE 30, SAVEHIST 0 (zsh 내장 기본)
+ * - SHARE_HISTORY / HIST_IGNORE_DUPS / AUTO_CD 모두 OFF
+ * - 프롬프트 기본 (%m%#)
+ * - 플러그인 없음, 별칭 없음
+ */
 export const zshDefault: ZshConfig = {
-    prompt: "starship",
-    histsize: 10000,
-    savehist: 10000,
-    shareHistory: true,
-    ignoreDups: true,
-    autoCd: true,
-    plugins: ["git", "z", "syntax-highlighting", "autosuggestions"],
-    aliases: [
-        {name: "ll", value: "ls -lah"},
-        {name: "gs", value: "git status"},
-        {name: "gp", value: "git pull"},
-        {name: "..", value: "cd .."}
-    ]
+    prompt: "default",
+    histsize: 30,
+    savehist: 0,
+    shareHistory: false,
+    ignoreDups: false,
+    autoCd: false,
+    plugins: [],
+    aliases: []
 };
 
 export function serializeZshConfig(c: ZshConfig): string {
@@ -122,6 +125,9 @@ export function serializeZshConfig(c: ZshConfig): string {
     // Prompt
     out.push("# === Prompt ===");
     switch (c.prompt) {
+        case "default":
+            out.push("# zsh 기본 프롬프트(%m%#) 사용 — 별도 설정 없음");
+            break;
         case "starship":
             out.push('eval "$(starship init zsh)"');
             break;

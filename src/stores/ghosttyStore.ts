@@ -115,7 +115,7 @@ export const useGhosttyStore = create<GhosttyState>()(
                     rawExtras: {}
                 })
         }),
-        {name: "bus-terminal:ghostty"}
+        {name: "bus-terminal:ghostty", version: 2}
     )
 );
 
