@@ -1,11 +1,13 @@
 # Cloudflare Pages 보안 헤더 — 전 라우트 적용
+# CSP의 script-src 'unsafe-inline'는 index.html의 JSON-LD를 허용하기 위함
+# (사용자 입력을 HTML로 렌더하지 않고 eval도 사용하지 않으므로 실질적 XSS 표면은 없음)
+
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
-  # CSP — Google Fonts CSS/woff, 인라인 SVG/data URI favicon/og, 인라인 스타일(Vite) 허용
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
 
 # 정적 자산 — 긴 캐시
 /assets/*

@@ -19,7 +19,11 @@ export function PrivacyPage() {
             >
                 <p className="text-body-md text-on-surface leading-relaxed">
                     버스터미널은 <strong className="text-primary-fixed-dim">서버를 운영하지 않습니다.</strong>
-                    모든 데이터는 사용자의 브라우저(localStorage)에만 저장되며, 어떤 정보도 외부로 전송되지 않습니다.
+                    사용자가 입력한 설정값과 노선·즐겨찾기는 브라우저(localStorage)에만 저장되며,
+                    <strong className="text-on-surface"> 외부로 전송되지 않습니다.</strong>
+                </p>
+                <p className="mt-3 text-[12px] text-on-surface-variant leading-relaxed">
+                    단, 사이트 호스팅(Cloudflare Pages)과 폰트 로딩(Google Fonts)을 위해 IP 주소 등 표준 웹 요청 정보는 각 서비스 측에 전달될 수 있습니다. 자세한 내용은 아래 ③항을 확인하세요.
                 </p>
             </ConfigPanel>
 
