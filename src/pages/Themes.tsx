@@ -6,7 +6,9 @@ import {ThemeCard} from "@/components/platform/ThemeCard";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
 import {Select, TextInput} from "@/components/ui/Field";
-import {themes, themeCategories, type RouteTheme, type ThemeTag} from "@/data/themes";
+import {themes as builtinThemes, themeCategories, type RouteTheme, type ThemeTag} from "@/data/themes";
+import {useUserThemesStore} from "@/stores/userThemesStore";
+import {ImportThemeModal} from "@/components/platform/ImportThemeModal";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useNeovimStore} from "@/stores/neovimStore";
@@ -97,13 +99,23 @@ export function ThemesPage() {
     const setHelixField = useHelixStore(s => s.setField);
     const favorites = useFavoritesStore(s => s.themes);
     const toggleFavorite = useFavoritesStore(s => s.toggleTheme);
+    const userThemes = useUserThemesStore(s => s.items);
+    const removeUserTheme = useUserThemesStore(s => s.remove);
     const navigate = useNavigate();
 
     const [query, setQuery] = useState("");
-    const [tagFilter, setTagFilter] = useState<ThemeTag | "all" | "favorites">("all");
+    const [tagFilter, setTagFilter] = useState<ThemeTag | "all" | "favorites" | "imported">("all");
     const [sort, setSort] = useState<SortId>("default");
-    const [active, setActive] = useState(themes[0].id);
+    const [active, setActive] = useState(builtinThemes[0].id);
     const [target, setTarget] = useState<Target>("all");
+    const [importOpen, setImportOpen] = useState(false);
+
+    // 빌트인 + 사용자 추가 테마. 사용자 테마가 앞에 와서 새로 가져온 게 바로 보임.
+    const themes = useMemo<RouteTheme[]>(
+        () => [...userThemes, ...builtinThemes],
+        [userThemes]
+    );
+    const userIds = useMemo(() => new Set(userThemes.map(t => t.id)), [userThemes]);
 
     const activeTheme = themes.find(t => t.id === active) ?? themes[0];
 
@@ -119,6 +131,9 @@ export function ThemesPage() {
         }
         if (tagFilter === "favorites") {
             list = list.filter(t => favorites.includes(t.id));
+        }
+        else if (tagFilter === "imported") {
+            list = list.filter(t => userIds.has(t.id));
         }
         else if (tagFilter !== "all") {
             list = list.filter(t => t.tags.includes(tagFilter));
@@ -147,7 +162,7 @@ export function ThemesPage() {
                 break;
         }
         return list;
-    }, [query, tagFilter, sort, favorites]);
+    }, [query, tagFilter, sort, favorites, themes, userIds]);
 
     function applyToAll(t: RouteTheme) {
         applyGhostty(t);
@@ -237,14 +252,24 @@ export function ThemesPage() {
                 eyebrow="노선 스타일 (THEME)"
                 subtitle={`${themes.length}개 노선 운행중. 6개 승강장(Ghostty · Warp · iTerm2 · Neovim · Helix · tmux)에 한 번에 환승 송출.`}
                 actions={
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate("/fonts")}
-                    >
-                        <Icon name="text_fields" className="text-[14px]" />
-                        폰트 환승센터
-                    </Button>
+                    <>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setImportOpen(true)}
+                        >
+                            <Icon name="file_upload" className="text-[14px]" />
+                            테마 가져오기
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate("/fonts")}
+                        >
+                            <Icon name="text_fields" className="text-[14px]" />
+                            폰트 환승센터
+                        </Button>
+                    </>
                 }
             />
 
@@ -288,6 +313,14 @@ export function ThemesPage() {
                         icon="favorite"
                         label={`즐겨찾기 ${favorites.length}`}
                     />
+                    {userThemes.length > 0 && (
+                        <TagChip
+                            active={tagFilter === "imported"}
+                            onClick={() => setTagFilter("imported")}
+                            icon="file_upload"
+                            label={`가져온 ${userThemes.length}`}
+                        />
+                    )}
                     {themeCategories.map(c => {
                         const count = themes.filter(t => t.tags.includes(c.id)).length;
                         return (
@@ -319,8 +352,23 @@ export function ThemesPage() {
                             active={t.id === active}
                             favorite={favorites.includes(t.id)}
                             detailTo={`/themes/${t.id}`}
+                            imported={userIds.has(t.id)}
                             onClick={() => setActive(t.id)}
                             onFavorite={() => toggleFavorite(t.id)}
+                            onDelete={
+                                userIds.has(t.id)
+                                    ? () => {
+                                          if (
+                                              window.confirm(
+                                                  `"${t.ko}" 사용자 테마를 삭제할까요?`
+                                              )
+                                          ) {
+                                              removeUserTheme(t.id);
+                                              toast("삭제했어요.", "success");
+                                          }
+                                      }
+                                    : undefined
+                            }
                         />
                     ))}
                 </div>
@@ -371,6 +419,12 @@ export function ThemesPage() {
                     </Button>
                 </div>
             </motion.div>
+
+            <ImportThemeModal
+                open={importOpen}
+                onClose={() => setImportOpen(false)}
+                onImported={id => setActive(id)}
+            />
         </div>
     );
 }

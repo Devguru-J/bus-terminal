@@ -8,14 +8,18 @@ interface Props {
     theme: RouteTheme;
     active?: boolean;
     favorite?: boolean;
+    /** 사용자가 import한 테마인지 — 뱃지 표시 */
+    imported?: boolean;
     /** 디테일 페이지로 가는 경로 (지정 시 카드에 ↗ 버튼 표시) */
     detailTo?: string;
     onClick?: () => void;
     onFavorite?: () => void;
+    /** 사용자 테마 삭제 — 지정 시 카드 하단에 작은 삭제 버튼 표시 */
+    onDelete?: () => void;
 }
 
 /** Mini terminal preview tile used in the Theme Center. */
-export function ThemeCard({theme, active, favorite, detailTo, onClick, onFavorite}: Props) {
+export function ThemeCard({theme, active, favorite, imported, detailTo, onClick, onFavorite, onDelete}: Props) {
     return (
         <motion.div
             whileHover={{y: -2}}
@@ -134,19 +138,40 @@ export function ThemeCard({theme, active, favorite, detailTo, onClick, onFavorit
             </button>
 
             {/* Palette dots — 고정 높이 */}
-            <button
-                type="button"
-                onClick={onClick}
-                className="w-full flex items-center gap-2 px-4 h-11 bg-surface-container-lowest border-t border-white/[0.05]"
-            >
-                {theme.palette16.slice(0, 8).map((c, i) => (
-                    <span
-                        key={i}
-                        className="h-3.5 w-3.5 rounded-full border border-white/10 shrink-0"
-                        style={{background: c}}
-                    />
-                ))}
-            </button>
+            <div className="flex items-center gap-2 px-4 h-11 bg-surface-container-lowest border-t border-white/[0.05]">
+                <button
+                    type="button"
+                    onClick={onClick}
+                    className="flex items-center gap-2 flex-1 min-w-0"
+                >
+                    {theme.palette16.slice(0, 8).map((c, i) => (
+                        <span
+                            key={i}
+                            className="h-3.5 w-3.5 rounded-full border border-white/10 shrink-0"
+                            style={{background: c}}
+                        />
+                    ))}
+                </button>
+                {imported && (
+                    <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-tertiary-fixed-dim px-1.5 py-0.5 rounded border border-tertiary-fixed-dim/30 bg-tertiary-fixed-dim/10">
+                        imported
+                    </span>
+                )}
+                {onDelete && (
+                    <button
+                        type="button"
+                        onClick={e => {
+                            e.stopPropagation();
+                            onDelete();
+                        }}
+                        className="h-6 w-6 grid place-items-center rounded text-on-surface-variant/50 hover:text-error hover:bg-error/10"
+                        aria-label="사용자 테마 삭제"
+                        title="삭제"
+                    >
+                        <Icon name="delete" className="text-[14px]" />
+                    </button>
+                )}
+            </div>
         </motion.div>
     );
 }

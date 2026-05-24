@@ -4,7 +4,8 @@ import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
-import {themes, themeToConfigSnippet} from "@/data/themes";
+import {themes as builtinThemes, themeToConfigSnippet} from "@/data/themes";
+import {useUserThemesStore} from "@/stores/userThemesStore";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useNeovimStore} from "@/stores/neovimStore";
@@ -51,7 +52,10 @@ function themeToHelixTheme(id: string): HelixTheme {
 
 export function ThemeDetailPage() {
     const {id} = useParams();
-    const theme = themes.find(t => t.id === id);
+    const userThemes = useUserThemesStore(s => s.items);
+    const removeUserTheme = useUserThemesStore(s => s.remove);
+    const theme = [...userThemes, ...builtinThemes].find(t => t.id === id);
+    const isUserTheme = userThemes.some(t => t.id === id);
     const favorite = useFavoritesStore(s => s.themes.includes(id ?? ""));
     const toggleFavorite = useFavoritesStore(s => s.toggleTheme);
     const applyGhostty = useGhosttyStore(s => s.applyTheme);
@@ -126,6 +130,22 @@ export function ThemeDetailPage() {
                 }
                 actions={
                     <>
+                        {isUserTheme && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    if (window.confirm(`"${theme.ko}" 사용자 테마를 삭제할까요?`)) {
+                                        removeUserTheme(theme.id);
+                                        toast("삭제했어요.", "success");
+                                        window.history.back();
+                                    }
+                                }}
+                            >
+                                <Icon name="delete" className="text-[16px] text-error" />
+                                삭제
+                            </Button>
+                        )}
                         <Button
                             variant="outline"
                             size="sm"
