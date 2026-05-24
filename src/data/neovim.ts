@@ -17,11 +17,19 @@ export const nvimPlugins: NvimPlugin[] = [
     {id: "treesitter", ko: "Treesitter", repo: "nvim-treesitter/nvim-treesitter", desc: "AST 기반 신택스 하이라이트", category: "editor"},
     {id: "lspconfig", ko: "LSP Config", repo: "neovim/nvim-lspconfig", desc: "LSP 서버 자동 설정", category: "lsp"},
     {id: "mason", ko: "Mason", repo: "williamboman/mason.nvim", desc: "LSP·DAP·linter 설치 관리자", category: "lsp"},
+    {id: "mason-lspconfig", ko: "Mason LSPConfig", repo: "williamboman/mason-lspconfig.nvim", desc: "Mason과 lspconfig 연결", category: "lsp"},
     {id: "lualine", ko: "Lualine", repo: "nvim-lualine/lualine.nvim", desc: "상태바 (statusline)", category: "ui"},
     {id: "neo-tree", ko: "Neo-tree", repo: "nvim-neo-tree/neo-tree.nvim", desc: "파일 탐색기 사이드바", category: "navigation"},
     {id: "gitsigns", ko: "Gitsigns", repo: "lewis6991/gitsigns.nvim", desc: "Git diff 사인 / 블레임", category: "git"},
     {id: "which-key", ko: "which-key", repo: "folke/which-key.nvim", desc: "키 매핑 힌트 팝업", category: "ui"},
-    {id: "tokyonight", ko: "Tokyo Night", repo: "folke/tokyonight.nvim", desc: "테마: 도쿄 야간선", category: "ui"}
+    {id: "tokyonight", ko: "Tokyo Night", repo: "folke/tokyonight.nvim", desc: "테마: 도쿄 야간선", category: "ui"},
+    {id: "conform", ko: "Conform.nvim", repo: "stevearc/conform.nvim", desc: "저장 시 포맷팅", category: "editor"},
+    {id: "cmp", ko: "nvim-cmp", repo: "hrsh7th/nvim-cmp", desc: "자동완성 엔진", category: "editor"},
+    {id: "catppuccin", ko: "Catppuccin", repo: "catppuccin/nvim", desc: "테마: Catppuccin", category: "ui"},
+    {id: "gruvbox", ko: "Gruvbox", repo: "ellisonleao/gruvbox.nvim", desc: "테마: Gruvbox", category: "ui"},
+    {id: "nord", ko: "Nord", repo: "shaunsingh/nord.nvim", desc: "테마: Nord", category: "ui"},
+    {id: "rose-pine", ko: "Rose Pine", repo: "rose-pine/neovim", desc: "테마: Rose Pine", category: "ui"},
+    {id: "kanagawa", ko: "Kanagawa", repo: "rebelot/kanagawa.nvim", desc: "테마: Kanagawa", category: "ui"}
 ];
 
 export const NVIM_COLORSCHEMES = [
@@ -47,6 +55,14 @@ export interface NvimConfig {
     expandTab: boolean;
     mouse: boolean;
     transparent: boolean;
+    wrap: boolean;
+    scrolloff: number;
+    sidescrolloff: number;
+    clipboard: "default" | "unnamedplus";
+    ignorecase: boolean;
+    smartcase: boolean;
+    formatOnSave: boolean;
+    lspServers: string[];
     colorscheme: NvimColorscheme;
     statusline: NvimStatusline;
     plugins: string[]; // ids
@@ -70,6 +86,14 @@ export const nvimDefault: NvimConfig = {
     expandTab: false,
     mouse: false,
     transparent: false,
+    wrap: false,
+    scrolloff: 0,
+    sidescrolloff: 0,
+    clipboard: "default",
+    ignorecase: false,
+    smartcase: false,
+    formatOnSave: false,
+    lspServers: [],
     colorscheme: "default",
     statusline: "default",
     plugins: [],
@@ -79,6 +103,7 @@ export const nvimDefault: NvimConfig = {
 /** init.lua 생성. */
 export function serializeNvimConfig(c: NvimConfig): string {
     const lines: string[] = [];
+    const selectedPlugins = c.plugins.filter(id => id !== "lazy");
     lines.push("-- 버스터미널에서 출발한 Neovim 설정");
     lines.push(`-- generated ${new Date().toISOString()}`);
     lines.push("");
@@ -91,10 +116,16 @@ export function serializeNvimConfig(c: NvimConfig): string {
     lines.push(`vim.opt.expandtab = ${c.expandTab}`);
     lines.push(`vim.opt.mouse = "${c.mouse ? "a" : ""}"`);
     lines.push(`vim.opt.termguicolors = true`);
+    lines.push(`vim.opt.wrap = ${c.wrap}`);
+    lines.push(`vim.opt.scrolloff = ${c.scrolloff}`);
+    lines.push(`vim.opt.sidescrolloff = ${c.sidescrolloff}`);
+    if (c.clipboard === "unnamedplus") lines.push(`vim.opt.clipboard = "unnamedplus"`);
+    lines.push(`vim.opt.ignorecase = ${c.ignorecase}`);
+    lines.push(`vim.opt.smartcase = ${c.smartcase}`);
     lines.push("");
 
     // 플러그인 부트스트랩 (lazy.nvim)
-    if (c.plugins.includes("lazy")) {
+    if (selectedPlugins.length > 0 || c.plugins.includes("lazy")) {
         lines.push("-- lazy.nvim 부트스트랩");
         lines.push(`local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"`);
         lines.push("if not vim.loop.fs_stat(lazypath) then");
@@ -102,16 +133,15 @@ export function serializeNvimConfig(c: NvimConfig): string {
         lines.push("end");
         lines.push("vim.opt.rtp:prepend(lazypath)");
         lines.push("");
+        lines.push("require(\"lazy\").setup({");
+        for (const id of selectedPlugins) {
+            const p = nvimPlugins.find(x => x.id === id);
+            if (!p) continue;
+            lines.push(`    {${JSON.stringify(p.repo)}},`);
+        }
+        lines.push("})");
+        lines.push("");
     }
-
-    lines.push("require(\"lazy\").setup({");
-    for (const id of c.plugins) {
-        const p = nvimPlugins.find(x => x.id === id);
-        if (!p || p.id === "lazy") continue;
-        lines.push(`    {${JSON.stringify(p.repo)}},`);
-    }
-    lines.push("})");
-    lines.push("");
 
     // 테마
     lines.push("-- 테마");
@@ -129,6 +159,28 @@ export function serializeNvimConfig(c: NvimConfig): string {
         lines.push("");
     }
 
+    if (c.plugins.includes("mason") && c.lspServers.length) {
+        lines.push("-- Mason LSP");
+        lines.push(`require("mason").setup()`);
+        lines.push(`require("mason-lspconfig").setup({ ensure_installed = ${luaArray(c.lspServers)} })`);
+        lines.push("");
+    }
+
+    if (c.plugins.includes("conform") && c.formatOnSave) {
+        lines.push("-- Formatting");
+        lines.push(`require("conform").setup({`);
+        lines.push(`    format_on_save = { timeout_ms = 500, lsp_fallback = true },`);
+        lines.push(`})`);
+        lines.push("");
+    }
+
+    if (c.plugins.includes("cmp")) {
+        lines.push("-- Completion");
+        lines.push(`local cmp = require("cmp")`);
+        lines.push(`cmp.setup({ mapping = cmp.mapping.preset.insert({ ["<CR>"] = cmp.mapping.confirm({ select = true }) }) })`);
+        lines.push("");
+    }
+
     // 키매핑
     if (c.keymaps.length) {
         lines.push("-- 키 매핑");
@@ -139,4 +191,8 @@ export function serializeNvimConfig(c: NvimConfig): string {
         }
     }
     return lines.join("\n") + "\n";
+}
+
+function luaArray(values: string[]): string {
+    return `{ ${values.map(v => JSON.stringify(v)).join(", ")} }`;
 }

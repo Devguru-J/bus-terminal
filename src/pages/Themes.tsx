@@ -101,7 +101,7 @@ export function ThemesPage() {
             {/* Bottom action dock */}
             <motion.div
                 layout
-                className="sticky bottom-12 mt-8 rounded-xl border border-white/[0.08] bg-surface-container/80 backdrop-blur-md p-4 flex flex-col sm:flex-row items-center gap-3"
+                className="sticky bottom-12 mt-8 rounded-xl border border-white/[0.08] bg-surface-container/90 p-4 flex flex-col sm:flex-row items-center gap-3"
             >
                 <div className="flex items-center gap-3">
                     <div

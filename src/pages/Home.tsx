@@ -26,14 +26,26 @@ export function HomePage() {
             <section>
                 <div className="flex flex-col items-start gap-5">
                     <DepartureStatus label="System Online" />
-                    <motion.h1
-                        initial={{opacity: 0, y: 8}}
-                        animate={{opacity: 1, y: 0}}
+                    <motion.div
+                        initial={{opacity: 0, y: 10, rotate: -4}}
+                        animate={{opacity: 1, y: 0, rotate: -4}}
                         transition={{duration: 0.4}}
-                        className="font-display text-display-lg text-on-surface tracking-tight animate-flicker fids-glow"
+                        className="neon-sign-board"
+                        aria-label="버스터미널"
                     >
-                        버스터미널
-                    </motion.h1>
+                        <span className="neon-sign-cable neon-sign-cable-left" aria-hidden />
+                        <span className="neon-sign-cable neon-sign-cable-right" aria-hidden />
+                        <h1
+                            className="neon-sign-title font-display text-display-lg text-on-surface"
+                            data-text="버스터미널"
+                        >
+                            <span className="neon-sign-letter">버</span>
+                            <span className="neon-sign-letter">스</span>
+                            <span className="neon-sign-letter">터</span>
+                            <span className="neon-sign-letter neon-sign-letter-faulty">미</span>
+                            <span className="neon-sign-letter">널</span>
+                        </h1>
+                    </motion.div>
                     <p className="text-body-md text-on-surface-variant max-w-xl">
                         내 개발환경으로 출발. 복잡한 설정 없이 터미널을 선택하고,
                         탑승하고, 출발하세요.
@@ -65,7 +77,7 @@ export function HomePage() {
                             Departure Board
                         </div>
                         <h2 className="font-display text-headline-sm text-on-surface mt-1">
-                            출발 안내 · 4개 승강장 운행중
+                            출발 안내 · 7개 승강장 운행중
                         </h2>
                     </div>
                     <Link
@@ -96,35 +108,68 @@ export function HomePage() {
                         },
                         {
                             platformNo: "02",
-                            title: "tmux 승강장",
+                            title: "Warp 승강장",
                             description:
-                                "prefix · 상태바 · 플러그인을 체크박스로 조립. 결과는 라이브 상태바로 미리 보고 ~/.tmux.conf 로 도착.",
-                            to: "/tmux",
-                            icon: "grid_view",
+                                "AI 내장 차세대 터미널. 테마 / 워크플로우 / AI 설정을 YAML 한 묶음으로 출발.",
+                            to: "/warp",
+                            icon: "bolt",
                             departure: "14:15 DEPART",
-                            snippet: "> tmux attach -t dev",
+                            snippet: "> warp",
                             status: "ready" as const
                         },
                         {
                             platformNo: "03",
+                            title: "iTerm2 승강장",
+                            description:
+                                "macOS 대표 터미널. 색상 프리셋과 폰트·핫키까지 .itermcolors / Dynamic Profile로 한 번에.",
+                            to: "/iterm2",
+                            icon: "terminal",
+                            departure: "14:30 DEPART",
+                            snippet: "> open -a iTerm",
+                            status: "ready" as const
+                        },
+                        {
+                            platformNo: "04",
                             title: "Neovim 승강장",
                             description:
                                 "lazy.nvim 기반. 옵션 토글·플러그인 선택·키 매핑 추가만으로 init.lua 한 벌이 완성됩니다.",
                             to: "/neovim",
                             icon: "edit_note",
-                            departure: "14:30 DEPART",
+                            departure: "14:45 DEPART",
                             snippet: "> nvim .",
                             status: "ready" as const
                         },
                         {
-                            platformNo: "04",
+                            platformNo: "05",
+                            title: "Helix 승강장",
+                            description:
+                                "Rust로 만든 모달 에디터. 트리시터 + LSP가 기본. config.toml 한 벌로 출발 완료.",
+                            to: "/helix",
+                            icon: "edit_square",
+                            departure: "15:00 DEPART",
+                            snippet: "> hx .",
+                            status: "ready" as const
+                        },
+                        {
+                            platformNo: "06",
                             title: "Zsh 승강장",
                             description:
                                 "프롬프트 · 히스토리 · oh-my-zsh 플러그인 · alias를 하나의 ~/.zshrc 출발권으로 묶어냅니다.",
                             to: "/zsh",
                             icon: "code_blocks",
-                            departure: "14:45 DEPART",
+                            departure: "15:15 DEPART",
                             snippet: "> zsh",
+                            status: "ready" as const
+                        },
+                        {
+                            platformNo: "07",
+                            title: "tmux 승강장",
+                            description:
+                                "prefix · 상태바 · 플러그인을 체크박스로 조립. 결과는 라이브 상태바로 미리 보고 ~/.tmux.conf 로 도착.",
+                            to: "/tmux",
+                            icon: "grid_view",
+                            departure: "15:30 DEPART",
+                            snippet: "> tmux attach -t dev",
                             status: "ready" as const
                         }
                     ]).map(card => (

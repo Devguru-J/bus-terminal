@@ -28,21 +28,19 @@ interface Props {
     tabPosition?: "top" | "bottom" | "none";
 }
 
-const NEOFETCH = [
-    "             :h@@@@$@y.",
-    "         .h$$@$@$@$$@$$y.",
-    "      .y$$$@$@$@$$$@$@$$y.",
-    "    .y$$$$@@@@$@@@@$@@@$$$y.",
-    "   y$$$$@@@$@@$@$@@$@$@$$$$$y",
-    "  yyyyy@@$@$@@$@$@$@$@$@yyyyy",
-    "  o$$$$$@$@$$@@$$@@$@$@$$$$$o",
-    "  d$$$$$$$$@$@@$@$@$@$$$$$$$h",
-    "  o$$$$@$ydyyyy@$@$@ydyyyy$$o",
-    "   d$$$$$y    yyyo    y$$$$h",
-    "    .yyyyy.     ..    yyyyy.",
-    "      .yyyy. ... ... .yyyy.",
-    "         .yyyy.     .yyyy.",
-    "             ..yyyy.."
+const BUS_FETCH = [
+    "        ________________________________",
+    "   ____/ BUS TERMINAL     001      ____\\",
+    "  /  _   _   _   _   _   _   _    / ___|",
+    " |  |_| |_| |_| |_| |_| |_| |_|  | |___ ",
+    " |  ____________________________  |  ___|",
+    " | |                            | | |    ",
+    " | |  GHOSTTY EXPRESS           | | |    ",
+    " | |  next stop: ~/.config      | | |    ",
+    " | |____________________________| | |___ ",
+    " |_________________________________|____|",
+    "     ( O )                  ( O )       ",
+    "      '-'                    '-'        "
 ];
 
 /** 미리보기용 fake shell — 몇 가지 명령에 응답한다. */
@@ -64,8 +62,8 @@ function runFakeShell(cmd: string): string {
 const INFO = [
     "user@busterminal",
     "----------------",
-    "OS: Ghostty OS x86_64",
-    "Host: FIDS Terminal Pro",
+    "OS: Bus Terminal x86_64",
+    "Host: Gate 01 Neon Stand",
     "Kernel: 6.8.0-1-transit",
     "Uptime: 90 days, 23 hours",
     "Packages: 2048 (dpkg)",
@@ -183,7 +181,7 @@ export function TerminalPreview({
                         className="whitespace-pre"
                         style={{color: cursor, opacity: 0.85}}
                     >
-                        {NEOFETCH.join("\n")}
+                        {BUS_FETCH.join("\n")}
                     </pre>
                     <pre className="whitespace-pre" style={{color: foreground}}>
                         {INFO.join("\n")}

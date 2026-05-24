@@ -60,13 +60,30 @@ export function TmuxPreview({config}: Props) {
                     <span className="text-tertiary-fixed-dim">{config.baseIndex}</span>
                 </div>
                 <div className="opacity-30 mt-3">
-                    ──── plugins ({config.plugins.length}) ────
+                    ──── plugins ({config.plugins.length + config.customPlugins.length}) ────
                 </div>
                 <ul className="text-[11px] opacity-70 mt-1">
                     {config.plugins.map(p => (
                         <li key={p}>· {p}</li>
                     ))}
+                    {config.customPlugins.map(p => (
+                        <li key={p}>· {p}</li>
+                    ))}
                 </ul>
+                {config.keyBindings.length > 0 && (
+                    <>
+                        <div className="opacity-30 mt-3">
+                            ──── key bindings ({config.keyBindings.length}) ────
+                        </div>
+                        <ul className="text-[11px] opacity-70 mt-1">
+                            {config.keyBindings.map(binding => (
+                                <li key={`${binding.key}:${binding.command}`}>
+                                    · {binding.key} → {binding.command}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )}
             </div>
             {config.statusPosition === "bottom" && statusBar}
         </div>

@@ -50,8 +50,12 @@ zsh
 
 - Ghostty 승강장
 - tmux 승강장
-- Neovim 승강장 (예정)
-- yazi 승강장 (예정)
+- Neovim 승강장
+- Zsh 승강장
+- Helix 승강장
+- iTerm2 승강장
+- Warp 승강장
+- yazi / Kitty / Alacritty / Zellij 승강장 (예정)
 
 ---
 
@@ -167,20 +171,29 @@ bun run start
 
 ## 🗺 로드맵
 
-### v0.1
+### v0.1 — 지나간 정류장
 - [x] Ghostty 지원
-- [x] 테마 시스템
-- [x] 설정 가져오기
-- [x] 설정 출발
+- [x] tmux 지원 (키바인딩 CRUD 포함)
+- [x] Neovim 지원 (lazy.nvim init.lua)
+- [x] Zsh 지원 (.zshrc + starship.toml)
+- [x] 테마 환승센터
+- [x] 설정 가져오기 / 출발
 
-### v0.2
-- [ ] tmux 지원
-- [ ] 노선 병합
-- [ ] 설정 공유
+### v0.2 — 현재 운행중
+- [x] Helix 지원 (config.toml + languages.toml)
+- [x] iTerm2 지원 (.itermcolors + Dynamic Profile JSON)
+- [x] Warp 지원 (테마 YAML + 워크플로우 + AI)
+- [x] 출발 전 진단 리포트
+- [x] 설치 스크립트 (--dry-run / --only / --no-backup)
+- [ ] Diff 페이지 멀티 플랫폼 확장
+- [ ] 모바일 사이드바
 
-### v0.3
-- [ ] Neovim
-- [ ] yazi
+### v0.3 — 다음 출발
+- [ ] Kitty / Alacritty / Zellij / yazi
+- [ ] 가져오기 마법사 (.zshrc / .tmux.conf 자동 파싱)
+- [ ] 갤러리 / 공유 노선 서버 영속
+- [ ] 다중 디바이스 동기화 (계정)
+- [ ] i18n (영어)
 - [ ] 커뮤니티 노선
 
 ---

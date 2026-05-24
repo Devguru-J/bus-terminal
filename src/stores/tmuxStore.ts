@@ -32,7 +32,7 @@ export const useTmuxStore = create<TmuxState>()(
         }),
         {
             name: "bus-terminal:tmux",
-            version: 2,
+            version: 5,
             migrate: () => ({config: {...tmuxStatusDefault}})
         }
     )

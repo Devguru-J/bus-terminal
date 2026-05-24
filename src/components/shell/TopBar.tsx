@@ -25,20 +25,30 @@ export function TopBar() {
                 <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hidden sm:inline">
                     {t}
                 </span>
-                <button
-                    type="button"
+                <Link
+                    to="/"
                     className="p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
-                    aria-label="Sensors"
+                    aria-label="메인으로 돌아가기"
+                    title="메인으로 돌아가기"
+                >
+                    <Icon name="home" className="text-[18px]" />
+                </Link>
+                <Link
+                    to="/export"
+                    className="p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
+                    aria-label="출발 전 점검"
+                    title="출발 전 점검"
                 >
                     <Icon name="sensors" className="text-[18px]" />
-                </button>
-                <button
-                    type="button"
+                </Link>
+                <Link
+                    to="/settings"
                     className="p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
-                    aria-label="Account"
+                    aria-label="설정"
+                    title="설정"
                 >
                     <Icon name="account_circle" className="text-[18px]" />
-                </button>
+                </Link>
             </div>
         </header>
     );

@@ -47,7 +47,7 @@ export function ZshPage() {
                         <StatusDot />
                     </span>
                 }
-                eyebrow="Platform 4 · ZSH-001"
+                eyebrow="Platform 6 · ZSH-001"
                 subtitle="프롬프트 · 히스토리 · 플러그인 · 별칭을 조합해 ~/.zshrc를 출발시킵니다."
                 actions={
                     <>
@@ -109,7 +109,7 @@ export function ZshPage() {
                     <ConfigPanel title="히스토리">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-4">
                             <div>
-                                <Label hint="HISTSIZE">메모리 보관 줄 수</Label>
+                                <Label hint="HISTSIZE" help="현재 셸 세션 안에서 기억할 명령어 개수입니다. 값을 크게 하면 위/아래 방향키로 더 오래된 명령을 찾을 수 있습니다.">메모리 보관 줄 수</Label>
                                 <NumberInput
                                     value={config.histsize}
                                     onChange={e =>
@@ -118,7 +118,7 @@ export function ZshPage() {
                                 />
                             </div>
                             <div>
-                                <Label hint="SAVEHIST">파일 보관 줄 수</Label>
+                                <Label hint="SAVEHIST" help="셸을 껐다 켜도 남겨둘 명령어 개수입니다. 여러 터미널 세션에서 기록을 오래 보존하려면 크게 둡니다.">파일 보관 줄 수</Label>
                                 <NumberInput
                                     value={config.savehist}
                                     onChange={e =>
@@ -233,6 +233,92 @@ export function ZshPage() {
                             ))}
                         </div>
                     </ConfigPanel>
+
+                    <ConfigPanel
+                        title="Advanced / PATH · Env · Completion"
+                        actions={<Badge tone="warn">advanced</Badge>}
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-4">
+                            <div>
+                                <Label hint="HISTFILE" help="명령어 히스토리를 저장할 파일 경로입니다. 기본은 ~/.zsh_history입니다.">히스토리 파일</Label>
+                                <TextInput
+                                    value={config.histfile}
+                                    onChange={e => setField("histfile", e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <Label hint="starship.toml" help="Starship 프롬프트를 선택했을 때 함께 생성할 starship.toml 스타일입니다. minimal은 빠르고, git-heavy는 Git 상태 표시가 풍부합니다.">Starship Preset</Label>
+                                <Select
+                                    value={config.starshipPreset}
+                                    onChange={e =>
+                                        setField(
+                                            "starshipPreset",
+                                            e.target.value as typeof config.starshipPreset
+                                        )
+                                    }
+                                >
+                                    <option value="minimal">minimal</option>
+                                    <option value="developer">developer</option>
+                                    <option value="git-heavy">git-heavy</option>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                            <ToggleRow
+                                title="전체 중복 히스토리 제거"
+                                description="HIST_IGNORE_ALL_DUPS"
+                                checked={config.ignoreAllDups}
+                                onChange={v => setField("ignoreAllDups", v)}
+                            />
+                            <ToggleRow
+                                title="히스토리 공백 정리"
+                                description="HIST_REDUCE_BLANKS"
+                                checked={config.reduceBlanks}
+                                onChange={v => setField("reduceBlanks", v)}
+                            />
+                            <ToggleRow
+                                title="명령 즉시 저장"
+                                description="INC_APPEND_HISTORY"
+                                checked={config.incAppendHistory}
+                                onChange={v => setField("incAppendHistory", v)}
+                            />
+                            <ToggleRow
+                                title="Completion 초기화"
+                                description="compinit"
+                                checked={config.completion}
+                                onChange={v => setField("completion", v)}
+                            />
+                            <ToggleRow
+                                title="대소문자 무시 completion"
+                                description="zstyle matcher-list"
+                                checked={config.caseInsensitiveCompletion}
+                                onChange={v => setField("caseInsensitiveCompletion", v)}
+                            />
+                            <ToggleRow
+                                title="Vi 입력 모드"
+                                description="bindkey -v"
+                                checked={config.viMode}
+                                onChange={v => setField("viMode", v)}
+                            />
+                        </div>
+                        <AdvancedList
+                            title="PATH"
+                            items={config.pathEntries}
+                            placeholder="$HOME/.local/bin"
+                            onChange={items => setField("pathEntries", items)}
+                        />
+                        <KeyValueList
+                            title="ENV"
+                            items={config.envVars}
+                            keyPlaceholder="EDITOR"
+                            valuePlaceholder="nvim"
+                            onChange={items => setField("envVars", items)}
+                        />
+                        <FunctionList
+                            items={config.functions}
+                            onChange={items => setField("functions", items)}
+                        />
+                    </ConfigPanel>
                 </div>
 
                 <div className="space-y-5">
@@ -242,6 +328,163 @@ export function ZshPage() {
                         </pre>
                     </ConfigPanel>
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function AdvancedList({
+    title,
+    items,
+    placeholder,
+    onChange
+}: {
+    title: string;
+    items: string[];
+    placeholder: string;
+    onChange: (items: string[]) => void;
+}) {
+    return (
+        <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+                <Label>{title}</Label>
+                <Button size="sm" variant="ghost" onClick={() => onChange([...items, ""])}>
+                    <Icon name="add" className="text-[14px]" /> 추가
+                </Button>
+            </div>
+            <div className="space-y-2">
+                {items.map((item, i) => (
+                    <div key={i} className="grid grid-cols-[1fr_auto] gap-2">
+                        <TextInput
+                            value={item}
+                            placeholder={placeholder}
+                            onChange={e => {
+                                const next = items.slice();
+                                next[i] = e.target.value;
+                                onChange(next);
+                            }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                            className="h-10 w-10 grid place-items-center rounded text-on-surface-variant hover:text-error hover:bg-error/10"
+                            aria-label={`${title} 삭제`}
+                        >
+                            <Icon name="delete" className="text-[16px]" />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function KeyValueList({
+    title,
+    items,
+    keyPlaceholder,
+    valuePlaceholder,
+    onChange
+}: {
+    title: string;
+    items: Array<{name: string; value: string}>;
+    keyPlaceholder: string;
+    valuePlaceholder: string;
+    onChange: (items: Array<{name: string; value: string}>) => void;
+}) {
+    return (
+        <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+                <Label>{title}</Label>
+                <Button size="sm" variant="ghost" onClick={() => onChange([...items, {name: "", value: ""}])}>
+                    <Icon name="add" className="text-[14px]" /> 추가
+                </Button>
+            </div>
+            <div className="space-y-2">
+                {items.map((item, i) => (
+                    <div key={i} className="grid grid-cols-[120px_1fr_auto] gap-2">
+                        <TextInput
+                            value={item.name}
+                            placeholder={keyPlaceholder}
+                            onChange={e => {
+                                const next = items.slice();
+                                next[i] = {...item, name: e.target.value};
+                                onChange(next);
+                            }}
+                        />
+                        <TextInput
+                            value={item.value}
+                            placeholder={valuePlaceholder}
+                            onChange={e => {
+                                const next = items.slice();
+                                next[i] = {...item, value: e.target.value};
+                                onChange(next);
+                            }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                            className="h-10 w-10 grid place-items-center rounded text-on-surface-variant hover:text-error hover:bg-error/10"
+                            aria-label={`${title} 삭제`}
+                        >
+                            <Icon name="delete" className="text-[16px]" />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function FunctionList({
+    items,
+    onChange
+}: {
+    items: Array<{name: string; body: string}>;
+    onChange: (items: Array<{name: string; body: string}>) => void;
+}) {
+    return (
+        <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+                <Label>Functions</Label>
+                <Button size="sm" variant="ghost" onClick={() => onChange([...items, {name: "", body: ""}])}>
+                    <Icon name="add" className="text-[14px]" /> 추가
+                </Button>
+            </div>
+            <div className="space-y-3">
+                {items.map((item, i) => (
+                    <div key={i} className="rounded-lg border border-white/[0.06] bg-surface-container-lowest p-3">
+                        <div className="grid grid-cols-[1fr_auto] gap-2 mb-2">
+                            <TextInput
+                                value={item.name}
+                                placeholder="mkcd"
+                                onChange={e => {
+                                    const next = items.slice();
+                                    next[i] = {...item, name: e.target.value};
+                                    onChange(next);
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                                className="h-10 w-10 grid place-items-center rounded text-on-surface-variant hover:text-error hover:bg-error/10"
+                                aria-label="함수 삭제"
+                            >
+                                <Icon name="delete" className="text-[16px]" />
+                            </button>
+                        </div>
+                        <textarea
+                            value={item.body}
+                            placeholder={'mkdir -p "$1"\ncd "$1"'}
+                            onChange={e => {
+                                const next = items.slice();
+                                next[i] = {...item, body: e.target.value};
+                                onChange(next);
+                            }}
+                            className="w-full min-h-[84px] rounded bg-surface-container-low border border-white/[0.06] px-3 py-2 font-mono text-[12px] text-on-surface outline-none focus:border-primary-fixed-dim/60"
+                        />
+                    </div>
+                ))}
             </div>
         </div>
     );

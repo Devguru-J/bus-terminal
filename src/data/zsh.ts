@@ -56,6 +56,17 @@ export interface ZshConfig {
     shareHistory: boolean;
     ignoreDups: boolean;
     autoCd: boolean;
+    histfile: string;
+    ignoreAllDups: boolean;
+    reduceBlanks: boolean;
+    incAppendHistory: boolean;
+    completion: boolean;
+    caseInsensitiveCompletion: boolean;
+    viMode: boolean;
+    pathEntries: string[];
+    envVars: Array<{name: string; value: string}>;
+    functions: Array<{name: string; body: string}>;
+    starshipPreset: "minimal" | "developer" | "git-heavy";
     plugins: string[];
     aliases: Array<{name: string; value: string}>;
 }
@@ -74,6 +85,17 @@ export const zshDefault: ZshConfig = {
     shareHistory: false,
     ignoreDups: false,
     autoCd: false,
+    histfile: "~/.zsh_history",
+    ignoreAllDups: false,
+    reduceBlanks: false,
+    incAppendHistory: false,
+    completion: false,
+    caseInsensitiveCompletion: false,
+    viMode: false,
+    pathEntries: [],
+    envVars: [],
+    functions: [],
+    starshipPreset: "minimal",
     plugins: [],
     aliases: []
 };
@@ -88,12 +110,39 @@ export function serializeZshConfig(c: ZshConfig): string {
     out.push("# === History ===");
     out.push(`HISTSIZE=${c.histsize}`);
     out.push(`SAVEHIST=${c.savehist}`);
-    out.push("HISTFILE=~/.zsh_history");
+    out.push(`HISTFILE=${c.histfile || "~/.zsh_history"}`);
     if (c.shareHistory) out.push("setopt SHARE_HISTORY");
     if (c.ignoreDups) out.push("setopt HIST_IGNORE_DUPS");
+    if (c.ignoreAllDups) out.push("setopt HIST_IGNORE_ALL_DUPS");
+    if (c.reduceBlanks) out.push("setopt HIST_REDUCE_BLANKS");
+    if (c.incAppendHistory) out.push("setopt INC_APPEND_HISTORY");
     out.push("setopt EXTENDED_HISTORY");
     if (c.autoCd) out.push("setopt AUTO_CD");
+    if (c.viMode) out.push("bindkey -v");
     out.push("");
+
+    if (c.pathEntries.length || c.envVars.length) {
+        out.push("# === PATH / Environment ===");
+        for (const entry of c.pathEntries) {
+            if (!entry.trim()) continue;
+            out.push(`export PATH="${entry.trim()}:$PATH"`);
+        }
+        for (const env of c.envVars) {
+            if (!env.name.trim()) continue;
+            out.push(`export ${env.name.trim()}="${env.value.replace(/"/g, '\\"')}"`);
+        }
+        out.push("");
+    }
+
+    if (c.completion) {
+        out.push("# === Completion ===");
+        out.push("autoload -Uz compinit");
+        out.push("compinit");
+        if (c.caseInsensitiveCompletion) {
+            out.push("zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'");
+        }
+        out.push("");
+    }
 
     // Plugin loader (oh-my-zsh path)
     const omzPlugins = c.plugins.filter(id =>
@@ -154,6 +203,28 @@ export function serializeZshConfig(c: ZshConfig): string {
             if (!a.name.trim()) continue;
             out.push(`alias ${a.name}="${a.value.replace(/"/g, '\\"')}"`);
         }
+        out.push("");
+    }
+
+    if (c.functions.length) {
+        out.push("# === Functions ===");
+        for (const fn of c.functions) {
+            if (!fn.name.trim() || !fn.body.trim()) continue;
+            out.push(`${fn.name.trim()}() {`);
+            out.push(fn.body.trim());
+            out.push("}");
+            out.push("");
+        }
     }
     return out.join("\n") + "\n";
+}
+
+export function serializeStarshipConfig(c: ZshConfig): string {
+    if (c.prompt !== "starship") return "";
+    const presets = {
+        minimal: `add_newline = false\n\n[character]\nsuccess_symbol = "[➜](bold green)"\nerror_symbol = "[➜](bold red)"\n`,
+        developer: `add_newline = false\n\n[directory]\nstyle = "bold cyan"\n\n[git_branch]\nstyle = "bold green"\n\n[nodejs]\nsymbol = "node "\n\n[python]\nsymbol = "py "\n\n[rust]\nsymbol = "rs "\n`,
+        "git-heavy": `add_newline = false\n\n[git_branch]\nsymbol = "git "\nstyle = "bold green"\n\n[git_status]\nstyle = "bold yellow"\nconflicted = "!"\nahead = "⇡"\nbehind = "⇣"\nmodified = "*"\n`
+    };
+    return `# 버스터미널에서 출발한 starship.toml\n${presets[c.starshipPreset]}`;
 }

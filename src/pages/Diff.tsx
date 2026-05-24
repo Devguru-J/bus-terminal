@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {DiffViewer, type DiffLine} from "@/components/platform/DiffViewer";
@@ -7,10 +7,13 @@ import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
 import {ghosttyDefaults} from "@/data/ghosttySchema";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
+import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
 
 export function DiffPage() {
-    const {config} = useGhosttyStore();
+    const {config, exportText} = useGhosttyStore();
+    const save = useRoutesStore(s => s.save);
+    const [changedOnly, setChangedOnly] = useState(false);
     const navigate = useNavigate();
     const defaults = ghosttyDefaults();
 
@@ -37,7 +40,7 @@ export function DiffPage() {
                 k === "cursor-style" ||
                 k === "cursor-color" ||
                 k === "theme";
-            if (!interesting) continue;
+            if (!interesting || (changedOnly && sameDef)) continue;
             if (sameDef) {
                 baseLines.push({n: n, type: "context", text: `${k} = ${formatVal(d)}`});
                 targetLines.push({n: n, type: "context", text: `${k} = ${formatVal(v)}`});
@@ -61,7 +64,7 @@ export function DiffPage() {
             added: addedCount,
             mutated: mutatedCount
         };
-    }, [config, defaults]);
+    }, [changedOnly, config, defaults]);
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -77,8 +80,13 @@ export function DiffPage() {
                 }
                 actions={
                     <>
-                        <Button variant="outline" size="sm">
-                            <Icon name="tune" className="text-[14px]" /> Options
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setChangedOnly(v => !v)}
+                        >
+                            <Icon name="tune" className="text-[14px]" />
+                            {changedOnly ? "Show Context" : "Changes Only"}
                         </Button>
                         <Button size="sm" onClick={() => navigate("/export")}>
                             <Icon name="upload" className="text-[14px]" /> Export
@@ -97,17 +105,22 @@ export function DiffPage() {
                     변경 사항을 새 노선으로 병합하거나 출발권으로 바로 보냅니다.
                 </p>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => navigate("/ghostty")}>
                         Cancel
                     </Button>
                     <Button
                         size="sm"
                         onClick={() => {
-                            toast("변경사항을 병합했어요.", "success");
+                            save({
+                                name: `Diff merged ${new Date().toLocaleTimeString()}`,
+                                platform: "ghostty",
+                                text: exportText()
+                            });
+                            toast("변경사항을 새 Ghostty 노선으로 보관했어요.", "success");
                             navigate("/export");
                         }}
                     >
-                        Merge Changes
+                        Save Merged Route
                     </Button>
                 </div>
             </div>

@@ -54,7 +54,7 @@ export function PlatformCard({
                 ref={ref}
                 whileHover={{y: -3}}
                 transition={{type: "spring", stiffness: 220, damping: 22}}
-                className="relative rounded-xl border border-white/[0.06] bg-surface-container-low/60 backdrop-blur-md p-5 h-full overflow-hidden flex flex-col gap-4"
+                className="relative rounded-xl border border-white/[0.06] bg-surface-container-low/85 p-5 h-full overflow-hidden flex flex-col gap-4"
             >
                 {/* Spotlight refraction — 커서 위치 기반 라디얼 그래디언트 */}
                 <div

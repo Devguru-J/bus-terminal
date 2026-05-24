@@ -14,18 +14,30 @@
 | 데이터 영속화 | ⚠️ `localStorage`만. 브라우저/디바이스 바뀌면 증발 |
 | 다중 디바이스 동기화 | ❌ 없음 |
 | 사용자 계정 | ❌ 없음 |
-| 공유한 노선의 URL 영속성 | ⚠️ base64 해시 — 1.8KB 한계, 디코드 실패 시 깨짐 |
+| 공유한 노선의 URL 영속성 | ⚠️ base64 해시 공유 UI는 연결됨. 서버 영속 URL은 없음 |
 | 커뮤니티 노선 / 갤러리 | ❌ 없음 |
 | 모바일 UX | ⚠️ 사이드바 데스크탑 전용 (`hidden lg:flex`) |
-| 검색/필터 | ❌ (테마 6개라 아직 OK, 늘어나면 필수) |
+| 검색/필터 | ⚠️ Cmd/Ctrl-K 팔레트, Saved Routes 검색, Ghostty Expert 검색 구현. 갤러리 검색은 없음 |
 | 분석 (어떤 옵션이 인기?) | ❌ 없음 |
 | 에러 트래킹 | ❌ 없음 |
 | 테스트 | ❌ 없음 |
 | i18n | ⚠️ 한국어 일방. 영어 사용자 진입 불가 |
-| 접근성 검증 | ⚠️ Skip-link/focus-ring만 추가, 자동 검사 안 함 |
+| 접근성 검증 | ⚠️ Skip-link/focus-ring/도움말 tooltip 추가. 자동 검사 안 함 |
 | Lighthouse / Core Web Vitals | ❓ 측정 안 함 |
 | SEO | ⚠️ meta 태그만. sitemap/robots 없음 |
 | 도메인 / 브랜딩 | ⚠️ `pages.dev` 서브도메인 |
+
+### 0.1 최근 완료된 개선
+
+| 영역 | 완료 내용 |
+|---|---|
+| Ghostty | 기본/고급/전문가 탭 구조, sticky 대형 미리보기, Expert 설정 검색, keybind CRUD |
+| tmux | 기본 키바인딩 전체 목록, 검색/수정/비활성화/복원, custom plugin/binding export |
+| Neovim | scrolloff/wrap/clipboard/search/LSP/Mason/conform/cmp 고급 설정 |
+| Zsh | PATH/env/function/completion/history/Starship preset 및 starship.toml export |
+| Export | 출발 전 진단 리포트, starship.toml 다운로드, install script 다운로드 |
+| Saved Routes | 검색, rename, duplicate, share link 복사/import |
+| UX | Cmd/Ctrl-K command palette, 홈 네온 사인, 메인 이동 버튼, 도움말 tooltip |
 
 ---
 
@@ -185,8 +197,8 @@
 - **Why**: 개발자 도구의 정체성.
 - **What**: cmd-K 명령 팔레트 + 페이지 간 이동.
 - **How**:
-  - cmdk 라이브러리 또는 자체 구현
-  - 단축키: `g g` (Ghostty) / `g t` (tmux) / `e` (export) / `?` (단축키 안내)
+  - ✅ 자체 구현 완료: Cmd/Ctrl-K, `/`, 방향키 이동, Enter 실행, Esc 닫기
+  - 다음 후보: `g g` (Ghostty) / `g t` (tmux) / `e` (export) / `?` (단축키 안내)
 
 ### 5.3 미리보기 폰트 로딩 인디케이터
 - **Why**: 새 폰트 선택 시 GF 로딩 동안 시스템 폰트로 폴백되어 어색.
@@ -239,6 +251,39 @@
 - **Why**: framer-motion / zustand 보안 패치 자동.
 - **What**: `.github/dependabot.yml` + `bun update` 정기.
 
+### 6.5 설정 스키마 버전 관리
+- **Why**: localStorage persist version이 올라갈 때 기존 사용자의 설정이 초기화될 수 있음.
+- **What**: 플랫폼별 config schema version + migration registry.
+- **How**:
+  - `ghostty:v3`, `tmux:v5`, `neovim:v3`, `zsh:v3` 등 명시
+  - migration은 "초기화"가 아니라 필드별 보존/보정 우선
+  - export 파일에도 `generated_by`, `schema_version` 주석 포함
+
+### 6.6 설정 안전성 감사
+- **Why**: 사용자가 shell env, PATH, custom command, keybind를 직접 입력하므로 잘못된 설정이 로컬 환경을 망칠 수 있음.
+- **What**: Export 전 위험 패턴 감지.
+- **How**:
+  - shell command에 `rm -rf`, 토큰 패턴, 홈 디렉터리 전체 overwrite 경고
+  - PATH 중복/존재하지 않는 경로 경고
+  - keybind 충돌/중복 감지
+  - install script는 기본 `--dry-run` 안내 우선
+
+### 6.7 개인정보/보안 정책
+- **Why**: 공유 링크와 계정/분석 도입 시 신뢰가 핵심.
+- **What**: Privacy/Terms 페이지, 데이터 보존 정책, 공유 링크 공개 범위 명시.
+- **How**:
+  - `/privacy`, `/terms`
+  - localStorage만 쓰는 현재 상태와 서버 저장 도입 후 상태 분리
+  - 공유 링크 생성 시 "이 설정에 토큰/비밀값이 포함되어 있지 않은지" 체크
+
+### 6.8 릴리즈 채널
+- **Why**: 설정 생성기는 깨지면 사용자의 로컬 개발환경에 영향을 줌.
+- **What**: stable/beta 채널 구분.
+- **How**:
+  - `bus-terminal.pages.dev`는 beta
+  - 커스텀 도메인은 stable
+  - 신규 serializer는 beta에서 먼저 검증 후 stable 반영
+
 ---
 
 ## 7. 비즈니스 (선택)
@@ -262,6 +307,21 @@
 - 트위터 한국 dev 커뮤니티에 데모 공유 → 댓글 반응 측정
 - Product Hunt에 올리기 (한국 새벽 시간 launch)
 - ZeroCho/Naver D2 등 한국 개발 매체 컨택
+
+### 7.4 상용화에 매우 유리한 기능 후보
+
+| 기능 | 왜 중요한가 | MVP |
+|---|---|---|
+| Dotfiles GitHub 연동 | 개발자는 이미 dotfiles를 GitHub로 관리함 | GitHub OAuth 후 gist/repo에 export PR 생성 |
+| Config Doctor | "내 설정이 왜 안 되지?"를 해결하면 재방문 이유가 생김 | `bus doctor` 또는 웹 진단 리포트 확장 |
+| Team Presets | 회사/팀 온보딩용으로 가치가 큼 | 공개/비공개 팀 노선, fork, 변경 이력 |
+| One-click Bootstrap | 단순 다운로드보다 설치 완료 경험이 강함 | install script + dry-run + backup |
+| Import Coverage | 기존 dotfiles 유저 흡수 | tmux/Neovim/Zsh parser 추가 |
+| Share Preview Page | 공유 링크가 제품 홍보면이 됨 | `/share/:slug`에서 미리보기 + fork |
+| Config Diff Across Tools | 변경 전/후 신뢰 확보 | Ghostty 외 tmux/nvim/zsh diff |
+| Secret Scanner | 공유/클라우드 저장 전 필수 안전장치 | token/env/private key 패턴 경고 |
+| Onboarding Wizard | 초보자 전환율 개선 | "나는 프론트엔드/Vim입문/SSH 위주" 3문항 |
+| Telemetry-lite | 어떤 옵션이 진짜 쓰이는지 알아야 함 | 개인정보 친화 이벤트 5개만 수집 |
 
 ---
 
@@ -327,3 +387,44 @@
 - AI 추천 — "당신에게 맞는 테마는 X입니다" 같은 잡스러운 feature
 - 다크모드 토글 — 우리는 다크 only 브랜드
 - 모바일에서 ghostty 다운로드 — 의미 없음 (모바일에선 데스크탑 링크 보내기 안내)
+
+
+---
+
+## 2026-05-24 추가 — Platform 5/6/7 출범
+
+### Helix 승강장 (Platform 5)
+- `~/.config/helix/config.toml` + `languages.toml` 두 벌 export
+- theme / line-number / scrolloff / cursor-shape / indent-guides / statusline / LSP / file-picker / keymaps (모달별)
+- 진짜 `hx --health` 기준 기본값
+- LSP 카탈로그: rust-analyzer, ts-server, gopls, pyright, ruff, clangd, lua-ls, marksman, tailwindcss, yaml, deno
+
+### iTerm2 승강장 (Platform 6)
+- `.itermcolors` (Apple plist XML) + Dynamic Profile JSON 두 벌 export
+- 16색 ANSI + Background/Foreground/Cursor/Selection/Bold/Link/Badge/Tab/Underline 12개 UI 색
+- Font / Size / Thin Strokes / Spacing / Window 크기 / Transparency / Blur / Cursor / Option-as-Meta / Hotkey Window
+- **`.itermcolors` 가져오기** — 기존 색상 프리셋 파일을 그대로 import (정규식 기반 plist 파서)
+- iTerm2의 `~/Library/Application Support/iTerm2/DynamicProfiles/`에 떨구면 자동 인식
+
+### Warp 승강장 (Platform 7)
+- `~/.warp/themes/<name>.yaml` (정식 Warp 커스텀 테마 포맷)
+- `~/.warp/workflows/<name>.yaml` (Warp Workflows 멀티 문서)
+- 16색 (normal 8 + bright 8) + accent + background + foreground + details(darker/lighter)
+- Appearance (font, cursor, opacity, blur, status bar, breadcrumbs, ligatures, pane dim)
+- **Warp AI 패널** — enabled / autosuggestions / natural language(#) / agent mode / history context
+- Workflows CRUD — `{{arg}}` 자동 인자 추출
+
+### 함께 갱신된 부분
+- `/export` — 12개까지 자동 다운로드, install script가 helix/iterm2/warp 경로 모두 처리
+- Sidebar / CommandPalette / Home / MyRoutes / RouteTable — 7개 플랫폼 인식
+- routesStore platform union 확장
+
+### 의도적으로 다음 라운드 (P1)
+- Kitty / Alacritty / Zellij / yazi — 같은 패턴으로 추가
+- Cross-platform Theme Center 환승 (현재는 RouteTheme → Ghostty / Warp / iTerm2만 매핑)
+- Diff 페이지의 Helix/iTerm2/Warp 지원 (현재 Ghostty 전용)
+- Undo / autosave UI (스토어는 이미 persist, UI 토글만 추가)
+- 가져오기 마법사 (`config.toml` / `.zshrc` / `.tmux.conf` 자동 파싱)
+- 모바일 사이드바 (`Drawer` 패턴)
+- 갤러리 / 공유 노선 서버 영속
+

@@ -17,6 +17,8 @@ import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
 
+const LSP_SERVERS = ["ts_ls", "eslint", "lua_ls", "pyright", "rust_analyzer", "gopls", "jsonls", "cssls", "html"];
+
 export function NeovimPage() {
     const {config, setField, togglePlugin, addKeymap, removeKeymap, exportText, reset} =
         useNeovimStore();
@@ -43,7 +45,7 @@ export function NeovimPage() {
                         <StatusDot />
                     </span>
                 }
-                eyebrow="Platform 3 · NVM-001"
+                eyebrow="Platform 4 · NVM-001"
                 subtitle="lazy.nvim 기반 init.lua를 시각적으로 구성합니다."
                 actions={
                     <>
@@ -63,7 +65,7 @@ export function NeovimPage() {
                     <ConfigPanel title="기본 옵션">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
-                                <Label hint="g.mapleader">Leader Key</Label>
+                                <Label hint="g.mapleader" help="Neovim 커스텀 단축키의 기준 키입니다. Space나 \\ 를 많이 씁니다. 예: <leader>ff">Leader Key</Label>
                                 <TextInput
                                     value={config.leaderKey === " " ? "Space" : config.leaderKey}
                                     onChange={e => {
@@ -74,7 +76,7 @@ export function NeovimPage() {
                                 />
                             </div>
                             <div>
-                                <Label hint="tabstop / shiftwidth">Tab Width</Label>
+                                <Label hint="tabstop / shiftwidth" help="Tab 한 번을 몇 칸으로 볼지, 자동 들여쓰기를 몇 칸으로 할지 정합니다. 프로젝트 스타일과 맞추세요.">Tab Width</Label>
                                 <RangeInput
                                     value={config.tabWidth}
                                     min={1}
@@ -115,7 +117,7 @@ export function NeovimPage() {
                     <ConfigPanel title="UI / 테마">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
-                                <Label hint="colorscheme">컬러스킴</Label>
+                                <Label hint="colorscheme" help="Neovim 전체 색상 테마입니다. 선택한 테마에 맞는 플러그인이 필요할 수 있습니다.">컬러스킴</Label>
                                 <Select
                                     value={config.colorscheme}
                                     onChange={e =>
@@ -133,7 +135,7 @@ export function NeovimPage() {
                                 </Select>
                             </div>
                             <div>
-                                <Label hint="statusline">상태바</Label>
+                                <Label hint="statusline" help="에디터 하단에 현재 파일, 모드, Git 상태 등을 보여주는 줄입니다. lualine이 가장 흔합니다.">상태바</Label>
                                 <Select
                                     value={config.statusline}
                                     onChange={e =>
@@ -206,6 +208,121 @@ export function NeovimPage() {
                                 );
                             })}
                         </div>
+                    </ConfigPanel>
+
+                    <ConfigPanel
+                        title="Advanced / Editor & LSP"
+                        actions={<Badge tone="warn">advanced</Badge>}
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <Label hint="scrolloff" help="커서 위아래에 항상 남겨둘 최소 줄 수입니다. 값을 올리면 화면 끝에 커서가 붙지 않아 읽기 편합니다.">Scrolloff</Label>
+                                <RangeInput
+                                    value={config.scrolloff}
+                                    min={0}
+                                    max={20}
+                                    onChange={v => setField("scrolloff", v)}
+                                />
+                            </div>
+                            <div>
+                                <Label hint="sidescrolloff" help="가로 스크롤 시 커서 좌우에 남겨둘 최소 칸 수입니다. 긴 줄을 볼 때 여유 공간을 만듭니다.">Side Scrolloff</Label>
+                                <RangeInput
+                                    value={config.sidescrolloff}
+                                    min={0}
+                                    max={20}
+                                    onChange={v => setField("sidescrolloff", v)}
+                                />
+                            </div>
+                            <div>
+                                <Label hint="clipboard" help="Neovim 복사/붙여넣기를 시스템 클립보드와 연결할지 정합니다. unnamedplus는 OS 클립보드를 사용합니다.">Clipboard</Label>
+                                <Select
+                                    value={config.clipboard}
+                                    onChange={e =>
+                                        setField("clipboard", e.target.value as typeof config.clipboard)
+                                    }
+                                >
+                                    <option value="default">default</option>
+                                    <option value="unnamedplus">system clipboard</option>
+                                </Select>
+                            </div>
+                            <div>
+                                <Label hint="Mason ensure_installed" help="언어별 자동완성, 진단, go-to-definition을 제공하는 LSP 서버입니다. 선택하면 Mason 설치 목록에 들어갑니다.">LSP Servers</Label>
+                                <Select
+                                    value=""
+                                    onChange={e => {
+                                        const value = e.target.value;
+                                        if (!value) return;
+                                        setField(
+                                            "lspServers",
+                                            Array.from(new Set([...config.lspServers, value]))
+                                        );
+                                        if (!config.plugins.includes("mason")) togglePlugin("mason");
+                                        if (!config.plugins.includes("mason-lspconfig")) {
+                                            togglePlugin("mason-lspconfig");
+                                        }
+                                        if (!config.plugins.includes("lspconfig")) {
+                                            togglePlugin("lspconfig");
+                                        }
+                                    }}
+                                >
+                                    <option value="">Add server...</option>
+                                    {LSP_SERVERS.map(server => (
+                                        <option key={server} value={server}>
+                                            {server}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <ToggleRow
+                                title="긴 줄 줄바꿈"
+                                description="vim.opt.wrap"
+                                checked={config.wrap}
+                                onChange={v => setField("wrap", v)}
+                            />
+                            <ToggleRow
+                                title="검색 대소문자 무시"
+                                description="ignorecase"
+                                checked={config.ignorecase}
+                                onChange={v => setField("ignorecase", v)}
+                            />
+                            <ToggleRow
+                                title="스마트 대소문자 검색"
+                                description="smartcase"
+                                checked={config.smartcase}
+                                onChange={v => setField("smartcase", v)}
+                            />
+                            <ToggleRow
+                                title="저장 시 포맷팅"
+                                description="conform.nvim"
+                                checked={config.formatOnSave}
+                                onChange={v => {
+                                    setField("formatOnSave", v);
+                                    if (v && !config.plugins.includes("conform")) togglePlugin("conform");
+                                }}
+                            />
+                        </div>
+                        {config.lspServers.length > 0 && (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                                {config.lspServers.map(server => (
+                                    <button
+                                        key={server}
+                                        type="button"
+                                        onClick={() =>
+                                            setField(
+                                                "lspServers",
+                                                config.lspServers.filter(x => x !== server)
+                                            )
+                                        }
+                                        className="inline-flex items-center gap-1 rounded border border-secondary-fixed-dim/30 bg-secondary-fixed-dim/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-secondary-fixed-dim"
+                                    >
+                                        {server}
+                                        <Icon name="close" className="text-[13px]" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </ConfigPanel>
 
                     {/* 키 매핑 */}

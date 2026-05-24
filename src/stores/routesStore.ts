@@ -8,7 +8,7 @@ import {persist} from "zustand/middleware";
 export interface SavedRoute {
     id: string;
     name: string;
-    platform: "ghostty" | "tmux" | "neovim" | "zsh";
+    platform: "ghostty" | "tmux" | "neovim" | "zsh" | "helix" | "iterm2" | "warp";
     text: string;
     createdAt: number;
 }

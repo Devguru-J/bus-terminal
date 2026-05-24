@@ -11,15 +11,18 @@ const FIELD =
 
 export function Label({
     children,
-    hint
+    hint,
+    help
 }: {
     children: ReactNode;
     hint?: ReactNode;
+    help?: string;
 }) {
     return (
         <div className="mb-2 flex items-baseline justify-between gap-2">
-            <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant">
-                {children}
+            <span className="inline-flex items-center gap-1.5 font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant">
+                <span>{children}</span>
+                {help && <HelpTip text={help} />}
             </span>
             {hint && (
                 <span className="font-mono text-[10px] text-on-surface-variant/50">
@@ -27,6 +30,23 @@ export function Label({
                 </span>
             )}
         </div>
+    );
+}
+
+export function HelpTip({text}: {text: string}) {
+    return (
+        <span className="relative inline-flex group align-middle">
+            <button
+                type="button"
+                aria-label={text}
+                className="grid h-4 w-4 place-items-center rounded-full border border-white/15 bg-white/[0.03] text-[10px] leading-none text-on-surface-variant/70 transition hover:border-primary-fixed-dim/50 hover:text-primary-fixed-dim focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-fixed-dim"
+            >
+                ?
+            </button>
+            <span className="pointer-events-none absolute left-1/2 top-6 z-50 w-64 -translate-x-1/2 rounded-lg border border-white/10 bg-surface-container-highest px-3 py-2 text-left font-body text-[12px] normal-case leading-relaxed tracking-normal text-on-surface opacity-0 shadow-glow-soft transition group-hover:opacity-100 group-focus-within:opacity-100">
+                {text}
+            </span>
+        </span>
     );
 }
 

@@ -6,6 +6,9 @@ import type {SavedRoute} from "@/stores/routesStore";
 interface Props {
     routes: SavedRoute[];
     onPlay: (r: SavedRoute) => void;
+    onRename: (r: SavedRoute) => void;
+    onDuplicate: (r: SavedRoute) => void;
+    onShare: (r: SavedRoute) => void;
     onDelete: (r: SavedRoute) => void;
 }
 
@@ -13,7 +16,10 @@ const PLATFORM_TONE: Record<SavedRoute["platform"], "active" | "info" | "warn" |
     ghostty: "active",
     tmux: "info",
     neovim: "warn",
-    zsh: "default"
+    zsh: "default",
+    helix: "active",
+    iterm2: "info",
+    warp: "warn"
 };
 
 function fmtDate(ts: number): string {
@@ -28,7 +34,7 @@ function shortId(id: string, idx: number): string {
     return `RT-${String(8000 + idx * 53).padStart(4, "0")}-${id.slice(0, 4).toUpperCase()}`;
 }
 
-export function RouteTable({routes, onPlay, onDelete}: Props) {
+export function RouteTable({routes, onPlay, onRename, onDuplicate, onShare, onDelete}: Props) {
     if (routes.length === 0) {
         return (
             <div className="rounded-xl border border-dashed border-white/10 bg-surface-container-low/40 px-6 py-14 text-center">
@@ -54,7 +60,7 @@ export function RouteTable({routes, onPlay, onDelete}: Props) {
 
     return (
         <div className="rounded-xl border border-white/[0.06] bg-surface-container-low/60 overflow-hidden">
-            <div className="grid grid-cols-[60px_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_120px] gap-3 px-5 py-3 border-b border-white/[0.06] font-mono text-label-xs uppercase tracking-[0.16em] text-on-surface-variant/60">
+            <div className="grid grid-cols-[60px_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_180px] gap-3 px-5 py-3 border-b border-white/[0.06] font-mono text-label-xs uppercase tracking-[0.16em] text-on-surface-variant/60">
                 <span>Status</span>
                 <span>Route ID / Name</span>
                 <span>Last Departed</span>
@@ -65,7 +71,7 @@ export function RouteTable({routes, onPlay, onDelete}: Props) {
                 {routes.map((r, i) => (
                     <li
                         key={r.id}
-                        className="grid grid-cols-[60px_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_120px] gap-3 items-center px-5 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition"
+                        className="grid grid-cols-[60px_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_180px] gap-3 items-center px-5 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition"
                     >
                         <span>
                             <StatusDot tone={i === routes.length - 1 ? "muted" : "active"} />
@@ -96,6 +102,33 @@ export function RouteTable({routes, onPlay, onDelete}: Props) {
                                 title="다시 탑승"
                             >
                                 <Icon name="play_arrow" className="text-[16px]" fill />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => onRename(r)}
+                                className="h-8 w-8 grid place-items-center rounded text-on-surface-variant hover:text-primary-fixed-dim hover:bg-primary-fixed-dim/10 transition"
+                                aria-label="이름 변경"
+                                title="이름 변경"
+                            >
+                                <Icon name="edit" className="text-[16px]" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => onDuplicate(r)}
+                                className="h-8 w-8 grid place-items-center rounded text-on-surface-variant hover:text-secondary-fixed-dim hover:bg-secondary-fixed-dim/10 transition"
+                                aria-label="복제"
+                                title="복제"
+                            >
+                                <Icon name="content_copy" className="text-[16px]" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => onShare(r)}
+                                className="h-8 w-8 grid place-items-center rounded text-on-surface-variant hover:text-tertiary-fixed-dim hover:bg-tertiary-fixed-dim/10 transition"
+                                aria-label="공유"
+                                title="공유"
+                            >
+                                <Icon name="ios_share" className="text-[16px]" />
                             </button>
                             <button
                                 type="button"

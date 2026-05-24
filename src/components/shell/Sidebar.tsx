@@ -7,7 +7,7 @@ import {StatusDot} from "@/components/ui/Badge";
 export function Sidebar() {
     const navigate = useNavigate();
     return (
-        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-white/[0.05] bg-surface-container-lowest/60 backdrop-blur-md">
+        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-white/[0.05] bg-surface-container-lowest/80">
             {/* Station Identity */}
             <div className="px-4 py-5 border-b border-white/[0.05]">
                 <div className="flex items-start gap-3">
@@ -36,12 +36,19 @@ export function Sidebar() {
             {/* Platforms */}
             <nav className="flex-1 py-4 flex flex-col gap-0.5 overflow-y-auto">
                 <div className="px-5 mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant/60">
+                    Terminal
+                </div>
+                <PlatformNavItem to="/" label="Main Station" icon="home" end />
+                <div className="mt-4 px-5 mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant/60">
                     Platforms
                 </div>
                 <PlatformNavItem to="/ghostty" label="Platform 1: Ghostty" icon="terminal" />
-                <PlatformNavItem to="/tmux" label="Platform 2: tmux" icon="grid_view" />
-                <PlatformNavItem to="/neovim" label="Platform 3: Neovim" icon="edit_note" />
-                <PlatformNavItem to="/zsh" label="Platform 4: Zsh" icon="code_blocks" />
+                <PlatformNavItem to="/warp" label="Platform 2: Warp" icon="bolt" />
+                <PlatformNavItem to="/iterm2" label="Platform 3: iTerm2" icon="terminal" />
+                <PlatformNavItem to="/neovim" label="Platform 4: Neovim" icon="edit_note" />
+                <PlatformNavItem to="/helix" label="Platform 5: Helix" icon="edit_square" />
+                <PlatformNavItem to="/zsh" label="Platform 6: Zsh" icon="code_blocks" />
+                <PlatformNavItem to="/tmux" label="Platform 7: tmux" icon="grid_view" />
                 <PlatformNavItem to="/themes" label="Theme Center" icon="palette" />
             </nav>
 
@@ -71,4 +78,3 @@ export function Sidebar() {
         </aside>
     );
 }
-

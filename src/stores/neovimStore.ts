@@ -54,7 +54,7 @@ export const useNeovimStore = create<NeovimState>()(
         }),
         {
             name: "bus-terminal:neovim",
-            version: 2,
+            version: 3,
             migrate: () => ({config: {...nvimDefault}})
         }
     )

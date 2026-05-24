@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import {persist} from "zustand/middleware";
-import {zshDefault, serializeZshConfig, type ZshConfig} from "@/data/zsh";
+import {zshDefault, serializeZshConfig, serializeStarshipConfig, type ZshConfig} from "@/data/zsh";
 
 interface ZshState {
     config: ZshConfig;
@@ -10,6 +10,7 @@ interface ZshState {
     addAlias: () => void;
     removeAlias: (idx: number) => void;
     exportText: () => string;
+    exportStarshipText: () => string;
     reset: () => void;
 }
 
@@ -51,11 +52,12 @@ export const useZshStore = create<ZshState>()(
                     }
                 })),
             exportText: () => serializeZshConfig(get().config),
+            exportStarshipText: () => serializeStarshipConfig(get().config),
             reset: () => set({config: {...zshDefault}})
         }),
         {
             name: "bus-terminal:zsh",
-            version: 2,
+            version: 3,
             migrate: () => ({config: {...zshDefault}})
         }
     )

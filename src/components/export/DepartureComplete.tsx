@@ -43,7 +43,7 @@ export function DepartureComplete({summary, onDownload, onReturn}: Props) {
             </div>
 
             {/* Bus animation board */}
-            <div className="relative w-full max-w-3xl h-36 rounded-xl overflow-hidden border-y border-white/[0.06] bg-surface-container-lowest/60 backdrop-blur-sm">
+            <div className="relative w-full max-w-3xl h-36 rounded-xl overflow-hidden border-y border-white/[0.06] bg-surface-container-lowest/85">
                 <div className="absolute inset-0 grid-board" />
                 <div className="absolute inset-0 grid-board-fine opacity-50" />
 
@@ -113,7 +113,7 @@ export function DepartureComplete({summary, onDownload, onReturn}: Props) {
                 {summary.map(item => (
                     <div
                         key={item.label}
-                        className="rounded-lg bg-surface-container-low/60 backdrop-blur-md border border-white/[0.05] p-4"
+                        className="rounded-lg bg-surface-container-low/85 border border-white/[0.05] p-4"
                     >
                         <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant mb-2">
                             {item.label}
