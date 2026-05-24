@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {DepartureComplete} from "@/components/export/DepartureComplete";
 import {Badge} from "@/components/ui/Badge";
@@ -170,13 +170,16 @@ export function ExportPage() {
     const initialSelected = useMemo(() => computeInitialSelection(modified), [modified]);
     const [selected, setSelected] = useState<Record<Platform, boolean>>(initialSelected);
 
-    // modified 자동 동기화
-    const [syncKey, setSyncKey] = useState("");
-    const stamp = Object.entries(initialSelected).map(([k, v]) => `${k}:${v ? "1" : "0"}`).join("|");
-    if (stamp !== syncKey) {
+    // modified가 바뀌면 선택 상태도 자동 동기화 (render 중이 아닌 effect로)
+    const stamp = useMemo(
+        () => Object.entries(initialSelected).map(([k, v]) => `${k}:${v ? "1" : "0"}`).join("|"),
+        [initialSelected]
+    );
+    useEffect(() => {
         setSelected(initialSelected);
-        setSyncKey(stamp);
-    }
+        // initialSelected 객체는 매 렌더 새로 만들어지므로 stamp 문자열로 의존성 안정화
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [stamp]);
 
     function toggle(id: Platform) {
         setSelected(s => ({...s, [id]: !s[id]}));

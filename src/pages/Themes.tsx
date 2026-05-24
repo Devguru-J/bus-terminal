@@ -200,7 +200,7 @@ export function ThemesPage() {
                 };
                 applyToAll(t);
                 toastWithUndo(
-                    `6개 승강장에 "${t.ko}" 노선을 환승 송출했어요.`,
+                    `6개 도구에 "${t.ko}"을 적용했어요.`,
                     () => {
                         // 전체 복원
                         useGhosttyStore.setState(s => ({
@@ -213,7 +213,7 @@ export function ThemesPage() {
                         useTmuxStore.setState(s => ({...s, config: snapshot.tmux}));
                         setNvimField("colorscheme", snapshot.nvim);
                         setHelixField("theme", snapshot.helix);
-                        toast("전체 송출을 되돌렸어요.", "info");
+                        toast("모든 도구 적용을 되돌렸어요.", "info");
                     }
                 );
                 return;

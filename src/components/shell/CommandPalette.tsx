@@ -32,7 +32,7 @@ export function CommandPalette() {
             {id: "helix", title: "Helix 승강장", subtitle: "모달 에디터, LSP, 키매핑", icon: "edit_square", keywords: "helix editor modal lsp toml", run: () => navigate("/helix")},
             {id: "zsh", title: "Zsh 승강장", subtitle: "셸, prompt, alias, PATH 설정", icon: "code_blocks", keywords: "zsh shell prompt alias path env", run: () => navigate("/zsh")},
             {id: "tmux", title: "tmux 승강장", subtitle: "세션, pane, key binding 설정", icon: "grid_view", keywords: "tmux multiplexer pane session key binding 키바인딩", run: () => navigate("/tmux")},
-            {id: "themes", title: "테마 환승센터", subtitle: "26개 테마 검색·즐겨찾기·전체 송출", icon: "palette", keywords: "theme color palette tokyonight catppuccin gruvbox nord dracula", run: () => navigate("/themes")},
+            {id: "themes", title: "테마 환승센터", subtitle: "26개 테마 검색·즐겨찾기·전체 적용", icon: "palette", keywords: "theme color palette tokyonight catppuccin gruvbox nord dracula", run: () => navigate("/themes")},
             {id: "fonts", title: "폰트 환승센터", subtitle: "26개 폰트 미리보기·환승", icon: "text_fields", keywords: "font typography jetbrains fira geist berkeley iosevka", run: () => navigate("/fonts")},
             {id: "themes-compare", title: "테마 비교", subtitle: "두 테마 side-by-side + 색차", icon: "compare_arrows", keywords: "compare theme side by side diff", run: () => navigate("/themes/compare")},
             {id: "fonts-pairings", title: "폰트 페어링", subtitle: "mono + sans 큐레이션", icon: "auto_awesome", keywords: "font pairing combo mono sans", run: () => navigate("/fonts/pairings")},

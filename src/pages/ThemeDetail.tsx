@@ -102,7 +102,7 @@ export function ThemeDetailPage() {
         setTmuxField("rightSegments", [`#[fg=${theme!.foreground}] %Y-%m-%d `, `#[fg=${theme!.accent}] %H:%M `]);
         setNvimField("colorscheme", themeToNvimColorscheme(theme!.id));
         setHelixField("theme", themeToHelixTheme(theme!.id));
-        toast(`6개 승강장에 "${theme!.ko}"을 송출했어요.`, "success");
+        toast(`6개 도구에 "${theme!.ko}"을 적용했어요.`, "success");
     }
 
     const ghosttySnippet = themeToConfigSnippet(theme);

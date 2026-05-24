@@ -32,7 +32,7 @@ const TERM_GLOSSARY: Array<{term: string; meaning: string; example: string}> = [
         example: "ghostty config / .tmux.conf / .zshrc 등을 받아 옴"
     },
     {
-        term: "전체 송출",
+        term: "모든 도구에 적용",
         meaning: "여러 도구에 테마·폰트를 한 번에 적용",
         example: "테마 센터에서 한 번 클릭 → Ghostty + iTerm2 + Warp + tmux + Neovim + Helix 모두 환승"
     }

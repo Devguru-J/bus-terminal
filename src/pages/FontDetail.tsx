@@ -73,7 +73,7 @@ export function FontDetailPage() {
         }
         toast(
             target === "all"
-                ? `3개 승강장에 "${f.name}" ${size}pt 송출 완료.`
+                ? `3개 터미널에 "${f.name}" ${size}pt 적용 완료.`
                 : `${target}에 "${f.name}" ${size}pt 환승 완료.`,
             "success"
         );
@@ -132,7 +132,7 @@ export function FontDetailPage() {
                         </Button>
                         <Button size="sm" onClick={apply}>
                             <Icon name="cell_tower" className="text-[16px]" />
-                            {target === "all" ? "전체 송출" : "환승 적용"}
+                            {target === "all" ? "전체 적용" : "이 터미널에 적용"}
                         </Button>
                     </>
                 }

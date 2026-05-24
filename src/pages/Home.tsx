@@ -25,7 +25,7 @@ export function HomePage() {
         <div className="max-w-6xl mx-auto space-y-12">
             <section>
                 <div className="flex flex-col items-start gap-5">
-                    <DepartureStatus label="System Online" />
+                    <DepartureStatus label="Ready to configure" />
                     <motion.div
                         initial={{opacity: 0, y: 10, rotate: -4}}
                         animate={{opacity: 1, y: 0, rotate: -4}}

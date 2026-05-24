@@ -115,7 +115,7 @@ export function FontsPage() {
                 setWarpAppearance("fontFamily", font.name);
                 setWarpAppearance("fontSize", size);
                 toastWithUndo(
-                    `3개 승강장에 "${font.name}" ${size}pt를 송출했어요.`,
+                    `3개 터미널에 "${font.name}" ${size}pt를 적용했어요.`,
                     restore
                 );
                 return;
