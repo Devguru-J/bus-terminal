@@ -187,7 +187,7 @@ export function DiffPage() {
                             <Icon name="tune" className="text-[14px]" />
                             {changedOnly ? "Show Context" : "Changes Only"}
                         </Button>
-                        <Button size="sm" onClick={() => navigate("/export")}>
+                        <Button size="sm" onClick={() => navigate("/export")} title="설정 파일 다운로드 화면으로 이동">
                             <Icon name="rocket_launch" className="text-[14px]" /> 출발권 만들기
                         </Button>
                     </>

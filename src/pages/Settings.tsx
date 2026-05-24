@@ -210,7 +210,7 @@ export function SettingsPage() {
                     />
                     <DangerRow
                         title="차고 비우기"
-                        desc="저장된 모든 노선을 폐차합니다."
+                        desc="저장된 모든 노선을 삭제합니다."
                         store={useRoutesStore.getState().clear}
                     />
                     <DangerRow

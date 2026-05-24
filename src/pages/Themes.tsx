@@ -20,6 +20,7 @@ import {NVIM_COLORSCHEMES, type NvimColorscheme} from "@/data/neovim";
 import {HELIX_THEMES, type HelixTheme} from "@/data/helix";
 import {toast, toastWithUndo} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 
 type Target = "all" | "ghostty" | "warp" | "iterm2" | "neovim" | "helix" | "tmux";
 
@@ -281,6 +282,16 @@ export function ThemesPage() {
                 }
             />
 
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-themes"
+                title="테마 환승센터"
+                steps={[
+                    {title: "1. 테마 고르기", detail: "26개 중 마음에 드는 카드 클릭"},
+                    {title: "2. 적용 대상 선택", detail: "하단 dock — '전체' 또는 특정 도구"},
+                    {title: "3. 적용 버튼", detail: "선택한 도구(들)에 즉시 환승"}
+                ]}
+            />
+
             {/* 검색 + 카테고리 + 정렬 */}
             <div className="mb-5 rounded-xl border border-white/[0.06] bg-surface-container-lowest/80 p-3 space-y-3">
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -402,7 +413,7 @@ export function ThemesPage() {
                     </div>
                 </div>
                 <div className="lg:ml-auto flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant hidden md:inline">
+                    <span className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant hidden md:inline" title="선택한 도구에 이 테마를 적용합니다">
                         적용 대상
                     </span>
                     <div className="inline-flex flex-wrap rounded border border-white/[0.06] bg-surface-container-lowest p-0.5">
@@ -421,9 +432,9 @@ export function ThemesPage() {
                             </button>
                         ))}
                     </div>
-                    <Button onClick={broadcast}>
+                    <Button onClick={broadcast} title={target === "all" ? "선택한 테마를 6개 도구 모두에 한 번에 적용" : "선택한 도구 하나에 이 테마 적용"}>
                         <Icon name="cell_tower" className="text-[16px]" />
-                        {target === "all" ? "전체 송출" : "환승 적용"}
+                        {target === "all" ? "모든 도구에 적용" : "이 도구에 적용"}
                     </Button>
                 </div>
             </motion.div>

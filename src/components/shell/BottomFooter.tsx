@@ -1,8 +1,10 @@
+import {Link} from "react-router-dom";
+
 export function BottomFooter() {
     return (
         <footer className="h-10 flex items-center justify-between px-6 border-t border-white/[0.06] bg-surface-container-lowest">
             <span className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant">
-                © 2026 BusTerminal · READY TO DEPART
+                © 2026 BusTerminal · 내 개발환경으로 출발
             </span>
             <div className="hidden md:flex items-center gap-5">
                 <a
@@ -11,14 +13,20 @@ export function BottomFooter() {
                     target="_blank"
                     rel="noreferrer"
                 >
-                    Documentation
+                    GitHub
                 </a>
-                <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant">
-                    API Status
-                </span>
-                <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant">
+                <Link
+                    to="/privacy"
+                    className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hover:text-primary-fixed-dim transition"
+                >
                     Privacy
-                </span>
+                </Link>
+                <Link
+                    to="/terms"
+                    className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hover:text-primary-fixed-dim transition"
+                >
+                    Terms
+                </Link>
             </div>
         </footer>
     );

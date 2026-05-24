@@ -159,7 +159,7 @@ export function ThemeDetailPage() {
                             {favorite ? "즐겨찾기 해제" : "즐겨찾기"}
                         </Button>
                         <Button size="sm" onClick={applyToAll}>
-                            <Icon name="cell_tower" className="text-[16px]" /> 6개 승강장 송출
+                            <Icon name="cell_tower" className="text-[16px]" /> 6개 도구에 모두 적용
                         </Button>
                     </>
                 }

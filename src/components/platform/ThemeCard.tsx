@@ -130,7 +130,7 @@ export function ThemeCard({theme, active, favorite, imported, detailTo, onClick,
                     )
                 </div>
                 <div className="mt-1">
-                    <span style={{color: theme.accent}}>modified:</span> dlacrity
+                    <span style={{color: theme.accent}}>modified:</span> alacritty
                 </div>
                 <div>
                     <span style={{color: theme.accent}}>modified:</span> tmux.conf

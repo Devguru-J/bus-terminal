@@ -100,13 +100,13 @@ export function TmuxPage() {
                 subtitle="전문가용 tmux 세션 인터페이스 및 실시간 미리보기. 변경사항은 다음 출발 때 적용됩니다."
                 actions={
                     <>
-                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
-                        <Button variant="outline" size="sm" onClick={handleSave}>
+                        <Button variant="outline" size="sm" onClick={handleSave} title="현재 설정을 내 노선으로 저장">
                             <Icon name="bookmark_add" className="text-[16px]" /> 차고 보관
                         </Button>
-                        <Button size="sm" onClick={() => navigate("/export")}>
+                        <Button size="sm" onClick={() => navigate("/export")} title="설정 파일 다운로드 화면으로 이동">
                             <Icon name="rocket_launch" className="text-[16px]" /> 출발권 만들기
                         </Button>
                     </>

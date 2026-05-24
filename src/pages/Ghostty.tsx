@@ -23,6 +23,7 @@ import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 
 // Google Fonts에 실제로 로드되는 폰트만 노출. (Cascadia/Iosevka는 GF에 없음)
 const FONTS = [
@@ -209,7 +210,7 @@ export function GhosttyPage() {
                 subtitle="가장 사람이 가까운 터미널. 폰트·색·창 패딩을 슬라이더로 잡고, 우측 미리보기에서 즉시 확인. 완성하면 ghostty config 한 줄로 출발합니다."
                 actions={
                     <>
-                        <Button variant="outline" size="md" onClick={() => setImportOpen(true)}>
+                        <Button variant="outline" size="md" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
                         <Button variant="outline" size="md" onClick={handleBoard}>
@@ -220,6 +221,16 @@ export function GhosttyPage() {
                         </Button>
                     </>
                 }
+            />
+
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-ghostty"
+                title="Ghostty 터미널 설정"
+                steps={[
+                    {title: "1. 폰트 고르기", detail: "왼쪽 패널 상단의 폰트 패밀리·사이즈"},
+                    {title: "2. 테마 / 색 고르기", detail: "테마 센터로 가거나 컬러 패널에서 직접"},
+                    {title: "3. 출발권 만들기", detail: "헤더의 '출발권 만들기'로 파일 다운로드"}
+                ]}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,560px)_minmax(520px,1fr)] gap-6 items-start">

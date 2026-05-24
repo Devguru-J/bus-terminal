@@ -134,8 +134,8 @@ export function RouteTable({routes, onPlay, onRename, onDuplicate, onShare, onDe
                                 type="button"
                                 onClick={() => onDelete(r)}
                                 className="h-8 w-8 grid place-items-center rounded text-on-surface-variant hover:text-error hover:bg-error/10 transition"
-                                aria-label="폐차"
-                                title="폐차"
+                                aria-label="삭제"
+                                title="삭제"
                             >
                                 <Icon name="delete" className="text-[16px]" />
                             </button>

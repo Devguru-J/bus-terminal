@@ -55,7 +55,7 @@ export function ZshPage() {
                 subtitle="프롬프트 · 히스토리 · 플러그인 · 별칭을 조합해 ~/.zshrc를 출발시킵니다."
                 actions={
                     <>
-                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
                         <Button variant="ghost" size="sm" onClick={reset}>

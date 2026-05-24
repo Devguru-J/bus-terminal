@@ -261,7 +261,7 @@ export function FontDetailPage() {
                         </div>
                         <Button onClick={apply} className="w-full">
                             <Icon name="cell_tower" className="text-[16px]" />
-                            {target === "all" ? "3개 승강장 송출" : "환승 적용"}
+                            {target === "all" ? "3개 터미널에 적용" : "이 터미널에 적용"}
                         </Button>
                     </div>
 

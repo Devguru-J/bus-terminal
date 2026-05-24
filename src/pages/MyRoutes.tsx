@@ -125,22 +125,12 @@ export function MyRoutesPage() {
                     );
                 }}
                 onDelete={r => {
-                    if (confirm(`"${r.name}"을(를) 폐차하시겠어요?`)) {
+                    if (confirm(`"${r.name}"을(를) 삭제하시겠어요?`)) {
                         remove(r.id);
                     }
                 }}
             />
 
-            {/* System activity log */}
-            <div className="mt-8 rounded-xl border border-white/[0.06] bg-surface-container-lowest/60 px-5 py-4">
-                <div className="font-mono text-label-xs uppercase tracking-[0.16em] text-primary-fixed-dim mb-3">
-                    System Activity
-                </div>
-                <pre className="font-mono text-[12px] leading-relaxed text-on-surface-variant">{`[SYS] Checking repository consistency... OK
-[SYS] Verifying tmux socket permissions... OK
-[SYS] Scanning available manifests... ${routes.length} found
-[INFO] BT-9991 manifest hashed. Ready.`}</pre>
-            </div>
         </div>
     );
 }

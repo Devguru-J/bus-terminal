@@ -23,10 +23,10 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                     </div>
                     <div className="min-w-0">
                         <div className="font-mono text-label-xs uppercase tracking-[0.16em] text-primary-fixed-dim">
-                            STATION 01
+                            BusTerminal
                         </div>
                         <p className="mt-1 text-[11px] text-on-surface-variant leading-snug">
-                            Configuring Local Terminal
+                            내 개발환경 설정
                         </p>
                     </div>
                 </div>
@@ -73,12 +73,7 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                         설정 비교
                     </span>
                 </NavLink>
-                <div className="mt-3 mx-3 flex items-center gap-2 px-2 py-2 rounded bg-white/[0.02] border border-white/[0.04]">
-                    <StatusDot />
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">
-                        System Online
-                    </span>
-                </div>
+
             </div>
         </>
     );

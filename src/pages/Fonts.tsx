@@ -407,9 +407,9 @@ export function FontsPage() {
                             </button>
                         ))}
                     </div>
-                    <Button onClick={() => apply(selected)}>
+                    <Button onClick={() => apply(selected)} title={target === "all" ? "선택한 폰트를 3개 터미널 모두에 한 번에 적용" : "선택한 터미널 하나에 이 폰트 적용"}>
                         <Icon name="cell_tower" className="text-[16px]" />
-                        {target === "all" ? "전체 송출" : "환승 적용"}
+                        {target === "all" ? "모든 터미널에 적용" : "이 터미널에 적용"}
                     </Button>
                 </div>
             </div>
