@@ -188,6 +188,8 @@ bun run start
 - [x] 출발 전 진단 리포트
 - [x] 테마 환승센터 (26개 테마, 검색/필터/즐겨찾기/전체 송출)
 - [x] 폰트 환승센터 (26개 폰트, Google Fonts 자동 로드, 실시간 미리보기)
+- [x] Theme/Font 디테일 페이지 (`/themes/:id`, `/fonts/:id`, 공유 가능 URL)
+- [x] Code-splitting (메인 번들 39% 감소)
 - [x] 설치 스크립트 (--dry-run / --only / --no-backup)
 - [ ] Diff 페이지 멀티 플랫폼 확장
 - [ ] 모바일 사이드바

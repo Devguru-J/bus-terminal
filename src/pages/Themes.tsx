@@ -289,6 +289,7 @@ export function ThemesPage() {
                             theme={t}
                             active={t.id === active}
                             favorite={favorites.includes(t.id)}
+                            detailTo={`/themes/${t.id}`}
                             onClick={() => setActive(t.id)}
                             onFavorite={() => toggleFavorite(t.id)}
                         />

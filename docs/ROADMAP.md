@@ -498,3 +498,33 @@
 - iterm2 plist → Warp/Ghostty 자동 환승
 - Round-trip 검증 (export → import → diff = 0)
 
+
+
+---
+
+## 2026-05-25 — Phase 2-α (Detail Pages + Code-Splitting + Palette UX)
+
+### Theme/Font 디테일 페이지 (deep-linkable URL)
+- `/themes/:id` ThemeDetailPage — 대형 코드+터미널 미리보기, 16색 ANSI 그리드 (클릭 시 hex 복사), UI 색 카드, 플랫폼별 export 스니펫 5종 (Ghostty/tmux/Helix/Neovim/Warp) 각각 복사 버튼, "6개 승강장 송출" 즉시 적용, 공유 링크 복사
+- `/fonts/:id` FontDetailPage — 5종 미리보기 섹션 (Hero/English/한글/Code/Terminal) + Weight ladder (모든 weight 한눈에), font-size 슬라이더, weight chip, italic 토글, 설치 안내, homepage 링크, 공유 링크 복사
+- 리스트 카드에서 우상단 `↗` 버튼으로 디테일 진입
+
+### Code-splitting
+- `src/App.tsx`를 React.lazy + Suspense로 전환
+- 메인 번들 **550KB → 334KB** (gzip 171→109KB) — 39% 감소
+- 각 라우트가 독립 청크 (Ghostty 22KB, Tmux 14KB, Warp 13KB, …)
+- 500KB chunk-size 경고 해소
+- Suspense fallback: 페이지 스켈레톤 (실제 페이지 레이아웃 형태)
+
+### CommandPalette UX 픽스
+- ↑↓ 키 이동 시 활성 항목이 스크롤 영역에 항상 보이도록 `scrollIntoView({block: "nearest"})`
+- 중복된 "Theme Center" 항목 제거
+
+### 다음 라운드 (Phase 2-β / γ)
+- 외부 테마 import — Vim colorscheme / Base16 YAML / iterm2 plist → RouteTheme 자동 변환
+- Theme compare side-by-side (`/themes/compare?a=tokyo-night&b=dracula`)
+- 폰트 페어링 추천 (mono + ui sans 조합 카드)
+- 인기 순위·통계 (서버 영속 필요)
+- 모바일 사이드바 Drawer
+- Undo 토스트
+

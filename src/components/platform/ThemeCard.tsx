@@ -1,4 +1,5 @@
 import {motion} from "framer-motion";
+import {Link} from "react-router-dom";
 import {cn} from "@/lib/utils";
 import type {RouteTheme} from "@/data/themes";
 import {Icon} from "@/components/ui/Icon";
@@ -7,12 +8,14 @@ interface Props {
     theme: RouteTheme;
     active?: boolean;
     favorite?: boolean;
+    /** 디테일 페이지로 가는 경로 (지정 시 카드에 ↗ 버튼 표시) */
+    detailTo?: string;
     onClick?: () => void;
     onFavorite?: () => void;
 }
 
 /** Mini terminal preview tile used in the Theme Center. */
-export function ThemeCard({theme, active, favorite, onClick, onFavorite}: Props) {
+export function ThemeCard({theme, active, favorite, detailTo, onClick, onFavorite}: Props) {
     return (
         <motion.div
             whileHover={{y: -2}}
@@ -51,33 +54,52 @@ export function ThemeCard({theme, active, favorite, onClick, onFavorite}: Props)
                     {theme.ko}
                     {active && " (Active)"}
                 </span>
-                {/* favorite 버튼 자리 (있으면 차지, 없으면 0) */}
-                {onFavorite && <span className="shrink-0 w-8" aria-hidden />}
+                {/* 우상단 액션 영역 placeholder */}
+                {(onFavorite || detailTo) && (
+                    <span
+                        className="shrink-0"
+                        style={{width: `${(onFavorite ? 32 : 0) + (detailTo ? 32 : 0)}px`}}
+                        aria-hidden
+                    />
+                )}
             </button>
 
-            {/* Favorite — 헤더 오버레이가 아닌 절대 위치하지만, w-8 자리를 헤더에 미리 비워둠 */}
-            {onFavorite && (
-                <button
-                    type="button"
-                    onClick={e => {
-                        e.stopPropagation();
-                        onFavorite();
-                    }}
-                    className="absolute top-1 right-1 h-8 w-8 grid place-items-center rounded-md hover:bg-white/[0.08] transition z-10"
-                    aria-label={favorite ? "즐겨찾기 해제" : "즐겨찾기"}
-                >
-                    <Icon
-                        name="favorite"
-                        className={cn(
-                            "text-[16px]",
-                            favorite
-                                ? "text-error"
-                                : "text-on-surface-variant/50 group-hover:text-on-surface-variant"
-                        )}
-                        fill={favorite}
-                    />
-                </button>
-            )}
+            {/* 우상단 액션 — 헤더 placeholder에 정확히 들어감 */}
+            <div className="absolute top-1 right-1 z-10 flex items-center">
+                {detailTo && (
+                    <Link
+                        to={detailTo}
+                        className="h-8 w-8 grid place-items-center rounded-md hover:bg-white/[0.08] transition text-on-surface-variant/50 hover:text-on-surface-variant"
+                        aria-label={`${theme.ko} 자세히 보기`}
+                        title="자세히"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <Icon name="open_in_new" className="text-[14px]" />
+                    </Link>
+                )}
+                {onFavorite && (
+                    <button
+                        type="button"
+                        onClick={e => {
+                            e.stopPropagation();
+                            onFavorite();
+                        }}
+                        className="h-8 w-8 grid place-items-center rounded-md hover:bg-white/[0.08] transition"
+                        aria-label={favorite ? "즐겨찾기 해제" : "즐겨찾기"}
+                    >
+                        <Icon
+                            name="favorite"
+                            className={cn(
+                                "text-[16px]",
+                                favorite
+                                    ? "text-error"
+                                    : "text-on-surface-variant/50 group-hover:text-on-surface-variant"
+                            )}
+                            fill={favorite}
+                        />
+                    </button>
+                )}
+            </div>
 
             {/* Preview surface — 고정 높이 */}
             <button

@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
@@ -463,24 +463,35 @@ function FontRow({
                         ))}
                     </div>
                 </div>
-                <button
-                    type="button"
-                    onClick={e => {
-                        e.stopPropagation();
-                        onFavorite();
-                    }}
-                    className="shrink-0"
-                    aria-label="즐겨찾기"
-                >
-                    <Icon
-                        name="favorite"
-                        className={cn(
-                            "text-[18px]",
-                            favorite ? "text-error" : "text-white/30 hover:text-white/60"
-                        )}
-                        fill={favorite}
-                    />
-                </button>
+                <div className="shrink-0 flex items-center gap-1">
+                    <Link
+                        to={`/fonts/${font.id}`}
+                        onClick={e => e.stopPropagation()}
+                        className="h-8 w-8 grid place-items-center rounded-md hover:bg-white/[0.08] text-on-surface-variant/50 hover:text-on-surface-variant"
+                        aria-label={`${font.name} 자세히`}
+                        title="자세히"
+                    >
+                        <Icon name="open_in_new" className="text-[14px]" />
+                    </Link>
+                    <button
+                        type="button"
+                        onClick={e => {
+                            e.stopPropagation();
+                            onFavorite();
+                        }}
+                        className="h-8 w-8 grid place-items-center rounded-md hover:bg-white/[0.08]"
+                        aria-label="즐겨찾기"
+                    >
+                        <Icon
+                            name="favorite"
+                            className={cn(
+                                "text-[18px]",
+                                favorite ? "text-error" : "text-white/30 hover:text-white/60"
+                            )}
+                            fill={favorite}
+                        />
+                    </button>
+                </div>
             </div>
             <div
                 className="mt-3 text-on-surface truncate"
