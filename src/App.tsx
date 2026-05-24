@@ -1,6 +1,7 @@
 import {lazy, Suspense} from "react";
 import {Routes, Route} from "react-router-dom";
 import {AppShell} from "@/components/shell/AppShell";
+import {ErrorBoundary} from "@/components/shell/ErrorBoundary";
 import {CommandPalette} from "@/components/shell/CommandPalette";
 import {ToastViewport} from "@/components/shell/ToastViewport";
 import {HomePage} from "@/pages/Home";
@@ -25,6 +26,8 @@ const FontDetailPage = lazy(() => import("@/pages/FontDetail").then(m => ({defau
 const ThemeComparePage = lazy(() => import("@/pages/ThemeCompare").then(m => ({default: m.ThemeComparePage})));
 const FontPairingsPage = lazy(() => import("@/pages/FontPairings").then(m => ({default: m.FontPairingsPage})));
 const GuidePage = lazy(() => import("@/pages/Guide").then(m => ({default: m.GuidePage})));
+const PrivacyPage = lazy(() => import("@/pages/Privacy").then(m => ({default: m.PrivacyPage})));
+const TermsPage = lazy(() => import("@/pages/Terms").then(m => ({default: m.TermsPage})));
 
 function PageFallback() {
     return (
@@ -45,10 +48,13 @@ export default function App() {
     return (
         <>
             <AppShell>
-                <Suspense fallback={<PageFallback />}>
+                <ErrorBoundary>
+                    <Suspense fallback={<PageFallback />}>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/guide" element={<GuidePage />} />
+                        <Route path="/privacy" element={<PrivacyPage />} />
+                        <Route path="/terms" element={<TermsPage />} />
                         <Route path="/ghostty" element={<GhosttyPage />} />
                         <Route path="/tmux" element={<TmuxPage />} />
                         <Route path="/neovim" element={<NeovimPage />} />
@@ -69,6 +75,7 @@ export default function App() {
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>
+                </ErrorBoundary>
             </AppShell>
             <CommandPalette />
             <ToastViewport />
