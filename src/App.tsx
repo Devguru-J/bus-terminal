@@ -11,6 +11,7 @@ import {HelixPage} from "@/pages/Helix";
 import {Iterm2Page} from "@/pages/Iterm2";
 import {WarpPage} from "@/pages/Warp";
 import {ThemesPage} from "@/pages/Themes";
+import {FontsPage} from "@/pages/Fonts";
 import {MyRoutesPage} from "@/pages/MyRoutes";
 import {SettingsPage} from "@/pages/Settings";
 import {DiffPage} from "@/pages/Diff";
@@ -31,6 +32,7 @@ export default function App() {
                     <Route path="/iterm2" element={<Iterm2Page />} />
                     <Route path="/warp" element={<WarpPage />} />
                     <Route path="/themes" element={<ThemesPage />} />
+                    <Route path="/fonts" element={<FontsPage />} />
                     <Route path="/my-routes" element={<MyRoutesPage />} />
                     <Route path="/diff" element={<DiffPage />} />
                     <Route path="/export" element={<ExportPage />} />

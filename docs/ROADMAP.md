@@ -428,3 +428,45 @@
 - 모바일 사이드바 (`Drawer` 패턴)
 - 갤러리 / 공유 노선 서버 영속
 
+
+
+---
+
+## 2026-05-25 — Theme & Font Ecosystem Phase 1
+
+### Theme Registry 대폭 확장
+- 6개 → 26개 테마. palette16 정확히, author / description / tags 메타데이터.
+- 신규 추가: Tokyo Night Storm/Moon, Catppuccin 4종 (Mocha/Macchiato/Frappé/Latte), Gruvbox Light, Dracula, Solarized Dark, Rose Pine Moon, Everforest, Kanagawa Wave, One Dark, Night Owl, Monokai Pro, Ayu Dark, GitHub Dark/Light, Oxocarbon, Flexoki Dark, Embark
+- 카테고리 태그: dark / light / popular / minimal / retro / new / high-contrast
+- Helix / Neovim 매핑 확장 — 26개 테마가 두 에디터의 가장 가까운 colorscheme/theme name으로 자동 변환
+
+### 테마 환승센터 UX 업그레이드
+- **검색** — 이름·설명·제작자 텍스트 검색
+- **카테고리 필터 chips** — 전체 / 즐겨찾기 / 인기 / 신규 / 다크 / 라이트 / 미니멀 / 레트로 / 고대비
+- **정렬** — 추천순 / 이름순 / 다크 우선 / 라이트 우선 / 즐겨찾기 우선
+- **즐겨찾기** — 카드 우상단 하트 (favoritesStore persist)
+- **fixed-bottom dock** — 적용 대상 선택 + 전체 송출 (스크롤 시 항상 노출)
+- "전체" 선택 시 6개 승강장 (Ghostty/Warp/iTerm2/Neovim/Helix/tmux) 일괄
+
+### Font Registry 신설
+- `src/data/fonts.ts` — 26개 폰트 메타데이터 + 4종 미리보기 샘플 (영문/한글/코드/터미널)
+- 대표 폰트: JetBrains Mono, Fira Code, Geist Mono, Berkeley Mono, Maple Mono, Commit Mono, IBM Plex Mono, Monaco, SF Mono, Hack, Cascadia Code, Input Mono, Iosevka, Victor Mono, Dank Mono, Operator Mono, Ubuntu Mono, Source Code Pro, MesloLGS NF, PragmataPro, Recursive, Comic Mono, Noto Sans Mono, Roboto Mono, Pretendard, Inter
+- 카테고리: monospace / nerd / sans / korean / editorial
+- 태그: ligatures / nerd / variable / popular / new / free / paid / system
+- Google Fonts에 있는 것은 `googleFontUrl`로 페이지 마운트 시 자동 로드 → 미리보기 실시간
+- 자체 설치 필요 폰트(Berkeley/Operator/Dank/PragmataPro/Maple 등)는 `installNote`로 안내
+
+### 폰트 환승센터 (`/fonts`) 신설
+- 좌측 카드 그리드: 각 카드에서 실시간 폰트로 영문 샘플 렌더
+- 우측 sticky 상세: English / 한글 / Code / Terminal 4종 미리보기 탭, font-size 슬라이더
+- favorites, search, category, tag 필터
+- 적용 대상: Ghostty / iTerm2 / Warp (3개에 한 번에 송출 가능)
+
+### 다음 라운드 (Phase 2)
+- Theme/Font 디테일 페이지 (URL routing per item)
+- Theme compare side-by-side
+- 외부 테마 import (Base16 JSON / Vim colorscheme / iterm2 palette → 자동 변환)
+- 폰트 페어링 추천 (mono + ui sans)
+- 인기 순위 (서버 영속 필요)
+- 커뮤니티 갤러리
+

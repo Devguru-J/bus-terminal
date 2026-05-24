@@ -50,6 +50,7 @@ export function Sidebar() {
                 <PlatformNavItem to="/zsh" label="Platform 6: Zsh" icon="code_blocks" />
                 <PlatformNavItem to="/tmux" label="Platform 7: tmux" icon="grid_view" />
                 <PlatformNavItem to="/themes" label="Theme Center" icon="palette" />
+                <PlatformNavItem to="/fonts" label="Font Center" icon="text_fields" />
             </nav>
 
             {/* Footer rail */}

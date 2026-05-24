@@ -55,6 +55,8 @@ zsh
 - Helix 승강장
 - iTerm2 승강장
 - Warp 승강장
+- **테마 환승센터** — 26개 테마, 6개 플랫폼 일괄 송출, 즐겨찾기·검색·카테고리
+- **폰트 환승센터** — 26개 폰트, Ghostty/iTerm2/Warp 일괄, 실시간 미리보기
 - yazi / Kitty / Alacritty / Zellij 승강장 (예정)
 
 ---
@@ -184,6 +186,8 @@ bun run start
 - [x] iTerm2 지원 (.itermcolors + Dynamic Profile JSON)
 - [x] Warp 지원 (테마 YAML + 워크플로우 + AI)
 - [x] 출발 전 진단 리포트
+- [x] 테마 환승센터 (26개 테마, 검색/필터/즐겨찾기/전체 송출)
+- [x] 폰트 환승센터 (26개 폰트, Google Fonts 자동 로드, 실시간 미리보기)
 - [x] 설치 스크립트 (--dry-run / --only / --no-backup)
 - [ ] Diff 페이지 멀티 플랫폼 확장
 - [ ] 모바일 사이드바

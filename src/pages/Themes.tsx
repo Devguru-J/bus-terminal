@@ -1,20 +1,23 @@
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {motion} from "framer-motion";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {ThemeCard} from "@/components/platform/ThemeCard";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
-import {themes, type RouteTheme} from "@/data/themes";
+import {Select, TextInput} from "@/components/ui/Field";
+import {themes, themeCategories, type RouteTheme, type ThemeTag} from "@/data/themes";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useNeovimStore} from "@/stores/neovimStore";
 import {useHelixStore} from "@/stores/helixStore";
 import {useIterm2Store} from "@/stores/iterm2Store";
 import {useWarpStore} from "@/stores/warpStore";
+import {useFavoritesStore} from "@/stores/favoritesStore";
 import {NVIM_COLORSCHEMES, type NvimColorscheme} from "@/data/neovim";
 import {HELIX_THEMES, type HelixTheme} from "@/data/helix";
 import {toast} from "@/stores/toastStore";
+import {cn} from "@/lib/utils";
 
 type Target = "all" | "ghostty" | "warp" | "iterm2" | "neovim" | "helix" | "tmux";
 
@@ -28,15 +31,31 @@ const TARGETS: Array<{id: Target; label: string; route?: string}> = [
     {id: "tmux", label: "tmux", route: "/tmux"}
 ];
 
-/** RouteTheme.id → Neovim colorscheme name (가장 가까운 것) */
+const SORTS = [
+    {id: "default", label: "추천순"},
+    {id: "alpha", label: "이름순"},
+    {id: "dark-first", label: "다크 우선"},
+    {id: "light-first", label: "라이트 우선"},
+    {id: "favorites-first", label: "즐겨찾기 우선"}
+] as const;
+type SortId = (typeof SORTS)[number]["id"];
+
+/** RouteTheme.id → Neovim colorscheme name */
 function themeToNvimColorscheme(id: string): NvimColorscheme {
     const map: Record<string, NvimColorscheme> = {
         "tokyo-night": "tokyonight",
+        "tokyo-night-storm": "tokyonight",
+        "tokyo-night-moon": "tokyonight",
         "gruvbox-dark": "gruvbox",
+        "gruvbox-light": "gruvbox",
         "catppuccin-mocha": "catppuccin",
+        "catppuccin-macchiato": "catppuccin",
+        "catppuccin-frappe": "catppuccin",
+        "catppuccin-latte": "catppuccin",
         "nord": "nord",
         "rose-pine": "rose-pine",
-        "solarized-light": "default"
+        "rose-pine-moon": "rose-pine",
+        "kanagawa": "kanagawa"
     };
     const candidate = map[id];
     return NVIM_COLORSCHEMES.includes(candidate as NvimColorscheme)
@@ -44,15 +63,24 @@ function themeToNvimColorscheme(id: string): NvimColorscheme {
         : "default";
 }
 
-/** RouteTheme.id → Helix theme name (가장 가까운 것). */
+/** RouteTheme.id → Helix theme name */
 function themeToHelixTheme(id: string): HelixTheme {
     const map: Record<string, HelixTheme> = {
         "tokyo-night": "tokyonight",
-        "gruvbox-dark": "gruvbox_dark_hard",
+        "tokyo-night-storm": "tokyonight_storm",
+        "tokyo-night-moon": "tokyonight",
         "catppuccin-mocha": "catppuccin_mocha",
+        "catppuccin-macchiato": "catppuccin_macchiato",
+        "catppuccin-frappe": "catppuccin_mocha",
+        "gruvbox-dark": "gruvbox_dark_hard",
+        "gruvbox-light": "gruvbox",
         "nord": "nord",
-        "rose-pine": "rose_pine_moon",
-        "solarized-light": "default"
+        "dracula": "dracula",
+        "rose-pine": "rose_pine",
+        "rose-pine-moon": "rose_pine_moon",
+        "monokai-pro": "monokai_pro",
+        "ayu-dark": "ayu_dark",
+        "one-dark": "onedark"
     };
     const candidate = map[id];
     return HELIX_THEMES.includes(candidate as HelixTheme)
@@ -67,22 +95,64 @@ export function ThemesPage() {
     const setTmuxField = useTmuxStore(s => s.setField);
     const setNvimField = useNeovimStore(s => s.setField);
     const setHelixField = useHelixStore(s => s.setField);
+    const favorites = useFavoritesStore(s => s.themes);
+    const toggleFavorite = useFavoritesStore(s => s.toggleTheme);
     const navigate = useNavigate();
-    const [active, setActive] = useState(themes[1]?.id ?? themes[0].id);
+
+    const [query, setQuery] = useState("");
+    const [tagFilter, setTagFilter] = useState<ThemeTag | "all" | "favorites">("all");
+    const [sort, setSort] = useState<SortId>("default");
+    const [active, setActive] = useState(themes[0].id);
     const [target, setTarget] = useState<Target>("all");
 
     const activeTheme = themes.find(t => t.id === active) ?? themes[0];
 
-    function applyToGhostty(t: RouteTheme) {
+    const visible = useMemo(() => {
+        let list = themes.slice();
+        const q = query.trim().toLowerCase();
+        if (q) {
+            list = list.filter(t =>
+                `${t.ko} ${t.id} ${t.description} ${t.author ?? ""}`
+                    .toLowerCase()
+                    .includes(q)
+            );
+        }
+        if (tagFilter === "favorites") {
+            list = list.filter(t => favorites.includes(t.id));
+        }
+        else if (tagFilter !== "all") {
+            list = list.filter(t => t.tags.includes(tagFilter));
+        }
+        switch (sort) {
+            case "alpha":
+                list.sort((a, b) => a.ko.localeCompare(b.ko));
+                break;
+            case "dark-first":
+                list.sort(
+                    (a, b) =>
+                        Number(b.tags.includes("dark")) - Number(a.tags.includes("dark"))
+                );
+                break;
+            case "light-first":
+                list.sort(
+                    (a, b) =>
+                        Number(b.tags.includes("light")) - Number(a.tags.includes("light"))
+                );
+                break;
+            case "favorites-first":
+                list.sort(
+                    (a, b) =>
+                        Number(favorites.includes(b.id)) - Number(favorites.includes(a.id))
+                );
+                break;
+        }
+        return list;
+    }, [query, tagFilter, sort, favorites]);
+
+    function applyToAll(t: RouteTheme) {
         applyGhostty(t);
-    }
-    function applyToIterm2(t: RouteTheme) {
         applyIterm2(t);
-    }
-    function applyToWarp(t: RouteTheme) {
         applyWarp(t);
-    }
-    function applyToTmux(t: RouteTheme) {
         setTmuxField("statusStyle", `fg=${t.foreground},bg=${t.background}`);
         setTmuxField("leftSegments", [
             `#[fg=${t.accent}] #S `,
@@ -92,11 +162,7 @@ export function ThemesPage() {
             `#[fg=${t.foreground}] %Y-%m-%d `,
             `#[fg=${t.accent}] %H:%M `
         ]);
-    }
-    function applyToNvim(t: RouteTheme) {
         setNvimField("colorscheme", themeToNvimColorscheme(t.id));
-    }
-    function applyToHelix(t: RouteTheme) {
         setHelixField("theme", themeToHelixTheme(t.id));
     }
 
@@ -104,84 +170,172 @@ export function ThemesPage() {
         const t = activeTheme;
         switch (target) {
             case "all":
-                applyToGhostty(t);
-                applyToIterm2(t);
-                applyToWarp(t);
-                applyToTmux(t);
-                applyToNvim(t);
-                applyToHelix(t);
-                toast(
-                    `6개 승강장에 "${t.ko}" 노선을 환승 송출했어요.`,
-                    "success"
-                );
+                applyToAll(t);
+                toast(`6개 승강장에 "${t.ko}" 노선을 환승 송출했어요.`, "success");
                 return;
             case "ghostty":
-                applyToGhostty(t);
+                applyGhostty(t);
                 break;
             case "iterm2":
-                applyToIterm2(t);
+                applyIterm2(t);
                 break;
             case "warp":
-                applyToWarp(t);
+                applyWarp(t);
                 break;
             case "tmux":
-                applyToTmux(t);
+                setTmuxField("statusStyle", `fg=${t.foreground},bg=${t.background}`);
+                setTmuxField("leftSegments", [`#[fg=${t.accent}] #S `, `#[fg=${t.foreground}] | `]);
+                setTmuxField("rightSegments", [`#[fg=${t.foreground}] %Y-%m-%d `, `#[fg=${t.accent}] %H:%M `]);
                 break;
             case "neovim":
-                applyToNvim(t);
+                setNvimField("colorscheme", themeToNvimColorscheme(t.id));
                 break;
             case "helix":
-                applyToHelix(t);
+                setHelixField("theme", themeToHelixTheme(t.id));
                 break;
         }
         const targetMeta = TARGETS.find(x => x.id === target);
-        toast(
-            `${targetMeta?.label} 노선이 "${t.ko}"으로 환승했어요.`,
-            "success"
-        );
+        toast(`${targetMeta?.label} 노선이 "${t.ko}"으로 환승했어요.`, "success");
         if (targetMeta?.route) {
             setTimeout(() => navigate(targetMeta.route!), 350);
         }
     }
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto pb-32">
             <StationHeader
                 title="테마 환승센터"
                 eyebrow="노선 스타일 (THEME)"
-                subtitle="6개 승강장(Ghostty · Warp · iTerm2 · Neovim · Helix · tmux)에 색 노선 한 번에 환승. Zsh는 색 대신 프롬프트 테마(/zsh)로 운영됩니다."
+                subtitle={`${themes.length}개 노선 운행중. 6개 승강장(Ghostty · Warp · iTerm2 · Neovim · Helix · tmux)에 한 번에 환승 송출.`}
+                actions={
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate("/fonts")}
+                    >
+                        <Icon name="text_fields" className="text-[14px]" />
+                        폰트 환승센터
+                    </Button>
+                }
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                {themes.map(t => (
-                    <ThemeCard
-                        key={t.id}
-                        theme={t}
-                        active={t.id === active}
-                        onClick={() => setActive(t.id)}
+            {/* 검색 + 카테고리 + 정렬 */}
+            <div className="mb-5 rounded-xl border border-white/[0.06] bg-surface-container-lowest/80 p-3 space-y-3">
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1 relative">
+                        <Icon
+                            name="search"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant"
+                        />
+                        <TextInput
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
+                            placeholder="테마 이름, 설명, 제작자 검색..."
+                            className="pl-9"
+                        />
+                    </div>
+                    <Select
+                        value={sort}
+                        onChange={e => setSort(e.target.value as SortId)}
+                        className="sm:w-44"
+                    >
+                        {SORTS.map(s => (
+                            <option key={s.id} value={s.id}>
+                                {s.label}
+                            </option>
+                        ))}
+                    </Select>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                    <TagChip
+                        active={tagFilter === "all"}
+                        onClick={() => setTagFilter("all")}
+                        icon="apps"
+                        label={`전체 ${themes.length}`}
                     />
-                ))}
+                    <TagChip
+                        active={tagFilter === "favorites"}
+                        onClick={() => setTagFilter("favorites")}
+                        icon="favorite"
+                        label={`즐겨찾기 ${favorites.length}`}
+                    />
+                    {themeCategories.map(c => {
+                        const count = themes.filter(t => t.tags.includes(c.id)).length;
+                        return (
+                            <TagChip
+                                key={c.id}
+                                active={tagFilter === c.id}
+                                onClick={() => setTagFilter(c.id)}
+                                icon={c.icon}
+                                label={`${c.ko} ${count}`}
+                            />
+                        );
+                    })}
+                </div>
             </div>
+
+            {visible.length === 0 ? (
+                <div className="rounded-lg border border-white/[0.06] bg-surface-container-lowest/60 p-12 text-center">
+                    <Icon name="search_off" className="text-[40px] text-on-surface-variant/40" />
+                    <p className="mt-3 text-body-md text-on-surface-variant">
+                        조건에 맞는 테마가 없어요. 검색어 또는 필터를 바꿔보세요.
+                    </p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    {visible.map(t => (
+                        <div key={t.id} className="relative">
+                            <ThemeCard
+                                theme={t}
+                                active={t.id === active}
+                                onClick={() => setActive(t.id)}
+                            />
+                            <button
+                                type="button"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    toggleFavorite(t.id);
+                                }}
+                                className="absolute top-3 right-3 h-8 w-8 grid place-items-center rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 transition"
+                                aria-label={favorites.includes(t.id) ? "즐겨찾기 해제" : "즐겨찾기"}
+                            >
+                                <Icon
+                                    name="favorite"
+                                    className={cn(
+                                        "text-[18px]",
+                                        favorites.includes(t.id)
+                                            ? "text-error"
+                                            : "text-white/60"
+                                    )}
+                                    fill={favorites.includes(t.id)}
+                                />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Bottom action dock */}
             <motion.div
                 layout
-                className="sticky bottom-12 mt-8 rounded-xl border border-white/[0.08] bg-surface-container/95 p-4 flex flex-col lg:flex-row lg:items-center gap-3"
+                className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[min(960px,calc(100vw-2rem))] rounded-xl border border-white/[0.08] bg-surface-container/95 shadow-glow-soft p-4 flex flex-col lg:flex-row lg:items-center gap-3"
             >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                     <div
-                        className="h-8 w-8 rounded border border-white/10"
+                        className="h-10 w-10 rounded border border-white/10 shrink-0"
                         style={{background: activeTheme.background}}
                     />
-                    <div>
+                    <div className="min-w-0">
                         <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant">
                             Selected
                         </div>
-                        <div className="text-code-sm text-on-surface">{activeTheme.ko}</div>
+                        <div className="text-code-sm text-on-surface truncate">
+                            {activeTheme.ko}
+                        </div>
                     </div>
                 </div>
                 <div className="lg:ml-auto flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant">
+                    <span className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant hidden md:inline">
                         적용 대상
                     </span>
                     <div className="inline-flex flex-wrap rounded border border-white/[0.06] bg-surface-container-lowest p-0.5">
@@ -207,5 +361,33 @@ export function ThemesPage() {
                 </div>
             </motion.div>
         </div>
+    );
+}
+
+function TagChip({
+    active,
+    onClick,
+    icon,
+    label
+}: {
+    active: boolean;
+    onClick: () => void;
+    icon: string;
+    label: string;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] transition",
+                active
+                    ? "border-primary-fixed-dim bg-primary-fixed-dim/15 text-primary-fixed-dim"
+                    : "border-white/10 bg-white/[0.02] text-on-surface-variant hover:border-white/25 hover:text-on-surface"
+            )}
+        >
+            <Icon name={icon} className="text-[14px]" />
+            {label}
+        </button>
     );
 }

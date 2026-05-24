@@ -30,6 +30,8 @@ export function CommandPalette() {
             {id: "helix", title: "Helix 승강장", subtitle: "모달 에디터, LSP, 키매핑", icon: "edit_square", keywords: "helix editor modal lsp toml", run: () => navigate("/helix")},
             {id: "zsh", title: "Zsh 승강장", subtitle: "셸, prompt, alias, PATH 설정", icon: "code_blocks", keywords: "zsh shell prompt alias path env", run: () => navigate("/zsh")},
             {id: "tmux", title: "tmux 승강장", subtitle: "세션, pane, key binding 설정", icon: "grid_view", keywords: "tmux multiplexer pane session key binding 키바인딩", run: () => navigate("/tmux")},
+            {id: "themes", title: "테마 환승센터", subtitle: "26개 테마 검색·즐겨찾기·전체 송출", icon: "palette", keywords: "theme color palette tokyonight catppuccin gruvbox nord dracula", run: () => navigate("/themes")},
+            {id: "fonts", title: "폰트 환승센터", subtitle: "26개 폰트 미리보기·환승", icon: "text_fields", keywords: "font typography jetbrains fira geist berkeley iosevka", run: () => navigate("/fonts")},
             {id: "themes", title: "Theme Center", subtitle: "색상 테마 적용", icon: "palette", keywords: "theme color palette 테마", run: () => navigate("/themes")},
             {id: "routes", title: "Saved Routes", subtitle: "내 노선 관리", icon: "bookmark", keywords: "saved routes garage 저장 차고", run: () => navigate("/my-routes")},
             {id: "diff", title: "Departure Logs", subtitle: "설정 변경 비교", icon: "difference", keywords: "diff compare logs 변경 비교", run: () => navigate("/diff")},
