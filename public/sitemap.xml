@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://bus-terminal.pages.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://bus-terminal.pages.dev/guide</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://bus-terminal.pages.dev/ghostty</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://bus-terminal.pages.dev/warp</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://bus-terminal.pages.dev/iterm2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -9,8 +10,12 @@
   <url><loc>https://bus-terminal.pages.dev/zsh</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://bus-terminal.pages.dev/tmux</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://bus-terminal.pages.dev/themes</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bus-terminal.pages.dev/themes/compare</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://bus-terminal.pages.dev/fonts</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bus-terminal.pages.dev/fonts/pairings</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://bus-terminal.pages.dev/my-routes</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://bus-terminal.pages.dev/diff</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bus-terminal.pages.dev/export</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://bus-terminal.pages.dev/privacy</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://bus-terminal.pages.dev/terms</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
 </urlset>
