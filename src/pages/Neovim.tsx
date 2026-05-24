@@ -15,11 +15,14 @@ import {
 import {useNeovimStore} from "@/stores/neovimStore";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
+import {ImportWizard} from "@/components/platform/ImportWizard";
+import {importNvimInit} from "@/lib/importers";
 import {cn} from "@/lib/utils";
 
 const LSP_SERVERS = ["ts_ls", "eslint", "lua_ls", "pyright", "rust_analyzer", "gopls", "jsonls", "cssls", "html"];
 
 export function NeovimPage() {
+    const [importOpen, setImportOpen] = useState(false);
     const {config, setField, togglePlugin, addKeymap, removeKeymap, exportText, reset} =
         useNeovimStore();
     const save = useRoutesStore(s => s.save);
@@ -49,6 +52,9 @@ export function NeovimPage() {
                 subtitle="lazy.nvim 기반 init.lua를 시각적으로 구성합니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                            <Icon name="sync_alt" className="text-[16px]" /> 환승하기
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={reset}>
                             <Icon name="restart_alt" className="text-[14px]" /> 초기화
                         </Button>
@@ -406,6 +412,22 @@ export function NeovimPage() {
                     </ConfigPanel>
                 </div>
             </div>
+
+            <ImportWizard
+                open={importOpen}
+                onClose={() => setImportOpen(false)}
+                title="Neovim 설정 환승하기"
+                accept=".lua,.vim,.txt"
+                placeholder="~/.config/nvim/init.lua 내용을 붙여넣어 주세요."
+                hint="vim.opt.* / vim.g.* / colorscheme / lazy.nvim 플러그인 목록을 흡수합니다. (best-effort, lossy)"
+                parse={importNvimInit}
+                onApply={(r) => {
+                    for (const [k, v] of Object.entries(r.value)) {
+                        setField(k as never, v as never);
+                    }
+                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                }}
+            />
         </div>
     );
 }

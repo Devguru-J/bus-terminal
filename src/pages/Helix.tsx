@@ -25,9 +25,12 @@ import {
 import {useHelixStore} from "@/stores/helixStore";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
+import {ImportWizard} from "@/components/platform/ImportWizard";
+import {importHelixToml} from "@/lib/importers";
 import {cn} from "@/lib/utils";
 
 export function HelixPage() {
+    const [importOpen, setImportOpen] = useState(false);
     const {config, setField, toggleLanguageServer, addKeymap, removeKeymap, exportText} =
         useHelixStore();
     const save = useRoutesStore(s => s.save);
@@ -70,6 +73,9 @@ export function HelixPage() {
                 subtitle="Rust로 만들어진 모달 에디터. config.toml + languages.toml 두 벌이 출발권에 함께 실립니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                            <Icon name="sync_alt" className="text-[16px]" /> 환승하기
+                        </Button>
                         <Button variant="outline" size="sm" onClick={handleSave}>
                             <Icon name="bookmark_add" className="text-[16px]" /> 차고 보관
                         </Button>
@@ -479,6 +485,23 @@ export function HelixPage() {
                     </ConfigPanel>
                 </div>
             </div>
+
+
+            <ImportWizard
+                open={importOpen}
+                onClose={() => setImportOpen(false)}
+                title="Helix 설정 환승하기"
+                accept=".toml,.txt"
+                placeholder="~/.config/helix/config.toml 내용을 붙여넣어 주세요."
+                hint="[editor] / [editor.cursor-shape] / [editor.lsp] / [editor.statusline] 섹션을 흡수합니다."
+                parse={importHelixToml}
+                onApply={(r) => {
+                    for (const [k, v] of Object.entries(r.value)) {
+                        setField(k as never, v as never);
+                    }
+                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                }}
+            />
         </div>
     );
 }
@@ -542,7 +565,6 @@ function HelixPreview() {
             <div className="px-3 py-1.5 border-t border-white/[0.06] flex justify-between text-[10px] text-on-surface-variant">
                 <span>{c.statuslineLeft.slice(0, 3).join(" · ")}</span>
                 <span>{c.statuslineRight.slice(0, 3).join(" · ")}</span>
-            </div>
-        </div>
+            </div>        </div>
     );
 }

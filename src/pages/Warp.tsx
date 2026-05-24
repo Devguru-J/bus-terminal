@@ -18,6 +18,9 @@ import {WARP_FONT_FAMILIES, type WarpTerminalColors} from "@/data/warp";
 import {useWarpStore} from "@/stores/warpStore";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
+import {useState} from "react";
+import {ImportWizard} from "@/components/platform/ImportWizard";
+import {importWarpTheme} from "@/lib/importers";
 import {cn} from "@/lib/utils";
 
 const COLOR_KEYS: Array<keyof WarpTerminalColors> = [
@@ -25,6 +28,7 @@ const COLOR_KEYS: Array<keyof WarpTerminalColors> = [
 ];
 
 export function WarpPage() {
+    const [importOpen, setImportOpen] = useState(false);
     const {
         config,
         setAppearance,
@@ -81,6 +85,9 @@ export function WarpPage() {
                 subtitle="AI 내장 차세대 터미널. 테마 / 워크플로우 / AI 설정을 한 번에 정리해 출발 준비."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                            <Icon name="sync_alt" className="text-[16px]" /> 환승하기
+                        </Button>
                         <Button variant="outline" size="sm" onClick={handleSave}>
                             <Icon name="bookmark_add" className="text-[16px]" /> 차고 보관
                         </Button>
@@ -453,6 +460,37 @@ export function WarpPage() {
                     </ConfigPanel>
                 </div>
             </div>
+
+
+            <ImportWizard
+                open={importOpen}
+                onClose={() => setImportOpen(false)}
+                title="Warp 테마 환승하기"
+                accept=".yaml,.yml,.txt"
+                placeholder="~/.warp/themes/<name>.yaml 내용을 붙여넣어 주세요."
+                hint="Warp 테마 YAML의 name / accent / background / foreground / details / terminal_colors를 흡수합니다."
+                parse={importWarpTheme}
+                onApply={(r) => {
+                    if (r.value.themeName) setThemeName(r.value.themeName);
+                    if (r.value.theme) {
+                        if (r.value.theme.accent) setThemeField("accent", r.value.theme.accent);
+                        if (r.value.theme.background) setThemeField("background", r.value.theme.background);
+                        if (r.value.theme.foreground) setThemeField("foreground", r.value.theme.foreground);
+                        if (r.value.theme.details) setThemeField("details", r.value.theme.details);
+                        if (r.value.theme.normal) {
+                            for (const [k, v] of Object.entries(r.value.theme.normal)) {
+                                if (v) setNormalColor(k as never, v);
+                            }
+                        }
+                        if (r.value.theme.bright) {
+                            for (const [k, v] of Object.entries(r.value.theme.bright)) {
+                                if (v) setBrightColor(k as never, v);
+                            }
+                        }
+                    }
+                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                }}
+            />
         </div>
     );
 }
@@ -527,8 +565,7 @@ function WarpPreview() {
                         {c.ai.enabled ? "AI ON" : "AI OFF"} · {c.workflows.length} workflows
                     </span>
                 </div>
-            )}
-        </div>
+            )}        </div>
     );
 }
 

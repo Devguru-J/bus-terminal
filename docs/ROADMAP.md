@@ -470,3 +470,31 @@
 - 인기 순위 (서버 영속 필요)
 - 커뮤니티 갤러리
 
+
+
+---
+
+## 2026-05-25 — Import Wizard (가져오기 마법사)
+
+### 5개 추가 플랫폼에 환승하기 모달
+이전에는 Ghostty와 iTerm2만 import 가능 → 7개 플랫폼 전부 import 가능.
+
+- **tmux** — `~/.tmux.conf` (set/setw, status-*, @plugin 등)
+- **Zsh** — `~/.zshrc` (ZSH_THEME → prompt 매핑, plugins=(...), alias, export, HISTSIZE/HISTFILE)
+- **Neovim** — `init.lua` (vim.opt.*, vim.g.*, vim.cmd.colorscheme, lazy.nvim 플러그인 17종 자동 매핑)
+- **Helix** — `config.toml` (섹션·키 자동 인식, [editor], [editor.cursor-shape], [editor.lsp], [editor.statusline] 등)
+- **Warp** — 테마 YAML (name/accent/background/foreground/details/terminal_colors.normal·bright)
+
+### 공용 인프라
+- `src/lib/importers.ts` — 5개 lossy parser (정확한 round-trip 대신 "있는 키만 흡수")
+- `src/components/platform/ImportWizard.tsx` — 텍스트 붙여넣기 + 파일 업로드 통합 모달
+  - 실시간 파싱 통계 (✓ applied / ? 미인식 / ! 경고)
+  - 미인식 줄 100개까지 펼쳐서 확인 가능
+  - "환승하기 (N개 적용)" 동적 라벨
+
+### Phase 2 후보 (Import 영역)
+- Vim colorscheme 파싱 → RouteTheme 자동 생성
+- Base16 YAML → 모든 플랫폼 일괄
+- iterm2 plist → Warp/Ghostty 자동 환승
+- Round-trip 검증 (export → import → diff = 0)
+

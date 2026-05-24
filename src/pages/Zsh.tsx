@@ -1,3 +1,4 @@
+import {useState} from "react";
 import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
@@ -11,9 +12,12 @@ import {ZSH_PROMPTS, zshPlugins, type ZshPromptId} from "@/data/zsh";
 import {useZshStore} from "@/stores/zshStore";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
+import {ImportWizard} from "@/components/platform/ImportWizard";
+import {importZshrc} from "@/lib/importers";
 import {cn} from "@/lib/utils";
 
 export function ZshPage() {
+    const [importOpen, setImportOpen] = useState(false);
     const {
         config,
         setField,
@@ -51,6 +55,9 @@ export function ZshPage() {
                 subtitle="프롬프트 · 히스토리 · 플러그인 · 별칭을 조합해 ~/.zshrc를 출발시킵니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                            <Icon name="sync_alt" className="text-[16px]" /> 환승하기
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={reset}>
                             <Icon name="restart_alt" className="text-[14px]" /> 초기화
                         </Button>
@@ -329,6 +336,23 @@ export function ZshPage() {
                     </ConfigPanel>
                 </div>
             </div>
+
+
+            <ImportWizard
+                open={importOpen}
+                onClose={() => setImportOpen(false)}
+                title="zsh 설정 환승하기"
+                accept=".zshrc,.sh,.txt"
+                placeholder="~/.zshrc 내용을 붙여넣어 주세요."
+                hint="ZSH_THEME, plugins=(...), alias, export, HISTSIZE/HISTFILE를 자동 흡수합니다."
+                parse={importZshrc}
+                onApply={(r) => {
+                    for (const [k, v] of Object.entries(r.value)) {
+                        setField(k as never, v as never);
+                    }
+                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                }}
+            />
         </div>
     );
 }
@@ -485,7 +509,6 @@ function FunctionList({
                         />
                     </div>
                 ))}
-            </div>
-        </div>
+            </div>        </div>
     );
 }

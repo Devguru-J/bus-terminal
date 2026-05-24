@@ -284,33 +284,14 @@ export function ThemesPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                     {visible.map(t => (
-                        <div key={t.id} className="relative">
-                            <ThemeCard
-                                theme={t}
-                                active={t.id === active}
-                                onClick={() => setActive(t.id)}
-                            />
-                            <button
-                                type="button"
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    toggleFavorite(t.id);
-                                }}
-                                className="absolute top-3 right-3 h-8 w-8 grid place-items-center rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 transition"
-                                aria-label={favorites.includes(t.id) ? "즐겨찾기 해제" : "즐겨찾기"}
-                            >
-                                <Icon
-                                    name="favorite"
-                                    className={cn(
-                                        "text-[18px]",
-                                        favorites.includes(t.id)
-                                            ? "text-error"
-                                            : "text-white/60"
-                                    )}
-                                    fill={favorites.includes(t.id)}
-                                />
-                            </button>
-                        </div>
+                        <ThemeCard
+                            key={t.id}
+                            theme={t}
+                            active={t.id === active}
+                            favorite={favorites.includes(t.id)}
+                            onClick={() => setActive(t.id)}
+                            onFavorite={() => toggleFavorite(t.id)}
+                        />
                     ))}
                 </div>
             )}

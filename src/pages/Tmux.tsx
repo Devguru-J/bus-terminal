@@ -20,9 +20,12 @@ import {tmuxDefaultKeyBindings, tmuxPlugins, type TmuxKeyBinding} from "@/data/t
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
+import {ImportWizard} from "@/components/platform/ImportWizard";
+import {importTmuxConf} from "@/lib/importers";
 import {cn} from "@/lib/utils";
 
 export function TmuxPage() {
+    const [importOpen, setImportOpen] = useState(false);
     const {config, setField, togglePlugin, exportText} = useTmuxStore();
     const save = useRoutesStore(s => s.save);
     const navigate = useNavigate();
@@ -97,6 +100,9 @@ export function TmuxPage() {
                 subtitle="전문가용 tmux 세션 인터페이스 및 실시간 미리보기. 변경사항은 다음 출발 때 적용됩니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+                            <Icon name="sync_alt" className="text-[16px]" /> 환승하기
+                        </Button>
                         <Button variant="outline" size="sm" onClick={handleSave}>
                             <Icon name="bookmark_add" className="text-[16px]" /> 차고 보관
                         </Button>
@@ -397,6 +403,23 @@ export function TmuxPage() {
                     </ConfigPanel>
                 </div>
             </div>
+
+
+            <ImportWizard
+                open={importOpen}
+                onClose={() => setImportOpen(false)}
+                title="tmux 설정 환승하기"
+                accept=".conf,.tmux,.txt"
+                placeholder="~/.tmux.conf 내용을 붙여넣어 주세요."
+                hint="기존 ~/.tmux.conf를 흡수해 현재 설정에 덮어씁니다. set/setw/bind 줄을 인식합니다."
+                parse={importTmuxConf}
+                onApply={(r) => {
+                    for (const [k, v] of Object.entries(r.value)) {
+                        setField(k as never, v as never);
+                    }
+                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                }}
+            />
         </div>
     );
 }
@@ -472,7 +495,6 @@ function KeyBindingEditor({
                 value={binding.label}
                 onChange={e => onChange({label: e.target.value})}
                 aria-label={`${binding.label} label`}
-            />
-        </div>
+            />        </div>
     );
 }
