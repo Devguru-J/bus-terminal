@@ -33,7 +33,6 @@ type Platform = "ghostty" | "warp" | "iterm2" | "neovim" | "helix" | "zsh" | "tm
 interface PlatformMeta {
     id: Platform;
     label: string;
-    summaryLabel: string;
     files: Array<{name: string; getter: () => string; optional?: boolean}>;
     targetPath: string;
 }
@@ -96,14 +95,12 @@ export function ExportPage() {
         {
             id: "ghostty",
             label: "Ghostty",
-            summaryLabel: "Platform",
             targetPath: "~/.config/ghostty/config",
             files: [{name: "ghostty-config", getter: () => ghostty}]
         },
         {
             id: "warp",
             label: "Warp",
-            summaryLabel: "Warp (macOS)",
             targetPath: "~/.warp/themes/",
             files: [
                 {name: "warp-theme.yaml", getter: () => warpTheme},
@@ -114,7 +111,6 @@ export function ExportPage() {
         {
             id: "iterm2",
             label: "iTerm2",
-            summaryLabel: "iTerm2 (macOS)",
             targetPath: "~/Library/Application Support/iTerm2/DynamicProfiles/",
             files: [
                 {name: "BusTerminal.itermcolors", getter: () => itermColors},
@@ -124,14 +120,12 @@ export function ExportPage() {
         {
             id: "neovim",
             label: "Neovim",
-            summaryLabel: "Editor",
             targetPath: "~/.config/nvim/init.lua",
             files: [{name: "init.lua", getter: () => nvim}]
         },
         {
             id: "helix",
             label: "Helix",
-            summaryLabel: "Editor",
             targetPath: "~/.config/helix/",
             files: [
                 {name: "helix-config.toml", getter: () => helix},
@@ -141,7 +135,6 @@ export function ExportPage() {
         {
             id: "zsh",
             label: "Zsh",
-            summaryLabel: "Shell",
             targetPath: "~/.zshrc",
             files: [
                 {name: ".zshrc", getter: () => zsh},
@@ -151,7 +144,6 @@ export function ExportPage() {
         {
             id: "tmux",
             label: "tmux",
-            summaryLabel: "Multiplexer",
             targetPath: "~/.tmux.conf",
             files: [{name: ".tmux.conf", getter: () => tmux}]
         }
@@ -223,12 +215,6 @@ export function ExportPage() {
     });
     const summary = summarizeDiagnostics(diagnostics);
 
-    // ---- DepartureComplete 요약 (선택된 것만) ----
-    const heroSummary = META.filter(p => selected[p.id]).map(p => ({
-        label: p.summaryLabel,
-        value: p.label
-    }));
-
     function handleDownload() {
         if (selectedCount === 0 || fileList.length === 0) {
             toast("선택된 플랫폼이 없어요. 하나 이상 골라주세요.", "warn");
@@ -269,11 +255,6 @@ export function ExportPage() {
     return (
         <div className="max-w-5xl mx-auto py-6 space-y-8">
             <DepartureComplete
-                summary={
-                    heroSummary.length > 0
-                        ? heroSummary
-                        : [{label: "선택", value: "비어 있음"}]
-                }
                 onDownload={handleDownload}
                 onReturn={() => navigate("/ghostty")}
                 downloadLabel={

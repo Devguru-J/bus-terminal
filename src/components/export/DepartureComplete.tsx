@@ -5,8 +5,6 @@ import {DepartureStatus} from "@/components/platform/DepartureStatus";
 import {Button} from "@/components/ui/Button";
 
 interface Props {
-    /** Configuration manifest summary cards (4-cell bento). */
-    summary: Array<{label: string; value: string}>;
     onDownload?: () => void;
     onReturn?: () => void;
     /** 다운로드 버튼의 라벨 (선택 카운트 표시 등) */
@@ -19,7 +17,7 @@ interface Props {
  * Showcase FIDS panel: a bus icon drives across the dotted grid, then
  * settles into a "departed" state with status text.
  */
-export function DepartureComplete({summary, onDownload, onReturn, downloadLabel, downloadDisabled}: Props) {
+export function DepartureComplete({onDownload, onReturn, downloadLabel, downloadDisabled}: Props) {
     const reduced = useReducedMotion();
     const [arrived, setArrived] = useState(false);
 
@@ -112,22 +110,6 @@ export function DepartureComplete({summary, onDownload, onReturn, downloadLabel,
                 </div>
             </div>
 
-            {/* Bento manifest */}
-            <div className="w-full max-w-3xl grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
-                {summary.map(item => (
-                    <div
-                        key={item.label}
-                        className="rounded-lg bg-surface-container-low/85 border border-white/[0.05] p-4"
-                    >
-                        <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant mb-2">
-                            {item.label}
-                        </div>
-                        <div className="font-mono text-code-sm text-on-surface">
-                            {item.value}
-                        </div>
-                    </div>
-                ))}
-            </div>
         </div>
     );
 }
