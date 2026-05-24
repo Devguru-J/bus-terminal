@@ -105,8 +105,8 @@ export function Sidebar() {
 
     return (
         <>
-            {/* Desktop static */}
-            <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-white/[0.05] bg-surface-container-lowest/80">
+            {/* Desktop static — viewport에 sticky 고정해 footer 항상 보이게 */}
+            <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-white/[0.05] bg-surface-container-lowest/80 sticky top-0 self-start h-[100dvh]">
                 <SidebarContents />
             </aside>
 
