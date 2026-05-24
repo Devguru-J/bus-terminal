@@ -9,13 +9,17 @@ interface Props {
     summary: Array<{label: string; value: string}>;
     onDownload?: () => void;
     onReturn?: () => void;
+    /** 다운로드 버튼의 라벨 (선택 카운트 표시 등) */
+    downloadLabel?: string;
+    /** 다운로드 비활성화 (선택 0개일 때 등) */
+    downloadDisabled?: boolean;
 }
 
 /**
  * Showcase FIDS panel: a bus icon drives across the dotted grid, then
  * settles into a "departed" state with status text.
  */
-export function DepartureComplete({summary, onDownload, onReturn}: Props) {
+export function DepartureComplete({summary, onDownload, onReturn, downloadLabel, downloadDisabled}: Props) {
     const reduced = useReducedMotion();
     const [arrived, setArrived] = useState(false);
 
@@ -97,9 +101,9 @@ export function DepartureComplete({summary, onDownload, onReturn}: Props) {
                     설정 파일을 다운로드할 준비가 끝났어요.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <Button size="lg" onClick={onDownload}>
+                    <Button size="lg" onClick={onDownload} disabled={downloadDisabled}>
                         <Icon name="download" className="text-[16px]" />
-                        설정 파일 다운로드
+                        {downloadLabel ?? "설정 파일 다운로드"}
                     </Button>
                     <Button size="lg" variant="outline" onClick={onReturn}>
                         <Icon name="terminal" className="text-[16px]" />
