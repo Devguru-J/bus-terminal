@@ -528,3 +528,56 @@
 - 모바일 사이드바 Drawer
 - Undo 토스트
 
+
+
+---
+
+## 2026-05-25 — 출시 전 안전화 패스 (Codex 분석 기반)
+
+harm 기준 우선순위로 8단계 진행.
+
+### 1. Export UX 안전화
+- 미수정 fallback "전체 체크" 제거 — 손도 안 댄 12개 설정 파일이 받아지던 결함 차단
+- 아무것도 수정 안 한 상태에서는 빈 상태 화면 + 승강장 진입 링크
+- 설치 스크립트는 별도 `<details>` 안에 — `--dry-run`/백업/`--only` 가이드 명시
+- 플랫폼 카드에 초보자용 한 줄 설명(blurb) 추가
+- `src/lib/exportSelection.ts` 순수 함수로 추출 + 7개 테스트
+
+### 2. Install script escaping 테스트
+- `shellSingleQuoteEscape` + `buildInstallScript` 모듈 분리
+- 백슬래시·작은따옴표·줄바꿈·CR·악성 입력에 대한 15개 테스트
+- 위험 경계 — 사용자 입력이 `$'...'`를 빠져나가지 않는지 회귀 방어
+
+### 3. 가짜·장식성 요소 제거
+- `dlacrity` 오타 → `alacritty`
+- `폐차` → `삭제` (전 영역)
+- MyRoutes의 가짜 `System Activity` / `BT-9991 manifest hashed` 블록 제거
+- 푸터 `<span>` 장식 텍스트(API Status) 제거, Privacy/Terms는 실제 페이지 링크
+- Sidebar `STATION 01 / Configuring Local Terminal` → `BusTerminal / 내 개발환경 설정`
+- 항상 켜진 가짜 `System Online` LED 제거
+- 차고 보관/환승하기/출발권 만들기 버튼에 title 속성 — 메타포 라벨의 실제 의미 노출
+- 테마/폰트 환승센터의 "전체 송출" → "모든 도구에 적용" / "이 도구에 적용"
+
+### 4. ErrorBoundary
+- `src/components/shell/ErrorBoundary.tsx` 추가
+- 한 페이지 크래시가 전체 화이트 스크린으로 번지지 않게 보호
+- 친절한 복구 UI (새로고침 / 홈으로 / 다시 시도) + DEV 모드에서만 스택 노출
+
+### 5. Privacy / Terms / 푸터 / _headers / sitemap
+- `/privacy` — 서버 없음·localStorage·외부 전송 없음·제3자 서비스·삭제 권한
+- `/terms` — 적용 책임·백업 안내·설치 스크립트 가이드·면책 범위
+- 푸터에서 실제 페이지 링크 + GitHub
+- `public/_headers` — Cloudflare Pages용 보안 헤더 (X-Frame-Options/CSP/Referrer-Policy 등)
+- `public/sitemap.xml`에 /guide /privacy /terms /themes/compare /fonts/pairings 반영
+
+### 6. 추가 테스트 도입
+- `share.ts` round-trip — ASCII/한글/이모지/JSON/URL-safe/buildShareUrl
+- `parse.ts` Ghostty serialize/parse — 기본값 안정성·미인식 줄 보존·keybind/palette 분리
+- `importers.ts` — 5개 플랫폼(tmux/zsh/helix/nvim/warp) lossy 파서 회귀 방어
+- 총 57개 테스트 (5 test files)
+
+### 7. 페이지별 "할 일" 카드
+- 초보자 완주 경로의 3개 페이지에만 적용: Ghostty / Themes / Export
+- 첫 방문 자동 펼침 → 닫으면 localStorage 플래그로 유지
+- 닫혀도 우상단 작은 칩으로 언제든 다시 열 수 있음
+
