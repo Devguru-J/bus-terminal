@@ -19,6 +19,21 @@ body,
 body {
     @apply bg-background text-on-background font-body antialiased;
     font-feature-settings: "ss01", "ss02";
+    /* 한국어 단어 중간 줄바꿈 방지 (어절 단위로만 줄바꿈) */
+    word-break: keep-all;
+    /* 그래도 영문 config key·URL이 컨테이너를 넘치면 어느 지점에서든 잘림 허용 */
+    overflow-wrap: break-word;
+}
+
+/* 모노스페이스(코드/터미널/파일명) 영역은 영문 키 가독성 우선 — 어디서든 잘림 + 어절 분리 안 함 */
+code,
+pre,
+kbd,
+samp,
+.font-mono,
+[class*="font-mono"] {
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 h1,

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c0e10"/>
+      <stop offset="100%" stop-color="#131313"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00e55b" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#4cd6ff" stop-opacity="0.06"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <g transform="translate(80, 80)">
+    <rect width="40" height="40" rx="6" fill="#00e55b" fill-opacity="0.15" stroke="#00e55b" stroke-opacity="0.45"/>
+    <text x="20" y="28" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="20" font-weight="700" fill="#00e55b">❯</text>
+  </g>
+  <text x="140" y="112" font-family="Geist, sans-serif" font-size="22" font-weight="600" fill="#00e55b" letter-spacing="6">STATION 01 · ONLINE</text>
+
+  <text x="80" y="280" font-family="Geist, sans-serif" font-size="108" font-weight="800" fill="#f3f3f3">BUS TERMINAL</text>
+  <text x="80" y="350" font-family="Geist, sans-serif" font-size="40" font-weight="500" fill="#c9c9c9">내 개발환경으로 출발</text>
+
+  <g transform="translate(80, 430)" font-family="JetBrains Mono, monospace" font-size="20" fill="#999">
+    <text>Ghostty   ·   Warp   ·   iTerm2   ·   Neovim   ·   Helix   ·   Zsh   ·   tmux</text>
+    <text y="38" fill="#666" font-size="18">26 themes  ·  26 fonts  ·  cross-platform one-click broadcast</text>
+  </g>
+
+  <text x="1120" y="600" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="16" fill="#444" letter-spacing="2">bus-terminal.pages.dev</text>
+</svg>
