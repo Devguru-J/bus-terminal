@@ -1,13 +1,20 @@
-import {NavLink, useNavigate} from "react-router-dom";
+import {useEffect} from "react";
+import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import {AnimatePresence, motion} from "framer-motion";
 import {Icon} from "@/components/ui/Icon";
 import {PlatformNavItem} from "./PlatformNavItem";
 import {Button} from "@/components/ui/Button";
 import {StatusDot} from "@/components/ui/Badge";
+import {useUIStore} from "@/stores/uiStore";
 
-export function Sidebar() {
+function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
     const navigate = useNavigate();
+    function go(path: string) {
+        navigate(path);
+        onNavigate?.();
+    }
     return (
-        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-white/[0.05] bg-surface-container-lowest/80">
+        <>
             {/* Station Identity */}
             <div className="px-4 py-5 border-b border-white/[0.05]">
                 <div className="flex items-start gap-3">
@@ -23,11 +30,7 @@ export function Sidebar() {
                         </p>
                     </div>
                 </div>
-                <Button
-                    size="sm"
-                    className="w-full mt-4"
-                    onClick={() => navigate("/ghostty")}
-                >
+                <Button size="sm" className="w-full mt-4" onClick={() => go("/ghostty")}>
                     <Icon name="add" className="text-[16px]" />
                     New Route
                 </Button>
@@ -76,6 +79,78 @@ export function Sidebar() {
                     </span>
                 </div>
             </div>
-        </aside>
+        </>
+    );
+}
+
+export function Sidebar() {
+    const drawerOpen = useUIStore(s => s.drawerOpen);
+    const setDrawerOpen = useUIStore(s => s.setDrawerOpen);
+    const location = useLocation();
+
+    // 라우트 변경 시 모바일 drawer 자동 닫기
+    useEffect(() => {
+        setDrawerOpen(false);
+    }, [location.pathname, setDrawerOpen]);
+
+    // Esc로도 닫기
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            if (e.key === "Escape") setDrawerOpen(false);
+        }
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [setDrawerOpen]);
+
+    return (
+        <>
+            {/* Desktop static */}
+            <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-white/[0.05] bg-surface-container-lowest/80">
+                <SidebarContents />
+            </aside>
+
+            {/* Mobile drawer */}
+            <AnimatePresence>
+                {drawerOpen && (
+                    <>
+                        <motion.div
+                            key="overlay"
+                            initial={{opacity: 0}}
+                            animate={{opacity: 1}}
+                            exit={{opacity: 0}}
+                            onClick={() => setDrawerOpen(false)}
+                            className="lg:hidden fixed inset-0 z-40 bg-black/60"
+                            aria-hidden
+                        />
+                        <motion.aside
+                            key="drawer"
+                            initial={{x: "-100%"}}
+                            animate={{x: 0}}
+                            exit={{x: "-100%"}}
+                            transition={{type: "spring", stiffness: 380, damping: 38}}
+                            className="lg:hidden fixed top-0 left-0 z-50 h-[100dvh] w-[280px] flex flex-col border-r border-white/[0.06] bg-surface-container-lowest"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="네비게이션"
+                        >
+                            <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.05]">
+                                <span className="font-mono text-label-xs uppercase tracking-[0.16em] text-primary-fixed-dim px-2">
+                                    BusTerminal
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setDrawerOpen(false)}
+                                    className="p-2 rounded hover:bg-white/[0.04] text-on-surface-variant"
+                                    aria-label="닫기"
+                                >
+                                    <Icon name="close" className="text-[18px]" />
+                                </button>
+                            </div>
+                            <SidebarContents />
+                        </motion.aside>
+                    </>
+                )}
+            </AnimatePresence>
+        </>
     );
 }

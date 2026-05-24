@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {Icon} from "@/components/ui/Icon";
+import {useUIStore} from "@/stores/uiStore";
 
 function utcStamp(d = new Date()): string {
     const pad = (n: number) => String(n).padStart(2, "0");
@@ -14,13 +15,23 @@ export function TopBar() {
         return () => clearInterval(i);
     }, []);
     return (
-        <header className="sticky top-0 z-30 h-14 flex items-center justify-between px-6 border-b border-white/[0.06] bg-surface/60 backdrop-blur-md">
-            <Link
-                to="/"
-                className="font-display text-[15px] font-semibold tracking-[0.32em] text-primary-fixed-dim uppercase"
-            >
-                BusTerminal
-            </Link>
+        <header className="sticky top-0 z-30 h-14 flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.06] bg-surface/60 backdrop-blur-md">
+            <div className="flex items-center gap-2">
+                <button
+                    type="button"
+                    onClick={useUIStore.getState().toggleDrawer}
+                    className="lg:hidden p-2 -ml-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-white/[0.04] transition"
+                    aria-label="메뉴 열기"
+                >
+                    <Icon name="menu" className="text-[20px]" />
+                </button>
+                <Link
+                    to="/"
+                    className="font-display text-[15px] font-semibold tracking-[0.32em] text-primary-fixed-dim uppercase"
+                >
+                    BusTerminal
+                </Link>
+            </div>
             <div className="flex items-center gap-5">
                 <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hidden sm:inline">
                     {t}

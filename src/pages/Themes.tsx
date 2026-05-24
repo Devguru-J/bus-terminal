@@ -16,7 +16,7 @@ import {useWarpStore} from "@/stores/warpStore";
 import {useFavoritesStore} from "@/stores/favoritesStore";
 import {NVIM_COLORSCHEMES, type NvimColorscheme} from "@/data/neovim";
 import {HELIX_THEMES, type HelixTheme} from "@/data/helix";
-import {toast} from "@/stores/toastStore";
+import {toast, toastWithUndo} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
 
 type Target = "all" | "ghostty" | "warp" | "iterm2" | "neovim" | "helix" | "tmux";
@@ -169,10 +169,39 @@ export function ThemesPage() {
     function broadcast() {
         const t = activeTheme;
         switch (target) {
-            case "all":
+            case "all": {
+                // 적용 전 스냅샷 — 되돌리기에 사용
+                const snapshot = {
+                    ghostty: {
+                        config: {...useGhosttyStore.getState().config},
+                        palette: useGhosttyStore.getState().palette.slice()
+                    },
+                    iterm2: {...useIterm2Store.getState().profile, ansi: useIterm2Store.getState().profile.ansi.slice()},
+                    warp: JSON.parse(JSON.stringify(useWarpStore.getState().config)),
+                    tmux: {...useTmuxStore.getState().config},
+                    nvim: useNeovimStore.getState().config.colorscheme,
+                    helix: useHelixStore.getState().config.theme
+                };
                 applyToAll(t);
-                toast(`6개 승강장에 "${t.ko}" 노선을 환승 송출했어요.`, "success");
+                toastWithUndo(
+                    `6개 승강장에 "${t.ko}" 노선을 환승 송출했어요.`,
+                    () => {
+                        // 전체 복원
+                        useGhosttyStore.setState(s => ({
+                            ...s,
+                            config: snapshot.ghostty.config,
+                            palette: snapshot.ghostty.palette
+                        }));
+                        useIterm2Store.setState(s => ({...s, profile: snapshot.iterm2}));
+                        useWarpStore.setState(s => ({...s, config: snapshot.warp}));
+                        useTmuxStore.setState(s => ({...s, config: snapshot.tmux}));
+                        setNvimField("colorscheme", snapshot.nvim);
+                        setHelixField("theme", snapshot.helix);
+                        toast("전체 송출을 되돌렸어요.", "info");
+                    }
+                );
                 return;
+            }
             case "ghostty":
                 applyGhostty(t);
                 break;
