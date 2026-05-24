@@ -22,6 +22,8 @@ const DiffPage = lazy(() => import("@/pages/Diff").then(m => ({default: m.DiffPa
 const ExportPage = lazy(() => import("@/pages/Export").then(m => ({default: m.ExportPage})));
 const ThemeDetailPage = lazy(() => import("@/pages/ThemeDetail").then(m => ({default: m.ThemeDetailPage})));
 const FontDetailPage = lazy(() => import("@/pages/FontDetail").then(m => ({default: m.FontDetailPage})));
+const ThemeComparePage = lazy(() => import("@/pages/ThemeCompare").then(m => ({default: m.ThemeComparePage})));
+const FontPairingsPage = lazy(() => import("@/pages/FontPairings").then(m => ({default: m.FontPairingsPage})));
 
 function PageFallback() {
     return (
@@ -53,8 +55,10 @@ export default function App() {
                         <Route path="/iterm2" element={<Iterm2Page />} />
                         <Route path="/warp" element={<WarpPage />} />
                         <Route path="/themes" element={<ThemesPage />} />
+                        <Route path="/themes/compare" element={<ThemeComparePage />} />
                         <Route path="/themes/:id" element={<ThemeDetailPage />} />
                         <Route path="/fonts" element={<FontsPage />} />
+                        <Route path="/fonts/pairings" element={<FontPairingsPage />} />
                         <Route path="/fonts/:id" element={<FontDetailPage />} />
                         <Route path="/my-routes" element={<MyRoutesPage />} />
                         <Route path="/diff" element={<DiffPage />} />

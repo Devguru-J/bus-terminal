@@ -17,7 +17,7 @@ import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useIterm2Store} from "@/stores/iterm2Store";
 import {useWarpStore} from "@/stores/warpStore";
 import {useFavoritesStore} from "@/stores/favoritesStore";
-import {toast} from "@/stores/toastStore";
+import {toast, toastWithUndo} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
 
 type FontTarget = "all" | "ghostty" | "iterm2" | "warp";
@@ -88,16 +88,35 @@ export function FontsPage() {
     const selected = fonts.find(f => f.id === selectedId) ?? fonts[0];
 
     function apply(font: FontEntry) {
+        // 변경 전 스냅샷 (Undo용)
+        const snap = {
+            ghosttyFamily: useGhosttyStore.getState().config["font-family"],
+            ghosttySize: useGhosttyStore.getState().config["font-size"],
+            itermFamily: useIterm2Store.getState().profile.fontFamily,
+            itermSize: useIterm2Store.getState().profile.fontSize,
+            warpFamily: useWarpStore.getState().config.appearance.fontFamily,
+            warpSize: useWarpStore.getState().config.appearance.fontSize
+        };
+        const restore = () => {
+            setGhosttyField("font-family", snap.ghosttyFamily as string);
+            setGhosttyField("font-size", snap.ghosttySize as number);
+            setIterm2Field("fontFamily", snap.itermFamily);
+            setIterm2Field("fontSize", snap.itermSize);
+            setWarpAppearance("fontFamily", snap.warpFamily);
+            setWarpAppearance("fontSize", snap.warpSize);
+        };
+
         switch (target) {
             case "all":
                 setGhosttyField("font-family", font.name);
+                setGhosttyField("font-size", size);
                 setIterm2Field("fontFamily", font.name);
                 setIterm2Field("fontSize", size);
                 setWarpAppearance("fontFamily", font.name);
                 setWarpAppearance("fontSize", size);
-                toast(
+                toastWithUndo(
                     `3개 승강장에 "${font.name}" ${size}pt를 송출했어요.`,
-                    "success"
+                    restore
                 );
                 return;
             case "ghostty":
@@ -114,9 +133,9 @@ export function FontsPage() {
                 break;
         }
         const targetMeta = TARGETS.find(x => x.id === target);
-        toast(
+        toastWithUndo(
             `${targetMeta?.label} 폰트를 "${font.name}" ${size}pt로 환승했어요.`,
-            "success"
+            restore
         );
         if (targetMeta?.route) {
             setTimeout(() => navigate(targetMeta.route!), 350);
@@ -130,14 +149,24 @@ export function FontsPage() {
                 eyebrow="노선 타이포그래피 (FONT)"
                 subtitle={`${fonts.length}개 폰트 운행중. Ghostty · iTerm2 · Warp에 한 번에 환승. 자체 설치가 필요한 폰트는 카드에 안내됩니다.`}
                 actions={
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate("/themes")}
-                    >
-                        <Icon name="palette" className="text-[14px]" />
-                        테마 환승센터
-                    </Button>
+                    <>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate("/fonts/pairings")}
+                        >
+                            <Icon name="auto_awesome" className="text-[14px]" />
+                            폰트 페어링
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate("/themes")}
+                        >
+                            <Icon name="palette" className="text-[14px]" />
+                            테마 환승센터
+                        </Button>
+                    </>
                 }
             />
 

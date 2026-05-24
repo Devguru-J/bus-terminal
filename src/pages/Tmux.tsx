@@ -19,7 +19,7 @@ import {Badge} from "@/components/ui/Badge";
 import {tmuxDefaultKeyBindings, tmuxPlugins, type TmuxKeyBinding} from "@/data/tmux";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useRoutesStore} from "@/stores/routesStore";
-import {toast} from "@/stores/toastStore";
+import {toast, toastWithUndo} from "@/stores/toastStore";
 import {ImportWizard} from "@/components/platform/ImportWizard";
 import {importTmuxConf} from "@/lib/importers";
 import {cn} from "@/lib/utils";
@@ -414,10 +414,14 @@ export function TmuxPage() {
                 hint="기존 ~/.tmux.conf를 흡수해 현재 설정에 덮어씁니다. set/setw/bind 줄을 인식합니다."
                 parse={importTmuxConf}
                 onApply={(r) => {
+                    const before = {...useTmuxStore.getState().config};
                     for (const [k, v] of Object.entries(r.value)) {
                         setField(k as never, v as never);
                     }
-                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                    toastWithUndo(
+                        `${r.applied}개 키를 환승했어요.`,
+                        () => useTmuxStore.setState({config: before as never})
+                    );
                 }}
             />
         </div>

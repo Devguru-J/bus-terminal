@@ -10,6 +10,25 @@ html {
     scroll-behavior: smooth;
 }
 
+/* 모션 감도 — Lighthouse a11y + 사용자 환경 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* 키보드 포커스 가시성 강화 (마우스 클릭 시는 노출 안 함) */
+:focus-visible {
+    outline: 2px solid rgb(0 229 91 / 0.7);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 html,
 body,
 #root {

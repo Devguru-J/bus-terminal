@@ -24,7 +24,7 @@ import {
 } from "@/data/helix";
 import {useHelixStore} from "@/stores/helixStore";
 import {useRoutesStore} from "@/stores/routesStore";
-import {toast} from "@/stores/toastStore";
+import {toast, toastWithUndo} from "@/stores/toastStore";
 import {ImportWizard} from "@/components/platform/ImportWizard";
 import {importHelixToml} from "@/lib/importers";
 import {cn} from "@/lib/utils";
@@ -496,10 +496,14 @@ export function HelixPage() {
                 hint="[editor] / [editor.cursor-shape] / [editor.lsp] / [editor.statusline] 섹션을 흡수합니다."
                 parse={importHelixToml}
                 onApply={(r) => {
+                    const before = {...useHelixStore.getState().config};
                     for (const [k, v] of Object.entries(r.value)) {
                         setField(k as never, v as never);
                     }
-                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                    toastWithUndo(
+                        `${r.applied}개 키를 환승했어요.`,
+                        () => useHelixStore.setState({config: before as never})
+                    );
                 }}
             />
         </div>

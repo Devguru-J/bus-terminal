@@ -11,7 +11,7 @@ import {Badge, StatusDot} from "@/components/ui/Badge";
 import {ZSH_PROMPTS, zshPlugins, type ZshPromptId} from "@/data/zsh";
 import {useZshStore} from "@/stores/zshStore";
 import {useRoutesStore} from "@/stores/routesStore";
-import {toast} from "@/stores/toastStore";
+import {toast, toastWithUndo} from "@/stores/toastStore";
 import {ImportWizard} from "@/components/platform/ImportWizard";
 import {importZshrc} from "@/lib/importers";
 import {cn} from "@/lib/utils";
@@ -347,10 +347,14 @@ export function ZshPage() {
                 hint="ZSH_THEME, plugins=(...), alias, export, HISTSIZE/HISTFILE를 자동 흡수합니다."
                 parse={importZshrc}
                 onApply={(r) => {
+                    const before = {...useZshStore.getState().config};
                     for (const [k, v] of Object.entries(r.value)) {
                         setField(k as never, v as never);
                     }
-                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                    toastWithUndo(
+                        `${r.applied}개 키를 환승했어요.`,
+                        () => useZshStore.setState({config: before as never})
+                    );
                 }}
             />
         </div>

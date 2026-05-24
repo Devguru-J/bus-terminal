@@ -14,7 +14,7 @@ import {
 } from "@/data/neovim";
 import {useNeovimStore} from "@/stores/neovimStore";
 import {useRoutesStore} from "@/stores/routesStore";
-import {toast} from "@/stores/toastStore";
+import {toast, toastWithUndo} from "@/stores/toastStore";
 import {ImportWizard} from "@/components/platform/ImportWizard";
 import {importNvimInit} from "@/lib/importers";
 import {cn} from "@/lib/utils";
@@ -422,10 +422,14 @@ export function NeovimPage() {
                 hint="vim.opt.* / vim.g.* / colorscheme / lazy.nvim 플러그인 목록을 흡수합니다. (best-effort, lossy)"
                 parse={importNvimInit}
                 onApply={(r) => {
+                    const before = {...useNeovimStore.getState().config};
                     for (const [k, v] of Object.entries(r.value)) {
                         setField(k as never, v as never);
                     }
-                    toast(`${r.applied}개 키를 환승했어요.`, "success");
+                    toastWithUndo(
+                        `${r.applied}개 키를 환승했어요.`,
+                        () => useNeovimStore.setState({config: before as never})
+                    );
                 }}
             />
         </div>

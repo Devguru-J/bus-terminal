@@ -33,6 +33,8 @@ export function CommandPalette() {
             {id: "tmux", title: "tmux 승강장", subtitle: "세션, pane, key binding 설정", icon: "grid_view", keywords: "tmux multiplexer pane session key binding 키바인딩", run: () => navigate("/tmux")},
             {id: "themes", title: "테마 환승센터", subtitle: "26개 테마 검색·즐겨찾기·전체 송출", icon: "palette", keywords: "theme color palette tokyonight catppuccin gruvbox nord dracula", run: () => navigate("/themes")},
             {id: "fonts", title: "폰트 환승센터", subtitle: "26개 폰트 미리보기·환승", icon: "text_fields", keywords: "font typography jetbrains fira geist berkeley iosevka", run: () => navigate("/fonts")},
+            {id: "themes-compare", title: "테마 비교", subtitle: "두 테마 side-by-side + 색차", icon: "compare_arrows", keywords: "compare theme side by side diff", run: () => navigate("/themes/compare")},
+            {id: "fonts-pairings", title: "폰트 페어링", subtitle: "mono + sans 큐레이션", icon: "auto_awesome", keywords: "font pairing combo mono sans", run: () => navigate("/fonts/pairings")},
             {id: "routes", title: "Saved Routes", subtitle: "내 노선 관리", icon: "bookmark", keywords: "saved routes garage 저장 차고", run: () => navigate("/my-routes")},
             {id: "diff", title: "Departure Logs", subtitle: "설정 변경 비교", icon: "difference", keywords: "diff compare logs 변경 비교", run: () => navigate("/diff")},
             {id: "export", title: "Export / 출발 전 점검", subtitle: "설정 다운로드와 진단", icon: "rocket_launch", keywords: "export download diagnostics 출발 점검", run: () => navigate("/export")},

@@ -256,6 +256,14 @@ export function ThemesPage() {
                         <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => navigate("/themes/compare")}
+                        >
+                            <Icon name="compare_arrows" className="text-[14px]" />
+                            테마 비교
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => setImportOpen(true)}
                         >
                             <Icon name="file_upload" className="text-[14px]" />
