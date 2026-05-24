@@ -23,7 +23,8 @@ export function CommandPalette() {
 
     const commands = useMemo<CommandItem[]>(
         () => [
-            {id: "home", title: "Main Station", subtitle: "메인으로 이동", icon: "home", keywords: "home main station 메인", run: () => navigate("/")},
+            {id: "home", title: "홈", subtitle: "메인으로 이동", icon: "home", keywords: "home main station 메인 홈", run: () => navigate("/")},
+            {id: "guide", title: "처음이라면 — 사용 안내", subtitle: "5분짜리 사용 설명서", icon: "help", keywords: "guide help onboarding tutorial 안내 가이드 도움말", run: () => navigate("/guide")},
             {id: "ghostty", title: "Ghostty 승강장", subtitle: "터미널 에뮬레이터 설정", icon: "terminal", keywords: "ghostty terminal font theme keybind 고스티", run: () => navigate("/ghostty")},
             {id: "warp", title: "Warp 승강장", subtitle: "AI 터미널, 테마, 워크플로우", icon: "bolt", keywords: "warp ai terminal theme workflow", run: () => navigate("/warp")},
             {id: "iterm2", title: "iTerm2 승강장", subtitle: "macOS 터미널, .itermcolors, 핫키", icon: "terminal", keywords: "iterm iterm2 macos colors profile hotkey", run: () => navigate("/iterm2")},
@@ -35,8 +36,8 @@ export function CommandPalette() {
             {id: "fonts", title: "폰트 환승센터", subtitle: "26개 폰트 미리보기·환승", icon: "text_fields", keywords: "font typography jetbrains fira geist berkeley iosevka", run: () => navigate("/fonts")},
             {id: "themes-compare", title: "테마 비교", subtitle: "두 테마 side-by-side + 색차", icon: "compare_arrows", keywords: "compare theme side by side diff", run: () => navigate("/themes/compare")},
             {id: "fonts-pairings", title: "폰트 페어링", subtitle: "mono + sans 큐레이션", icon: "auto_awesome", keywords: "font pairing combo mono sans", run: () => navigate("/fonts/pairings")},
-            {id: "routes", title: "Saved Routes", subtitle: "내 노선 관리", icon: "bookmark", keywords: "saved routes garage 저장 차고", run: () => navigate("/my-routes")},
-            {id: "diff", title: "Departure Logs", subtitle: "설정 변경 비교", icon: "difference", keywords: "diff compare logs 변경 비교", run: () => navigate("/diff")},
+            {id: "routes", title: "내 노선", subtitle: "저장한 설정 관리", icon: "bookmark", keywords: "saved routes garage 저장 차고 내 노선", run: () => navigate("/my-routes")},
+            {id: "diff", title: "설정 비교", subtitle: "현재 설정과 기본값/저장된 노선 비교", icon: "difference", keywords: "diff compare logs 변경 비교 설정 비교", run: () => navigate("/diff")},
             {id: "export", title: "Export / 출발 전 점검", subtitle: "설정 다운로드와 진단", icon: "rocket_launch", keywords: "export download diagnostics 출발 점검", run: () => navigate("/export")},
             {id: "settings", title: "Settings", subtitle: "저장소와 초기화 관리", icon: "settings", keywords: "settings reset storage 설정 초기화", run: () => navigate("/settings")},
             {

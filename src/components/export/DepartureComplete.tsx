@@ -35,7 +35,7 @@ export function DepartureComplete({summary, onDownload, onReturn}: Props) {
             <div className="space-y-3">
                 <DepartureStatus label={arrived ? "STATUS: DEPARTED" : "STATUS: READY TO DEPART"} />
                 <h1 className="font-display text-display-lg text-on-surface tracking-tight animate-flicker fids-glow">
-                    출발 완료
+                    출발권 준비 완료
                 </h1>
                 <h2 className="font-display text-headline-sm text-primary-fixed-dim tracking-[0.32em] opacity-90">
                     SUCCESS
@@ -94,16 +94,16 @@ export function DepartureComplete({summary, onDownload, onReturn}: Props) {
             {/* Message + actions */}
             <div className="space-y-6 flex flex-col items-center">
                 <p className="text-body-md text-on-surface-variant max-w-md">
-                    모든 설정이 완료되었습니다. 안전한 코딩 여행 되세요!
+                    설정 파일을 다운로드할 준비가 끝났어요.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <Button size="lg" onClick={onDownload}>
                         <Icon name="download" className="text-[16px]" />
-                        출발하기 (Download Config)
+                        설정 파일 다운로드
                     </Button>
                     <Button size="lg" variant="outline" onClick={onReturn}>
                         <Icon name="terminal" className="text-[16px]" />
-                        Return to Terminal
+                        설정 화면으로 돌아가기
                     </Button>
                 </div>
             </div>

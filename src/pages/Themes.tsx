@@ -250,7 +250,7 @@ export function ThemesPage() {
             <StationHeader
                 title="테마 환승센터"
                 eyebrow="노선 스타일 (THEME)"
-                subtitle={`${themes.length}개 노선 운행중. 6개 승강장(Ghostty · Warp · iTerm2 · Neovim · Helix · tmux)에 한 번에 환승 송출.`}
+                subtitle={`${themes.length}개 테마 운행중. 한 번 고르면 6개 도구(Ghostty · Warp · iTerm2 · Neovim · Helix · tmux)에 한 번에 적용돼요.`}
                 actions={
                     <>
                         <Button

@@ -62,12 +62,82 @@ export function HomePage() {
                             <Link to="/themes">
                                 <Button size="lg" variant="outline">
                                     <Icon name="palette" className="text-[16px]" />
-                                    노선 둘러보기
+                                    테마 둘러보기
                                 </Button>
                             </Link>
                         </MagneticButton>
                     </div>
                 </div>
+            </section>
+
+            {/* 처음이라면 — 3-step 가이드 */}
+            <section className="rounded-xl border border-primary-fixed-dim/20 bg-primary-fixed-dim/[0.04] p-5">
+                <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+                    <div>
+                        <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-primary-fixed-dim">
+                            Onboarding
+                        </div>
+                        <h2 className="font-display text-title-md text-on-surface mt-1">
+                            처음이라면 이렇게 시작하세요
+                        </h2>
+                    </div>
+                    <Link
+                        to="/guide"
+                        className="font-mono text-label-xs uppercase tracking-[0.14em] text-primary-fixed-dim hover:underline inline-flex items-center gap-1"
+                    >
+                        사용 안내 전체 보기
+                        <Icon name="arrow_forward" className="text-[14px]" />
+                    </Link>
+                </div>
+                <ol className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {[
+                        {
+                            n: 1,
+                            title: "기본 터미널 설정",
+                            desc: "Ghostty 승강장에서 폰트·색·창 패딩을 잡아요.",
+                            to: "/ghostty",
+                            cta: "Ghostty로"
+                        },
+                        {
+                            n: 2,
+                            title: "테마·폰트 취향 적용",
+                            desc: "테마/폰트 센터에서 취향을 입혀요.",
+                            to: "/themes",
+                            cta: "테마 센터"
+                        },
+                        {
+                            n: 3,
+                            title: "설정 파일 다운로드",
+                            desc: "출발권 만들기에서 파일로 받아 가요.",
+                            to: "/export",
+                            cta: "출발권 만들기"
+                        }
+                    ].map(step => (
+                        <li
+                            key={step.n}
+                            className="rounded-lg border border-white/[0.06] bg-surface-container-lowest/80 p-4"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="h-6 w-6 rounded-full bg-primary-fixed-dim/15 border border-primary-fixed-dim/40 grid place-items-center font-mono text-[11px] text-primary-fixed-dim">
+                                    {step.n}
+                                </span>
+                                <span className="font-display text-title-md text-on-surface">
+                                    {step.title}
+                                </span>
+                            </div>
+                            <p className="text-[12px] text-on-surface-variant mb-2">
+                                {step.desc}
+                            </p>
+                            <Link
+                                to={step.to}
+                                className="inline-flex items-center gap-1 font-mono text-label-xs uppercase tracking-[0.14em] text-primary-fixed-dim hover:underline"
+                            >
+                                {step.cta}
+                                <Icon name="arrow_forward" className="text-[14px]" />
+                            </Link>
+                        </li>
+                    ))}
+                </ol>
             </section>
 
             <section>
@@ -84,7 +154,7 @@ export function HomePage() {
                         to="/my-routes"
                         className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant hover:text-primary-fixed-dim transition inline-flex items-center gap-1"
                     >
-                        Saved Routes ({routes.length})
+                        내 노선 ({routes.length})
                         <Icon name="arrow_forward" className="text-[14px]" />
                     </Link>
                 </div>

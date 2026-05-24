@@ -62,7 +62,7 @@ export function MyRoutesPage() {
             <StationHeader
                 title="내 노선"
                 eyebrow={`Saved · ${filtered.length}/${routes.length} Stored`}
-                subtitle="Stored developer environment configurations ready for deployment. Select a route to initiate the local terminal setup sequence."
+                subtitle="저장해 둔 개발환경 설정입니다. 다시 적용하거나 파일로 다운로드할 수 있어요."
                 actions={
                     <Badge tone="active">
                         <Icon name="garage" className="text-[14px]" />

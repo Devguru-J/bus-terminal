@@ -24,6 +24,7 @@ const ThemeDetailPage = lazy(() => import("@/pages/ThemeDetail").then(m => ({def
 const FontDetailPage = lazy(() => import("@/pages/FontDetail").then(m => ({default: m.FontDetailPage})));
 const ThemeComparePage = lazy(() => import("@/pages/ThemeCompare").then(m => ({default: m.ThemeComparePage})));
 const FontPairingsPage = lazy(() => import("@/pages/FontPairings").then(m => ({default: m.FontPairingsPage})));
+const GuidePage = lazy(() => import("@/pages/Guide").then(m => ({default: m.GuidePage})));
 
 function PageFallback() {
     return (
@@ -47,6 +48,7 @@ export default function App() {
                 <Suspense fallback={<PageFallback />}>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
+                        <Route path="/guide" element={<GuidePage />} />
                         <Route path="/ghostty" element={<GhosttyPage />} />
                         <Route path="/tmux" element={<TmuxPage />} />
                         <Route path="/neovim" element={<NeovimPage />} />

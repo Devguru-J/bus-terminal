@@ -32,7 +32,7 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                 </div>
                 <Button size="sm" className="w-full mt-4" onClick={() => go("/ghostty")}>
                     <Icon name="add" className="text-[16px]" />
-                    New Route
+                    새 설정 만들기
                 </Button>
             </div>
 
@@ -41,7 +41,7 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                 <div className="px-5 mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant/60">
                     Terminal
                 </div>
-                <PlatformNavItem to="/" label="Main Station" icon="home" end />
+                <PlatformNavItem to="/" label="홈" icon="home" end />
                 <div className="mt-4 px-5 mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant/60">
                     Platforms
                 </div>
@@ -52,13 +52,14 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                 <PlatformNavItem to="/helix" label="Platform 5: Helix" icon="edit_square" />
                 <PlatformNavItem to="/zsh" label="Platform 6: Zsh" icon="code_blocks" />
                 <PlatformNavItem to="/tmux" label="Platform 7: tmux" icon="grid_view" />
-                <PlatformNavItem to="/themes" label="Theme Center" icon="palette" />
-                <PlatformNavItem to="/fonts" label="Font Center" icon="text_fields" />
+                <PlatformNavItem to="/themes" label="테마 센터" icon="palette" />
+                <PlatformNavItem to="/fonts" label="폰트 센터" icon="text_fields" />
             </nav>
 
             {/* Footer rail */}
             <div className="px-2 py-3 border-t border-white/[0.05] flex flex-col gap-0.5">
-                <PlatformNavItem to="/my-routes" label="Saved Routes" icon="bookmark" />
+                <PlatformNavItem to="/guide" label="처음이라면" icon="help" />
+                <PlatformNavItem to="/my-routes" label="내 노선" icon="bookmark" />
                 <NavLink
                     to="/diff"
                     className={({isActive}) =>
@@ -69,7 +70,7 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                 >
                     <Icon name="difference" className="text-[18px]" />
                     <span className="font-mono text-label-xs uppercase tracking-[0.12em]">
-                        Departure Logs
+                        설정 비교
                     </span>
                 </NavLink>
                 <div className="mt-3 mx-3 flex items-center gap-2 px-2 py-2 rounded bg-white/[0.02] border border-white/[0.04]">

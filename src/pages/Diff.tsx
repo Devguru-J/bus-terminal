@@ -188,7 +188,7 @@ export function DiffPage() {
                             {changedOnly ? "Show Context" : "Changes Only"}
                         </Button>
                         <Button size="sm" onClick={() => navigate("/export")}>
-                            <Icon name="rocket_launch" className="text-[14px]" /> 출발 완료
+                            <Icon name="rocket_launch" className="text-[14px]" /> 출발권 만들기
                         </Button>
                     </>
                 }

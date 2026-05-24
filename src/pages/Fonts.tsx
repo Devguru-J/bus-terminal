@@ -147,7 +147,7 @@ export function FontsPage() {
             <StationHeader
                 title="폰트 환승센터"
                 eyebrow="노선 타이포그래피 (FONT)"
-                subtitle={`${fonts.length}개 폰트 운행중. Ghostty · iTerm2 · Warp에 한 번에 환승. 자체 설치가 필요한 폰트는 카드에 안내됩니다.`}
+                subtitle={`${fonts.length}개 폰트 운행중. Ghostty · iTerm2 · Warp에 한 번에 적용돼요. 자체 설치가 필요한 폰트는 카드에 안내됩니다.`}
                 actions={
                     <>
                         <Button

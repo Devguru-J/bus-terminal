@@ -92,7 +92,7 @@ export function WarpPage() {
                             <Icon name="bookmark_add" className="text-[16px]" /> 차고 보관
                         </Button>
                         <Button size="sm" onClick={() => navigate("/export")}>
-                            <Icon name="rocket_launch" className="text-[16px]" /> 출발 완료
+                            <Icon name="rocket_launch" className="text-[16px]" /> 출발권 만들기
                         </Button>
                     </>
                 }
