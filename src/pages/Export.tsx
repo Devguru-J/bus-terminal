@@ -1,9 +1,10 @@
 import {useMemo, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {DepartureComplete} from "@/components/export/DepartureComplete";
 import {Badge} from "@/components/ui/Badge";
 import {Icon} from "@/components/ui/Icon";
 import {Button} from "@/components/ui/Button";
+import {StationHeader} from "@/components/shell/StationHeader";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useNeovimStore} from "@/stores/neovimStore";
@@ -27,14 +28,25 @@ import {
 } from "@/lib/diagnostics";
 import {toast} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
+import {
+    computeInitialSelection,
+    countSelected,
+    selectAllPlatforms,
+    selectNoPlatforms,
+    type ExportPlatform
+} from "@/lib/exportSelection";
+import {buildInstallScript, shellSingleQuoteEscape} from "@/lib/installScript";
 
-type Platform = "ghostty" | "warp" | "iterm2" | "neovim" | "helix" | "zsh" | "tmux";
+type Platform = ExportPlatform;
 
 interface PlatformMeta {
     id: Platform;
     label: string;
     files: Array<{name: string; getter: () => string; optional?: boolean}>;
     targetPath: string;
+    /** 초보자용 한 줄 설명 */
+    blurb: string;
 }
 
 export function ExportPage() {
@@ -63,7 +75,6 @@ export function ExportPage() {
     const warpWorkflows = useWarpStore(s => s.exportWorkflows)();
     const warpSettings = useWarpStore(s => s.exportSettings)();
 
-    // ---- 수정 여부 감지 (config 객체 비교) ----
     const modified: Record<Platform, boolean> = useMemo(
         () => ({
             ghostty:
@@ -90,18 +101,19 @@ export function ExportPage() {
         ]
     );
 
-    // ---- 플랫폼별 메타데이터 (파일 목록, 라벨, 경로) ----
     const META: PlatformMeta[] = [
         {
             id: "ghostty",
             label: "Ghostty",
             targetPath: "~/.config/ghostty/config",
+            blurb: "Ghostty 터미널 앱의 폰트·색·창 패딩 등 외관 설정",
             files: [{name: "ghostty-config", getter: () => ghostty}]
         },
         {
             id: "warp",
             label: "Warp",
             targetPath: "~/.warp/themes/",
+            blurb: "Warp 터미널의 테마·워크플로우·AI 설정",
             files: [
                 {name: "warp-theme.yaml", getter: () => warpTheme},
                 {name: "warp-workflows.yaml", getter: () => warpWorkflows, optional: true},
@@ -111,7 +123,8 @@ export function ExportPage() {
         {
             id: "iterm2",
             label: "iTerm2",
-            targetPath: "~/Library/Application Support/iTerm2/DynamicProfiles/",
+            targetPath: "~/Library/Application Support/iTerm2/...",
+            blurb: "iTerm2 컬러 프리셋과 프로파일 (macOS 전용)",
             files: [
                 {name: "BusTerminal.itermcolors", getter: () => itermColors},
                 {name: "BusTerminal.profile.json", getter: () => itermProfileJson}
@@ -121,12 +134,14 @@ export function ExportPage() {
             id: "neovim",
             label: "Neovim",
             targetPath: "~/.config/nvim/init.lua",
+            blurb: "Neovim 옵션·플러그인·키맵을 담은 init.lua",
             files: [{name: "init.lua", getter: () => nvim}]
         },
         {
             id: "helix",
             label: "Helix",
             targetPath: "~/.config/helix/",
+            blurb: "Helix 에디터의 theme·statusline·LSP 설정",
             files: [
                 {name: "helix-config.toml", getter: () => helix},
                 {name: "helix-languages.toml", getter: () => helixLanguages, optional: true}
@@ -136,6 +151,7 @@ export function ExportPage() {
             id: "zsh",
             label: "Zsh",
             targetPath: "~/.zshrc",
+            blurb: "Zsh 프롬프트·alias·플러그인·환경변수",
             files: [
                 {name: ".zshrc", getter: () => zsh},
                 {name: "starship.toml", getter: () => starship, optional: true}
@@ -145,25 +161,16 @@ export function ExportPage() {
             id: "tmux",
             label: "tmux",
             targetPath: "~/.tmux.conf",
+            blurb: "tmux 상태바·키바인딩·플러그인",
             files: [{name: ".tmux.conf", getter: () => tmux}]
         }
     ];
 
-    // ---- 선택 상태: 수정된 것만 초기 체크. 모두 미수정이면 전체 체크. ----
-    const initialSelected = useMemo<Record<Platform, boolean>>(() => {
-        const anyModified = Object.values(modified).some(Boolean);
-        const init: Record<Platform, boolean> = {} as Record<Platform, boolean>;
-        for (const p of META) {
-            init[p.id] = anyModified ? modified[p.id] : true;
-        }
-        return init;
-        // META는 클로저로 한 번만 평가됨 — 의존성 누락 경고 회피
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [modified.ghostty, modified.warp, modified.iterm2, modified.neovim, modified.helix, modified.zsh, modified.tmux]);
-
+    // 초기 선택 — 수정된 플랫폼만 (fallback 없음 — 위험)
+    const initialSelected = useMemo(() => computeInitialSelection(modified), [modified]);
     const [selected, setSelected] = useState<Record<Platform, boolean>>(initialSelected);
 
-    // initialSelected가 바뀌면 (페이지 첫 진입 시 등) 동기화
+    // modified 자동 동기화
     const [syncKey, setSyncKey] = useState("");
     const stamp = Object.entries(initialSelected).map(([k, v]) => `${k}:${v ? "1" : "0"}`).join("|");
     if (stamp !== syncKey) {
@@ -174,23 +181,16 @@ export function ExportPage() {
     function toggle(id: Platform) {
         setSelected(s => ({...s, [id]: !s[id]}));
     }
-    function selectModified() {
-        const next: Record<Platform, boolean> = {} as Record<Platform, boolean>;
-        for (const p of META) next[p.id] = modified[p.id];
-        setSelected(next);
+    function selectModifiedOnly() {
+        setSelected(computeInitialSelection(modified));
     }
     function selectAll() {
-        const next: Record<Platform, boolean> = {} as Record<Platform, boolean>;
-        for (const p of META) next[p.id] = true;
-        setSelected(next);
+        setSelected(selectAllPlatforms());
     }
     function selectNone() {
-        const next: Record<Platform, boolean> = {} as Record<Platform, boolean>;
-        for (const p of META) next[p.id] = false;
-        setSelected(next);
+        setSelected(selectNoPlatforms());
     }
 
-    // ---- 선택된 파일 ----
     function collectFiles(): Array<[string, string]> {
         const out: Array<[string, string]> = [];
         for (const p of META) {
@@ -204,7 +204,8 @@ export function ExportPage() {
         return out;
     }
 
-    const selectedCount = META.filter(p => selected[p.id]).length;
+    const selectedCount = countSelected(selected);
+    const anyModified = Object.values(modified).some(Boolean);
     const fileList = useMemo(collectFiles, [selected, ghostty, tmux, nvim, zsh, starship, helix, helixLanguages, itermColors, itermProfileJson, warpTheme, warpWorkflows, warpSettings]);
 
     const diagnostics = runConfigDiagnostics({
@@ -234,7 +235,9 @@ export function ExportPage() {
             toast("선택된 플랫폼이 없어요.", "warn");
             return;
         }
-        const script = buildInstallScript(META, selected, {
+        const script = buildInstallScript({
+            selected,
+            labels: Object.fromEntries(META.map(p => [p.id, p.label])) as Record<Platform, string>,
             ghostty,
             tmux,
             nvim,
@@ -252,8 +255,32 @@ export function ExportPage() {
         toast(`${selectedCount}개 플랫폼 대상 설치 스크립트를 다운로드했어요.`, "success");
     }
 
+    // === 빈 상태 — 아무것도 수정되지 않은 경우 ===
+    if (!anyModified) {
+        return (
+            <div className="max-w-3xl mx-auto py-6 space-y-6">
+                <StationHeader
+                    title="출발권 만들기"
+                    eyebrow="Departure"
+                    subtitle="아직 다운로드할 설정이 없어요."
+                />
+                <EmptyExportState />
+                <DiagnosticsPanel diagnostics={diagnostics} summary={summary} />
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-5xl mx-auto py-6 space-y-8">
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-export"
+                title="출발권 만들기"
+                steps={[
+                    {title: "1. 다운로드 대상 확인", detail: "수정한 도구만 자동 체크되어 있음"},
+                    {title: "2. 필요하면 직접 추가/해제", detail: "체크박스로 자유롭게 조정"},
+                    {title: "3. 다운로드", detail: "선택한 도구의 설정 파일만 받아짐"}
+                ]}
+            />
             <DepartureComplete
                 onDownload={handleDownload}
                 onReturn={() => navigate("/ghostty")}
@@ -270,28 +297,60 @@ export function ExportPage() {
                 selected={selected}
                 modified={modified}
                 onToggle={toggle}
-                onSelectModified={selectModified}
+                onSelectModified={selectModifiedOnly}
                 onSelectAll={selectAll}
                 onSelectNone={selectNone}
                 fileList={fileList}
             />
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={handleInstallScript}
-                    disabled={selectedCount === 0}
-                >
-                    <Icon name="terminal" className="text-[16px]" />
-                    설치 스크립트 다운로드
-                </Button>
-                <span className="font-mono text-[11px] text-on-surface-variant">
-                    스크립트는 선택한 {selectedCount}개 플랫폼만 처리합니다
-                </span>
-            </div>
+            <AdvancedInstall
+                selectedCount={selectedCount}
+                onDownload={handleInstallScript}
+            />
 
             <DiagnosticsPanel diagnostics={diagnostics} summary={summary} />
+        </div>
+    );
+}
+
+function EmptyExportState() {
+    return (
+        <div className="rounded-xl border border-white/[0.06] bg-surface-container-lowest/80 p-8 text-center space-y-5">
+            <Icon name="luggage" className="text-[44px] text-on-surface-variant/50" />
+            <div>
+                <h2 className="font-display text-headline-sm text-on-surface">
+                    아직 변경된 설정이 없어요
+                </h2>
+                <p className="mt-2 text-body-md text-on-surface-variant">
+                    먼저 승강장에서 설정을 만져야 다운로드할 파일이 생겨요. 가장 많이 쓰는 순서는 Ghostty → 테마 센터 → 폰트 센터입니다.
+                </p>
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+                <Link to="/ghostty">
+                    <Button size="sm">
+                        <Icon name="play_arrow" className="text-[14px]" />
+                        Ghostty 승강장
+                    </Button>
+                </Link>
+                <Link to="/themes">
+                    <Button variant="outline" size="sm">
+                        <Icon name="palette" className="text-[14px]" />
+                        테마 센터
+                    </Button>
+                </Link>
+                <Link to="/fonts">
+                    <Button variant="outline" size="sm">
+                        <Icon name="text_fields" className="text-[14px]" />
+                        폰트 센터
+                    </Button>
+                </Link>
+                <Link to="/guide">
+                    <Button variant="outline" size="sm">
+                        <Icon name="help" className="text-[14px]" />
+                        사용 안내
+                    </Button>
+                </Link>
+            </div>
         </div>
     );
 }
@@ -400,6 +459,9 @@ function PlatformTile({
                         <Badge tone="muted">기본값</Badge>
                     )}
                 </div>
+                <p className="text-[11px] text-on-surface-variant mt-1">
+                    {meta.blurb}
+                </p>
                 <div className="font-mono text-[10px] text-on-surface-variant/70 mt-1 truncate">
                     {meta.targetPath}
                 </div>
@@ -432,107 +494,59 @@ function QuickChip({
     );
 }
 
-function buildInstallScript(
-    meta: PlatformMeta[],
-    selected: Record<Platform, boolean>,
-    files: {
-        ghostty: string;
-        tmux: string;
-        nvim: string;
-        zsh: string;
-        starship: string;
-        helix: string;
-        helixLanguages: string;
-        itermColors: string;
-        itermProfile: string;
-        warpTheme: string;
-        warpWorkflows: string;
-        warpSettings: string;
-    }
-): string {
-    const writes: string[] = [];
-    const guard = (id: Platform, line: string) =>
-        `[[ -z "$ONLY" || "$ONLY" == "${id}" ]] && ${line}`;
-
-    if (selected.ghostty) {
-        writes.push(guard("ghostty", `write_file "$HOME/.config/ghostty/config" ${shellString(files.ghostty)}`));
-    }
-    if (selected.tmux) {
-        writes.push(guard("tmux", `write_file "$HOME/.tmux.conf" ${shellString(files.tmux)}`));
-    }
-    if (selected.neovim) {
-        writes.push(guard("neovim", `write_file "$HOME/.config/nvim/init.lua" ${shellString(files.nvim)}`));
-    }
-    if (selected.zsh) {
-        writes.push(guard("zsh", `write_file "$HOME/.zshrc" ${shellString(files.zsh)}`));
-        if (files.starship) {
-            writes.push(guard("zsh", `write_file "$HOME/.config/starship.toml" ${shellString(files.starship)}`));
-        }
-    }
-    if (selected.helix) {
-        writes.push(guard("helix", `write_file "$HOME/.config/helix/config.toml" ${shellString(files.helix)}`));
-        if (files.helixLanguages) {
-            writes.push(guard("helix", `write_file "$HOME/.config/helix/languages.toml" ${shellString(files.helixLanguages)}`));
-        }
-    }
-    if (selected.iterm2) {
-        writes.push(guard("iterm2", `write_file "$HOME/Library/Application Support/iTerm2/DynamicProfiles/BusTerminal.json" ${shellString(files.itermProfile)}`));
-        writes.push(guard("iterm2", `write_file "$HOME/Downloads/BusTerminal.itermcolors" ${shellString(files.itermColors)}`));
-    }
-    if (selected.warp) {
-        writes.push(guard("warp", `write_file "$HOME/.warp/themes/bus-terminal.yaml" ${shellString(files.warpTheme)}`));
-        if (files.warpWorkflows) {
-            writes.push(guard("warp", `write_file "$HOME/.warp/workflows/bus-terminal.yaml" ${shellString(files.warpWorkflows)}`));
-        }
-        writes.push(guard("warp", `write_file "$HOME/.warp/bus-terminal-settings.yaml" ${shellString(files.warpSettings)}`));
-    }
-
-    const targetList = meta.filter(p => selected[p.id]).map(p => p.label).join(" + ") || "(none)";
-
-    return `#!/usr/bin/env bash
-# 버스터미널 설치 스크립트
-# 대상 플랫폼: ${targetList}
-set -euo pipefail
-
-DRY_RUN=0
-BACKUP=1
-ONLY=""
-
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --dry-run) DRY_RUN=1 ;;
-    --no-backup) BACKUP=0 ;;
-    --only) ONLY="$2"; shift ;;
-    *) echo "Unknown option: $1"; exit 1 ;;
-  esac
-  shift
-done
-
-write_file() {
-  local target="$1"
-  local content="$2"
-  mkdir -p "$(dirname "$target")"
-  if [[ "$BACKUP" == "1" && -f "$target" ]]; then
-    cp "$target" "$target.bak.$(date +%Y%m%d%H%M%S)"
-  fi
-  if [[ "$DRY_RUN" == "1" ]]; then
-    echo "[dry-run] write $target"
-  else
-    printf "%s" "$content" > "$target"
-    echo "wrote $target"
-  fi
-}
-
-${writes.join("\n")}
-`;
-}
-
-function shellString(value: string): string {
-    return `$'${value
-        .replace(/\\/g, "\\\\")
-        .replace(/'/g, "\\'")
-        .replace(/\n/g, "\\n")
-        .replace(/\r/g, "")}'`;
+function AdvancedInstall({
+    selectedCount,
+    onDownload
+}: {
+    selectedCount: number;
+    onDownload: () => void;
+}) {
+    return (
+        <details className="rounded-xl border border-tertiary-fixed-dim/20 bg-tertiary-fixed-dim/[0.04] overflow-hidden">
+            <summary className="cursor-pointer px-5 py-3 flex items-center gap-2 select-none">
+                <Icon name="terminal" className="text-[16px] text-tertiary-fixed-dim" />
+                <span className="font-mono text-label-xs uppercase tracking-[0.14em] text-tertiary-fixed-dim">
+                    고급 · 설치 스크립트 (위험)
+                </span>
+                <span className="ml-auto text-[11px] text-on-surface-variant">펼쳐서 확인</span>
+            </summary>
+            <div className="px-5 py-4 space-y-3 border-t border-tertiary-fixed-dim/20">
+                <p className="text-body-md text-on-surface">
+                    설치 스크립트는 <strong className="text-tertiary-fixed-dim">홈 디렉토리의 기존 설정 파일을 덮어씁니다</strong>.
+                    실행 전 반드시 한 번 더 확인하세요.
+                </p>
+                <ul className="text-[12px] text-on-surface-variant space-y-1 list-disc list-inside">
+                    <li>
+                        먼저 <code className="font-mono text-primary-fixed-dim">--dry-run</code> 옵션으로 실제 쓰기 없이 미리보기:
+                        <code className="font-mono text-on-surface ml-1">bash bus-terminal-install.sh --dry-run</code>
+                    </li>
+                    <li>
+                        기본적으로 기존 파일은 <code className="font-mono">.bak.YYYYMMDD...</code> 형태로 자동 백업합니다 (백업 끄려면 <code className="font-mono">--no-backup</code>).
+                    </li>
+                    <li>
+                        특정 플랫폼만 적용하려면 <code className="font-mono text-on-surface">--only ghostty</code> 같은 식으로 제한.
+                    </li>
+                    <li>
+                        스크립트를 다운로드하면 내용을 <strong>먼저 열어서 무엇을 쓰는지 검토</strong>한 뒤 실행하세요.
+                    </li>
+                </ul>
+                <div className="flex items-center gap-3 flex-wrap">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={onDownload}
+                        disabled={selectedCount === 0}
+                    >
+                        <Icon name="terminal" className="text-[14px]" />
+                        설치 스크립트 다운로드
+                    </Button>
+                    <span className="font-mono text-[11px] text-on-surface-variant">
+                        선택한 {selectedCount}개 플랫폼만 처리됩니다
+                    </span>
+                </div>
+            </div>
+        </details>
+    );
 }
 
 function DiagnosticsPanel({
@@ -624,3 +638,6 @@ function colorForLevel(level: DiagnosticLevel): string {
     if (level === "warning") return "text-tertiary-fixed-dim";
     return "text-secondary-fixed-dim";
 }
+
+// Re-export shellSingleQuoteEscape symbol for tests-by-package — not used here, just keeps tree-shaking happy.
+export {shellSingleQuoteEscape};
