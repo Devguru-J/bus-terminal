@@ -1,10 +1,9 @@
 import {useEffect} from "react";
-import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {AnimatePresence, motion} from "framer-motion";
 import {Icon} from "@/components/ui/Icon";
 import {PlatformNavItem} from "./PlatformNavItem";
 import {Button} from "@/components/ui/Button";
-import {StatusDot} from "@/components/ui/Badge";
 import {useUIStore} from "@/stores/uiStore";
 
 function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
@@ -68,20 +67,6 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
             <div className="px-2 py-3 border-t border-white/[0.05] flex flex-col gap-0.5">
                 <PlatformNavItem to="/guide" label="처음이라면" icon="help" />
                 <PlatformNavItem to="/my-routes" label="내 노선" icon="bookmark" />
-                <NavLink
-                    to="/diff"
-                    className={({isActive}) =>
-                        `flex items-center gap-3 h-10 pl-5 pr-3 rounded-r-lg text-on-surface-variant hover:text-on-surface hover:bg-white/[0.03] ${
-                            isActive ? "text-primary-fixed-dim bg-primary-fixed-dim/[0.06]" : ""
-                        }`
-                    }
-                >
-                    <Icon name="difference" className="text-[18px]" />
-                    <span className="font-mono text-label-xs uppercase tracking-[0.12em]">
-                        설정 비교
-                    </span>
-                </NavLink>
-
             </div>
         </>
     );
