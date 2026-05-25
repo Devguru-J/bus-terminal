@@ -5,18 +5,22 @@ import {useUIStore} from "@/stores/uiStore";
 import {signOut, useAuthStore} from "@/stores/authStore";
 import {toast} from "@/stores/toastStore";
 
-function utcStamp(d = new Date()): string {
-    const pad = (n: number) => String(n).padStart(2, "0");
-    return `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
+function localTimeStamp(d = new Date()): string {
+    return new Intl.DateTimeFormat(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZoneName: "short"
+    }).format(d);
 }
 
 export function TopBar() {
-    const [t, setT] = useState(utcStamp());
+    const [t, setT] = useState(localTimeStamp());
     const status = useAuthStore(s => s.status);
     const user = useAuthStore(s => s.user);
     const openAuth = useAuthStore(s => s.openModal);
     useEffect(() => {
-        const i = setInterval(() => setT(utcStamp()), 30_000);
+        const i = setInterval(() => setT(localTimeStamp()), 30_000);
         return () => clearInterval(i);
     }, []);
 
