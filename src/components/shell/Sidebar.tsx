@@ -18,8 +18,16 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
             {/* Station Identity */}
             <div className="px-4 py-5 border-b border-white/[0.05]">
                 <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded bg-primary-fixed-dim/15 border border-primary-fixed-dim/30 grid place-items-center text-primary-fixed-dim">
-                        <Icon name="hub" className="text-[20px]" fill />
+                    <div className="h-10 w-10 rounded bg-primary-fixed-dim/10 border border-primary-fixed-dim/30 overflow-hidden grid place-items-center">
+                        <img
+                            src="/logo.png"
+                            alt="BusTerminal 로고"
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover"
+                            loading="eager"
+                            decoding="async"
+                        />
                     </div>
                     <div className="min-w-0">
                         <div className="font-mono text-label-xs uppercase tracking-[0.16em] text-primary-fixed-dim">
