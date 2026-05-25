@@ -107,7 +107,8 @@ export function TermsPage() {
                     <Link to="/privacy" className="text-primary-fixed-dim underline">
                         개인정보처리방침
                     </Link>
-                    을 확인하세요. 요약하면: 서버 없음, localStorage만 사용, 외부 전송 없음.
+                    을 확인하세요. 요약하면: 비회원 설정은 localStorage 저장, 로그인 사용자의 클라우드 스냅샷은 Supabase 저장,
+                    호스팅·로그인·폰트 로딩 과정의 표준 웹 요청 정보는 제3자 서비스에 전달될 수 있음.
                 </p>
             </ConfigPanel>
         </div>

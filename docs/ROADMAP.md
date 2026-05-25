@@ -280,7 +280,7 @@
 - **Why**: 설정 생성기는 깨지면 사용자의 로컬 개발환경에 영향을 줌.
 - **What**: stable/beta 채널 구분.
 - **How**:
-  - `bus-terminal.pages.dev`는 beta
+  - `busterminal.dev`는 beta
   - 커스텀 도메인은 stable
   - 신규 serializer는 beta에서 먼저 검증 후 stable 반영
 

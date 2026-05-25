@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useState, type KeyboardEvent} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
@@ -460,12 +460,21 @@ function FontRow({
     onSelect: () => void;
     onFavorite: () => void;
 }) {
+    function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+        if (event.target !== event.currentTarget) return;
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        onSelect();
+    }
+
     return (
-        <button
-            type="button"
+        <div
+            role="button"
+            tabIndex={0}
             onClick={onSelect}
+            onKeyDown={handleKeyDown}
             className={cn(
-                "w-full text-left rounded-xl border p-4 transition",
+                "w-full cursor-pointer text-left rounded-xl border p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-fixed-dim/60",
                 selected
                     ? "border-primary-fixed-dim/50 bg-primary-fixed-dim/[0.05]"
                     : "border-white/[0.06] bg-surface-container-lowest/60 hover:border-white/15"
@@ -532,6 +541,6 @@ function FontRow({
             >
                 {PREVIEW_SAMPLES.english}
             </div>
-        </button>
+        </div>
     );
 }

@@ -46,7 +46,7 @@ describe("share encode/decode round-trip", () => {
 
     test("buildShareUrl / readShareFromHash round-trip", () => {
         const payload = encodePayload("내 노선 설정");
-        const url = buildShareUrl("https://bus-terminal.pages.dev", "/my-routes", payload);
+        const url = buildShareUrl("https://busterminal.dev", "/my-routes", payload);
         expect(url).toContain("#");
         expect(url).toContain(SHARE_KEY);
         // 해시 부분 추출

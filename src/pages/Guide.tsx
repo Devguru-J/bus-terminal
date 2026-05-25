@@ -187,15 +187,15 @@ export function GuidePage() {
                     <li className="flex gap-2">
                         <Icon name="storage" className="text-[16px] text-on-surface-variant mt-0.5 shrink-0" />
                         <span>
-                            모든 설정은 <strong className="text-on-surface">브라우저 localStorage</strong>에만 저장됩니다.
-                            서버에 올라가지 않아요.
+                            비회원 상태에서는 모든 설정이 <strong className="text-on-surface">브라우저 localStorage</strong>에만 저장됩니다.
+                            계정을 연결하면 사용자가 선택한 스냅샷만 클라우드 보관함에 저장됩니다.
                         </span>
                     </li>
                     <li className="flex gap-2">
                         <Icon name="warning" className="text-[16px] text-tertiary-fixed-dim mt-0.5 shrink-0" />
                         <span>
-                            <strong className="text-on-surface">브라우저가 바뀌면 데이터가 이어지지 않아요.</strong>{" "}
-                            크롬에서 만든 설정은 사파리에서 보이지 않습니다. 시크릿 모드도 마찬가지.
+                            <strong className="text-on-surface">로컬 데이터는 브라우저가 바뀌면 이어지지 않아요.</strong>{" "}
+                            여러 기기에서 쓰려면 계정 연결 또는 백업 JSON을 사용하세요.
                         </span>
                     </li>
                     <li className="flex gap-2">
@@ -208,7 +208,7 @@ export function GuidePage() {
                             >
                                 관리실(설정)
                             </Link>
-                            에서 백업 JSON을 다운로드해 두세요. 다른 브라우저에서 같은 JSON으로 복원할 수 있어요.
+                            에서 클라우드 저장 또는 백업 JSON을 사용하세요.
                         </span>
                     </li>
                 </ul>

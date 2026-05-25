@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bus-terminal.pages.dev/sitemap.xml
+Sitemap: https://busterminal.dev/sitemap.xml

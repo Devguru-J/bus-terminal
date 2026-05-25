@@ -1,9 +1,11 @@
-import {lazy, Suspense} from "react";
+import {lazy, Suspense, useEffect} from "react";
 import {Routes, Route} from "react-router-dom";
 import {AppShell} from "@/components/shell/AppShell";
 import {ErrorBoundary} from "@/components/shell/ErrorBoundary";
 import {CommandPalette} from "@/components/shell/CommandPalette";
 import {ToastViewport} from "@/components/shell/ToastViewport";
+import {AuthModal} from "@/components/auth/AuthModal";
+import {initAuth} from "@/stores/authStore";
 import {HomePage} from "@/pages/Home";
 import {NotFoundPage} from "@/pages/NotFound";
 
@@ -45,6 +47,10 @@ function PageFallback() {
 }
 
 export default function App() {
+    useEffect(() => {
+        initAuth();
+    }, []);
+
     return (
         <>
             <AppShell>
@@ -78,6 +84,7 @@ export default function App() {
                 </ErrorBoundary>
             </AppShell>
             <CommandPalette />
+            <AuthModal />
             <ToastViewport />
         </>
     );

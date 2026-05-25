@@ -1,7 +1,7 @@
 # 작업 내역 (Changelog)
 
 > 버스터미널 v0.1 → v0.2 개발 여정. 시간순 정리.
-> 라이브: <https://bus-terminal.pages.dev/> · 리포: <https://github.com/Devguru-J/bus-terminal>
+> 라이브: <https://busterminal.dev/> · 리포: <https://github.com/Devguru-J/bus-terminal>
 
 ---
 
@@ -176,7 +176,7 @@ Stitch 화면들에서 토큰 추출해서 시각 언어 전면 교체.
 - Cloudflare Pages용 `public/_redirects` 추가 (`/* /index.html 200`)
 - 빌드 명령: `bun install && bun run build` (CF가 Bun 프로젝트는 자동 install 안 함)
 - 환경변수: `BUN_VERSION=1.1.38`, `NODE_VERSION=20`
-- 라이브 URL: <https://bus-terminal.pages.dev/>
+- 라이브 URL: <https://busterminal.dev/>
 - README에 데모 링크 추가
 
 ---

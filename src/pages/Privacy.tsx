@@ -15,15 +15,14 @@ export function PrivacyPage() {
 
             <ConfigPanel
                 title="요약 — 한 줄로"
-                actions={<Badge tone="active">서버 없음</Badge>}
+                actions={<Badge tone="active">로컬 우선</Badge>}
             >
                 <p className="text-body-md text-on-surface leading-relaxed">
-                    버스터미널은 <strong className="text-primary-fixed-dim">서버를 운영하지 않습니다.</strong>
-                    사용자가 입력한 설정값과 노선·즐겨찾기는 브라우저(localStorage)에만 저장되며,
-                    <strong className="text-on-surface"> 외부로 전송되지 않습니다.</strong>
+                    비회원 상태에서는 사용자가 입력한 설정값과 노선·즐겨찾기가 브라우저(localStorage)에만 저장됩니다.
+                    계정을 연결하면 사용자가 직접 저장한 클라우드 스냅샷이 Supabase에 보관됩니다.
                 </p>
                 <p className="mt-3 text-[12px] text-on-surface-variant leading-relaxed">
-                    단, 사이트 호스팅(Cloudflare Pages)과 폰트 로딩(Google Fonts)을 위해 IP 주소 등 표준 웹 요청 정보는 각 서비스 측에 전달될 수 있습니다. 자세한 내용은 아래 ③항을 확인하세요.
+                    사이트 호스팅(Cloudflare Pages), 로그인/클라우드 보관함(Supabase), 폰트 로딩(Google Fonts)을 위해 IP 주소 등 표준 웹 요청 정보는 각 서비스 측에 전달될 수 있습니다. 자세한 내용은 아래 ③항을 확인하세요.
                 </p>
             </ConfigPanel>
 
@@ -49,13 +48,13 @@ export function PrivacyPage() {
                     </li>
                 </ul>
                 <p className="mt-4 text-[12px] text-on-surface-variant">
-                    저장 위치는 브라우저 localStorage 키 `bus-terminal:*`입니다. <Link to="/settings" className="text-primary-fixed-dim underline underline-offset-2">설정</Link>에서 전체 목록을 확인할 수 있습니다.
+                    비회원 저장 위치는 브라우저 localStorage 키 `bus-terminal:*`입니다. 계정 사용 시 사용자가 저장한 스냅샷은 Supabase의 사용자별 보관함에 저장됩니다. <Link to="/settings" className="text-primary-fixed-dim underline underline-offset-2">설정</Link>에서 로컬 목록과 클라우드 스냅샷을 확인할 수 있습니다.
                 </p>
             </ConfigPanel>
 
             <ConfigPanel title="② 외부 전송 / 수집은 있나요?">
                 <p className="text-body-md text-on-surface mb-3">
-                    <strong className="text-primary-fixed-dim">없습니다.</strong> 다음 항목들은 모두 사용자 브라우저에서 직접 처리됩니다:
+                    <strong className="text-primary-fixed-dim">자동 전송은 하지 않습니다.</strong> 다음 항목들은 모두 사용자 브라우저에서 직접 처리됩니다:
                 </p>
                 <ul className="space-y-1.5 text-[13px] text-on-surface-variant list-disc list-inside">
                     <li>설정 파일 생성 — 브라우저에서 텍스트로 합성</li>
@@ -63,6 +62,7 @@ export function PrivacyPage() {
                     <li>백업 JSON 생성 — 메모리에서 만들어 다운로드</li>
                     <li>공유 링크 — 브라우저 URL 해시에 base64로 인코딩 (서버 거치지 않음)</li>
                     <li>테마/폰트 import — 사용자가 붙여넣은 텍스트를 브라우저에서 파싱</li>
+                    <li>클라우드 저장 — 로그인 사용자가 명시적으로 저장 버튼을 누른 스냅샷만 Supabase에 저장</li>
                 </ul>
             </ConfigPanel>
 
@@ -74,6 +74,10 @@ export function PrivacyPage() {
                     <li>
                         <strong className="text-on-surface">Google Fonts</strong> — UI 및 폰트 미리보기용 웹폰트.
                         Google이 IP 등 기본 요청 정보를 받을 수 있습니다 (Google의 정책에 따름).
+                    </li>
+                    <li>
+                        <strong className="text-on-surface">Supabase</strong> — 로그인, 세션 관리, 클라우드 스냅샷 저장.
+                        계정 식별자와 사용자가 저장한 설정 스냅샷을 보관합니다.
                     </li>
                     <li>
                         <strong className="text-on-surface">Cloudflare Pages</strong> — 사이트 호스팅. 표준 웹 액세스 로그 수준의 정보가 Cloudflare 측에 남을 수 있습니다.

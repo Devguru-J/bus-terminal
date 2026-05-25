@@ -1,9 +1,10 @@
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
+import {useAuthStore} from "@/stores/authStore";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useNeovimStore} from "@/stores/neovimStore";
@@ -16,52 +17,102 @@ import {useFavoritesStore} from "@/stores/favoritesStore";
 import {useUserThemesStore} from "@/stores/userThemesStore";
 import {toast} from "@/stores/toastStore";
 import {downloadText} from "@/lib/download";
-
-/** 백업 JSON의 schema 버전 */
-const BACKUP_VERSION = 1;
-
-const STORAGE_KEYS = [
-    "bus-terminal:ghostty",
-    "bus-terminal:tmux",
-    "bus-terminal:neovim",
-    "bus-terminal:zsh",
-    "bus-terminal:helix",
-    "bus-terminal:iterm2",
-    "bus-terminal:warp",
-    "bus-terminal:routes",
-    "bus-terminal:favorites",
-    "bus-terminal:user-themes"
-] as const;
+import {clearLocalBackup, collectLocalBackup, countBackupItems, restoreLocalBackup, STORAGE_KEYS} from "@/lib/localBackup";
+import {deleteCloudSnapshot, listCloudSnapshots, saveCloudSnapshot, type CloudSnapshot} from "@/lib/cloudSync";
 
 export function SettingsPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [busy, setBusy] = useState(false);
+    const user = useAuthStore(s => s.user);
+    const authStatus = useAuthStore(s => s.status);
+    const openAuth = useAuthStore(s => s.openModal);
+    const [cloudBusy, setCloudBusy] = useState(false);
+    const [snapshots, setSnapshots] = useState<CloudSnapshot[]>([]);
+    const [snapshotLabel, setSnapshotLabel] = useState("내 개발환경");
 
     function exportBackup() {
-        const data: Record<string, unknown> = {};
-        for (const key of STORAGE_KEYS) {
-            const raw = localStorage.getItem(key);
-            if (raw) {
-                try {
-                    data[key] = JSON.parse(raw);
-                }
-                catch {
-                    data[key] = raw;
-                }
-            }
-        }
-        const payload = {
-            $schema: "bus-terminal-backup",
-            version: BACKUP_VERSION,
-            exportedAt: new Date().toISOString(),
-            data
-        };
+        const payload = collectLocalBackup();
         const filename = `bus-terminal-backup-${new Date()
             .toISOString()
             .slice(0, 19)
             .replace(/[:T]/g, "-")}.json`;
         downloadText(filename, JSON.stringify(payload, null, 2));
-        toast(`${Object.keys(data).length}개 항목을 백업했어요.`, "success");
+        toast(`${Object.keys(payload.data).length}개 항목을 백업했어요.`, "success");
+    }
+
+    async function refreshCloudSnapshots() {
+        if (!user) {
+            setSnapshots([]);
+            return;
+        }
+        setCloudBusy(true);
+        try {
+            setSnapshots(await listCloudSnapshots());
+        }
+        catch (err) {
+            toast(`클라우드 목록을 불러오지 못했어요: ${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
+        }
+        finally {
+            setCloudBusy(false);
+        }
+    }
+
+    async function saveToCloud() {
+        if (!user) {
+            openAuth();
+            return;
+        }
+        const payload = collectLocalBackup();
+        const count = Object.keys(payload.data).length;
+        if (count === 0) {
+            toast("저장할 로컬 설정이 아직 없어요.", "warn");
+            return;
+        }
+        setCloudBusy(true);
+        try {
+            await saveCloudSnapshot(snapshotLabel.trim() || "내 개발환경", payload);
+            toast(`${count}개 항목을 클라우드에 저장했어요.`, "success");
+            await refreshCloudSnapshots();
+        }
+        catch (err) {
+            toast(`클라우드 저장 실패: ${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
+        }
+        finally {
+            setCloudBusy(false);
+        }
+    }
+
+    async function restoreFromCloud(snapshot: CloudSnapshot) {
+        const count = countBackupItems(snapshot.data.data);
+        if (!window.confirm(`'${snapshot.label}' 스냅샷의 ${count}개 항목으로 현재 로컬 설정을 대체할까요?`)) return;
+        setCloudBusy(true);
+        try {
+            const restored = restoreLocalBackup(snapshot.data.data);
+            toast(`${restored}개 항목을 복원했어요. 새로고침 후 적용됩니다.`, "success");
+            setTimeout(() => window.location.reload(), 900);
+        }
+        catch (err) {
+            toast(`복원 실패: ${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
+        }
+        finally {
+            setCloudBusy(false);
+        }
+    }
+
+    async function removeCloudSnapshot(snapshot: CloudSnapshot) {
+        if (!window.confirm(`'${snapshot.label}' 스냅샷을 삭제할까요? 로컬 설정은 삭제되지 않습니다.`)) return;
+        setCloudBusy(true);
+        try {
+            await deleteCloudSnapshot(snapshot.id);
+            toast("클라우드 스냅샷을 삭제했어요.", "success");
+            await refreshCloudSnapshots();
+        }
+        catch (err) {
+            toast(`삭제 실패: ${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
+        }
+        finally {
+            setCloudBusy(false);
+        }
     }
 
     async function handleImportFile() {
@@ -92,8 +143,7 @@ export function SettingsPage() {
             let restored = 0;
             for (const [key, value] of Object.entries(payload.data)) {
                 if (!STORAGE_KEYS.includes(key as (typeof STORAGE_KEYS)[number])) continue;
-                localStorage.setItem(key, JSON.stringify(value));
-                restored++;
+                restored += restoreLocalBackup({[key]: value});
             }
             toast(`${restored}개 항목을 복원했어요. 새로고침 후 적용됩니다.`, "success");
             setTimeout(() => window.location.reload(), 1200);
@@ -108,18 +158,102 @@ export function SettingsPage() {
 
     function resetAll() {
         if (!window.confirm("정말로 모든 설정/노선/즐겨찾기를 초기화할까요?")) return;
-        for (const key of STORAGE_KEYS) localStorage.removeItem(key);
+        clearLocalBackup();
         toast("모두 초기화했어요. 새로고침 합니다.", "success");
         setTimeout(() => window.location.reload(), 800);
     }
+
+    useEffect(() => {
+        if (user) void refreshCloudSnapshots();
+        else setSnapshots([]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.id]);
 
     return (
         <div className="max-w-3xl mx-auto space-y-6">
             <StationHeader
                 title="터미널 관리실"
                 eyebrow="Control Tower"
-                subtitle="보관함과 노선 데이터를 관리합니다. 모든 데이터는 브라우저 로컬에만 저장됩니다."
+                subtitle="보관함과 노선 데이터를 관리합니다. 비회원은 로컬 저장, 로그인하면 클라우드 스냅샷으로 보관할 수 있습니다."
             />
+
+            <ConfigPanel
+                title="계정 / 클라우드 보관함"
+                actions={<Badge tone={user ? "active" : "info"}>{user ? "Connected" : "Optional"}</Badge>}
+            >
+                <div className="space-y-4">
+                    <div className="rounded-lg border border-white/[0.06] bg-surface-container-lowest p-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <div className="text-code-sm text-on-surface">
+                                    {user ? user.email ?? "연결된 계정" : "비회원 로컬 모드"}
+                                </div>
+                                <p className="mt-1 text-[12px] leading-relaxed text-on-surface-variant">
+                                    {user
+                                        ? "현재 브라우저의 설정을 Supabase에 스냅샷으로 저장하고, 다른 기기에서 다시 불러올 수 있습니다."
+                                        : "로그인하지 않아도 모든 기능을 사용할 수 있습니다. 클라우드 보관함만 계정이 필요합니다."}
+                                </p>
+                            </div>
+                            {!user && (
+                                <Button onClick={openAuth} disabled={authStatus === "booting"}>
+                                    <Icon name="login" className="text-[16px]" />
+                                    계정 연결
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
+                    {user && (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-2">
+                                <input
+                                    value={snapshotLabel}
+                                    onChange={e => setSnapshotLabel(e.target.value)}
+                                    className="h-10 rounded border border-white/10 bg-surface px-3 text-body-sm text-on-surface outline-none focus:border-primary-fixed-dim"
+                                    placeholder="스냅샷 이름"
+                                />
+                                <Button onClick={saveToCloud} disabled={cloudBusy}>
+                                    <Icon name="cloud_upload" className="text-[16px]" />
+                                    클라우드 저장
+                                </Button>
+                                <Button variant="outline" onClick={refreshCloudSnapshots} disabled={cloudBusy}>
+                                    <Icon name="refresh" className="text-[16px]" />
+                                    새로고침
+                                </Button>
+                            </div>
+
+                            <div className="space-y-2">
+                                {snapshots.length === 0 && (
+                                    <div className="rounded-lg border border-dashed border-white/10 px-4 py-5 text-center text-[12px] text-on-surface-variant">
+                                        아직 클라우드 스냅샷이 없습니다.
+                                    </div>
+                                )}
+                                {snapshots.map(snapshot => (
+                                    <div
+                                        key={snapshot.id}
+                                        className="flex flex-col gap-3 rounded-lg border border-white/[0.06] bg-surface-container-lowest px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                                    >
+                                        <div className="min-w-0">
+                                            <div className="text-code-sm text-on-surface truncate">{snapshot.label}</div>
+                                            <div className="mt-1 text-[11px] text-on-surface-variant">
+                                                {new Date(snapshot.updated_at).toLocaleString()} · {countBackupItems(snapshot.data.data)}개 항목
+                                            </div>
+                                        </div>
+                                        <div className="flex shrink-0 gap-2">
+                                            <Button variant="outline" size="sm" onClick={() => restoreFromCloud(snapshot)} disabled={cloudBusy}>
+                                                복원
+                                            </Button>
+                                            <Button variant="danger" size="sm" onClick={() => removeCloudSnapshot(snapshot)} disabled={cloudBusy}>
+                                                삭제
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
+            </ConfigPanel>
 
             <ConfigPanel
                 title="백업 / 복원"
@@ -153,9 +287,9 @@ export function SettingsPage() {
 
             <ConfigPanel title="Storage 키 목록">
                 <p className="text-body-md text-on-surface-variant mb-3">
-                    버스터미널은 외부 서버를 사용하지 않아요. 모든 데이터는{" "}
+                    비회원 데이터와 현재 브라우저의 작업 상태는{" "}
                     <code className="font-mono text-primary-fixed-dim">localStorage</code>
-                    에만 보관됩니다.
+                    에 보관됩니다. 로그인 후 직접 저장한 스냅샷만 Supabase 클라우드 보관함에 올라갑니다.
                 </p>
                 <ul className="font-mono text-[12px] text-on-surface-variant space-y-1">
                     <li>bus-terminal:ghostty — Ghostty 설정</li>
