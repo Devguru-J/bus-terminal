@@ -253,7 +253,7 @@ export const themes: RouteTheme[] = [
         selectionBg: "#073642",
         selectionFg: "#93a1a1",
         accent: "#268bd2",
-        tags: ["dark", "minimal"],
+        tags: ["dark", "minimal", "popular"],
         palette16: [
             "#073642", "#dc322f", "#859900", "#b58900",
             "#268bd2", "#d33682", "#2aa198", "#eee8d5",
@@ -293,7 +293,7 @@ export const themes: RouteTheme[] = [
         selectionBg: "#403d52",
         selectionFg: "#e0def4",
         accent: "#eb6f92",
-        tags: ["dark", "minimal"],
+        tags: ["dark", "minimal", "popular"],
         palette16: [
             "#26233a", "#eb6f92", "#31748f", "#f6c177",
             "#9ccfd8", "#c4a7e7", "#ebbcba", "#e0def4",
@@ -333,7 +333,7 @@ export const themes: RouteTheme[] = [
         selectionBg: "#503946",
         selectionFg: "#d3c6aa",
         accent: "#a7c080",
-        tags: ["dark", "minimal", "new"],
+        tags: ["dark", "minimal", "new", "popular"],
         palette16: [
             "#475258", "#e67e80", "#a7c080", "#dbbc7f",
             "#7fbbb3", "#d699b6", "#83c092", "#d3c6aa",
@@ -354,7 +354,7 @@ export const themes: RouteTheme[] = [
         selectionBg: "#2d4f67",
         selectionFg: "#c8c093",
         accent: "#7e9cd8",
-        tags: ["dark", "new"],
+        tags: ["dark", "new", "popular"],
         palette16: [
             "#16161d", "#c34043", "#76946a", "#c0a36e",
             "#7e9cd8", "#957fb8", "#6a9589", "#c8c093",
@@ -438,7 +438,7 @@ export const themes: RouteTheme[] = [
         selectionBg: "#273747",
         selectionFg: "#bfbdb6",
         accent: "#e6b450",
-        tags: ["dark", "minimal"],
+        tags: ["dark", "minimal", "popular"],
         palette16: [
             "#11151c", "#ea6c73", "#7fd962", "#f9af4f",
             "#53bdfa", "#cda1fa", "#90e1c6", "#c7c7c7",

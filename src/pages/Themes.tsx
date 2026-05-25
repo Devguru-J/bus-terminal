@@ -106,7 +106,7 @@ export function ThemesPage() {
     const navigate = useNavigate();
 
     const [query, setQuery] = useState("");
-    const [tagFilter, setTagFilter] = useState<ThemeTag | "all" | "favorites" | "imported">("all");
+    const [tagFilter, setTagFilter] = useState<ThemeTag | "all" | "favorites" | "imported">("popular");
     const [sort, setSort] = useState<SortId>("default");
     const [active, setActive] = useState(builtinThemes[0].id);
     const [target, setTarget] = useState<Target>("all");

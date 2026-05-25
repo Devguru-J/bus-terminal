@@ -40,7 +40,7 @@ export function FontsPage() {
 
     const [query, setQuery] = useState("");
     const [category, setCategory] = useState<FontCategory | "all" | "favorites">("all");
-    const [tag, setTag] = useState<FontTag | "all">("all");
+    const [tag, setTag] = useState<FontTag | "all">("popular");
     const [size, setSize] = useState(14);
     const [previewTab, setPreviewTab] = useState<PreviewTab>("code");
     const [selectedId, setSelectedId] = useState(fonts[0].id);
