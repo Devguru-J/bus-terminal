@@ -12,4 +12,3 @@ reference/
 # Playwright MCP 임시 파일
 .playwright-mcp/
 .antigravitycli/
-package-lock.json
