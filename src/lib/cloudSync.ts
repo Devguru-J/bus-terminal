@@ -1,4 +1,4 @@
-import {supabase} from "@/lib/supabase";
+import {requireSupabase} from "@/lib/supabase";
 import type {BackupPayload} from "@/lib/localBackup";
 
 export interface CloudSnapshot {
@@ -24,10 +24,21 @@ function normalizeSnapshot(row: unknown): CloudSnapshot {
     };
 }
 
+async function getCurrentUserId(): Promise<string> {
+    const supabase = requireSupabase();
+    const {data, error} = await supabase.auth.getUser();
+    if (error) throw error;
+    if (!data.user) throw new Error("로그인이 필요합니다.");
+    return data.user.id;
+}
+
 export async function listCloudSnapshots(): Promise<CloudSnapshot[]> {
+    const supabase = requireSupabase();
+    const userId = await getCurrentUserId();
     const {data, error} = await supabase
         .from(SNAPSHOT_TABLE)
         .select("id,user_id,label,data,created_at,updated_at")
+        .eq("user_id", userId)
         .order("updated_at", {ascending: false});
 
     if (error) throw error;
@@ -35,14 +46,13 @@ export async function listCloudSnapshots(): Promise<CloudSnapshot[]> {
 }
 
 export async function saveCloudSnapshot(label: string, payload: BackupPayload): Promise<CloudSnapshot> {
-    const {data: userData, error: userError} = await supabase.auth.getUser();
-    if (userError) throw userError;
-    if (!userData.user) throw new Error("로그인이 필요합니다.");
+    const supabase = requireSupabase();
+    const userId = await getCurrentUserId();
 
     const {data, error} = await supabase
         .from(SNAPSHOT_TABLE)
         .insert({
-            user_id: userData.user.id,
+            user_id: userId,
             label,
             data: payload
         })
@@ -54,6 +64,12 @@ export async function saveCloudSnapshot(label: string, payload: BackupPayload): 
 }
 
 export async function deleteCloudSnapshot(id: string) {
-    const {error} = await supabase.from(SNAPSHOT_TABLE).delete().eq("id", id);
+    const supabase = requireSupabase();
+    const userId = await getCurrentUserId();
+    const {error} = await supabase
+        .from(SNAPSHOT_TABLE)
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId);
     if (error) throw error;
 }

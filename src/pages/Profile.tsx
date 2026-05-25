@@ -59,6 +59,18 @@ export function ProfilePage() {
         navigate("/");
     }
 
+    if (status === "booting") {
+        return (
+            <div className="max-w-3xl mx-auto space-y-6">
+                <StationHeader title="내 프로필" eyebrow="Profile" subtitle="계정 정보를 불러오는 중…" />
+                <div className="space-y-4 animate-pulse">
+                    <div className="h-32 rounded-xl bg-white/[0.04]" />
+                    <div className="h-24 rounded-xl bg-white/[0.03]" />
+                </div>
+            </div>
+        );
+    }
+
     if (status !== "signed-in" || !user) {
         return (
             <div className="max-w-3xl mx-auto space-y-6">

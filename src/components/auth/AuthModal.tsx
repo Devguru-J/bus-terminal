@@ -2,7 +2,7 @@ import {useState} from "react";
 import {Modal} from "@/components/ui/Modal";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
-import {supabase} from "@/lib/supabase";
+import {supabase, isSupabaseConfigured} from "@/lib/supabase";
 import {useAuthStore} from "@/stores/authStore";
 import {toast} from "@/stores/toastStore";
 import {trackEvent} from "@/lib/analytics";
@@ -16,6 +16,10 @@ export function AuthModal() {
     const [busy, setBusy] = useState<Provider | "email" | null>(null);
 
     async function signInWithProvider(provider: Provider) {
+        if (!supabase) {
+            toast("클라우드 동기화가 설정되어 있지 않아요.", "warn");
+            return;
+        }
         setBusy(provider);
         try {
             trackEvent("Auth SignIn", {provider});
@@ -37,6 +41,10 @@ export function AuthModal() {
         const trimmed = email.trim();
         if (!trimmed) {
             toast("이메일을 입력해 주세요.", "warn");
+            return;
+        }
+        if (!supabase) {
+            toast("클라우드 동기화가 설정되어 있지 않아요.", "warn");
             return;
         }
         setBusy("email");
@@ -73,6 +81,11 @@ export function AuthModal() {
             }
         >
             <div className="space-y-4">
+                {!isSupabaseConfigured && (
+                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2.5 text-[13px] text-amber-200/90">
+                        클라우드 동기화가 설정되어 있지 않아요. 로컬 모드로 동작합니다.
+                    </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button
                         type="button"

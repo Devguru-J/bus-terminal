@@ -5,11 +5,13 @@ import {ErrorBoundary} from "@/components/shell/ErrorBoundary";
 import {CommandPalette} from "@/components/shell/CommandPalette";
 import {ToastViewport} from "@/components/shell/ToastViewport";
 import {AuthModal} from "@/components/auth/AuthModal";
+import {OnboardingModal} from "@/components/shell/OnboardingModal";
 import {initAuth} from "@/stores/authStore";
 import {HomePage} from "@/pages/Home";
 import {NotFoundPage} from "@/pages/NotFound";
 import {lazyWithRetry, clearChunkReloadFlag} from "@/lib/lazyWithRetry";
 import {trackPageview} from "@/lib/analytics";
+import {initAutosaveHint} from "@/lib/autosaveHint";
 
 // 페이지는 lazy-loading. 첫 번들이 작아지고 라우트 단위로 fetch.
 // lazyWithRetry: 배포 후 stale chunk(MIME 에러) 자동 1회 새로고침 복구.
@@ -56,6 +58,7 @@ export default function App() {
     useEffect(() => {
         initAuth();
         clearChunkReloadFlag();
+        initAutosaveHint();
     }, []);
 
     useEffect(() => {
@@ -97,6 +100,7 @@ export default function App() {
             </AppShell>
             <CommandPalette />
             <AuthModal />
+            <OnboardingModal />
             <ToastViewport />
         </>
     );

@@ -1,19 +1,33 @@
-import {createClient} from "@supabase/supabase-js";
+import {createClient, type SupabaseClient} from "@supabase/supabase-js";
 
-const FALLBACK_SUPABASE_URL = "https://vyjolbszizgrspawcdio.supabase.co";
-const FALLBACK_SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ5am9sYnN6aXpncnNwYXdjZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MjA4NzgsImV4cCI6MjA5NTE5Njg3OH0._XlYYTbmpD2fAUbmpxgTU7AQMvLPRf4CCCbNGb7GzrQ";
+// Supabase 환경변수가 비어 있으면 client는 null.
+// 포크/로컬 사용자가 우리 호스트 DB에 모르고 쓰는 사고를 막기 위함.
+// (이전 버전은 우리 프로젝트 URL/anon key를 하드코딩 fallback으로 가지고 있었음 — 보안 결함)
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || FALLBACK_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storageKey: "bus-terminal:supabase-auth"
-    }
-});
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+export const supabase: SupabaseClient | null = isSupabaseConfigured
+    ? createClient(supabaseUrl!, supabaseAnonKey!, {
+          auth: {
+              persistSession: true,
+              autoRefreshToken: true,
+              detectSessionInUrl: true,
+              storageKey: "bus-terminal:supabase-auth"
+          }
+      })
+    : null;
+
+export class SupabaseNotConfiguredError extends Error {
+    constructor() {
+        super("클라우드 동기화가 설정되어 있지 않아요. 환경변수 VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY를 확인하세요.");
+        this.name = "SupabaseNotConfiguredError";
+    }
+}
+
+export function requireSupabase(): SupabaseClient {
+    if (!supabase) throw new SupabaseNotConfiguredError();
+    return supabase;
+}

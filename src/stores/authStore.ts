@@ -35,6 +35,12 @@ export function initAuth() {
     if (initialized) return;
     initialized = true;
 
+    if (!supabase) {
+        // 환경변수 없으면 즉시 로컬-온리 모드로 전환
+        useAuthStore.getState().setSession(null);
+        return;
+    }
+
     supabase.auth.getSession().then(({data}) => {
         useAuthStore.getState().setSession(data.session);
     });
@@ -45,5 +51,6 @@ export function initAuth() {
 }
 
 export async function signOut() {
+    if (!supabase) return;
     await supabase.auth.signOut();
 }
