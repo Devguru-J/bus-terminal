@@ -1,4 +1,4 @@
-import {lazy, Suspense, useEffect} from "react";
+import {Suspense, useEffect} from "react";
 import {Routes, Route} from "react-router-dom";
 import {AppShell} from "@/components/shell/AppShell";
 import {ErrorBoundary} from "@/components/shell/ErrorBoundary";
@@ -8,29 +8,31 @@ import {AuthModal} from "@/components/auth/AuthModal";
 import {initAuth} from "@/stores/authStore";
 import {HomePage} from "@/pages/Home";
 import {NotFoundPage} from "@/pages/NotFound";
+import {lazyWithRetry, clearChunkReloadFlag} from "@/lib/lazyWithRetry";
 
 // 페이지는 lazy-loading. 첫 번들이 작아지고 라우트 단위로 fetch.
-const GhosttyPage = lazy(() => import("@/pages/Ghostty").then(m => ({default: m.GhosttyPage})));
-const TmuxPage = lazy(() => import("@/pages/Tmux").then(m => ({default: m.TmuxPage})));
-const NeovimPage = lazy(() => import("@/pages/Neovim").then(m => ({default: m.NeovimPage})));
-const ZshPage = lazy(() => import("@/pages/Zsh").then(m => ({default: m.ZshPage})));
-const HelixPage = lazy(() => import("@/pages/Helix").then(m => ({default: m.HelixPage})));
-const Iterm2Page = lazy(() => import("@/pages/Iterm2").then(m => ({default: m.Iterm2Page})));
-const WarpPage = lazy(() => import("@/pages/Warp").then(m => ({default: m.WarpPage})));
-const ThemesPage = lazy(() => import("@/pages/Themes").then(m => ({default: m.ThemesPage})));
-const FontsPage = lazy(() => import("@/pages/Fonts").then(m => ({default: m.FontsPage})));
-const MyRoutesPage = lazy(() => import("@/pages/MyRoutes").then(m => ({default: m.MyRoutesPage})));
-const SettingsPage = lazy(() => import("@/pages/Settings").then(m => ({default: m.SettingsPage})));
-const ProfilePage = lazy(() => import("@/pages/Profile").then(m => ({default: m.ProfilePage})));
-const DiffPage = lazy(() => import("@/pages/Diff").then(m => ({default: m.DiffPage})));
-const ExportPage = lazy(() => import("@/pages/Export").then(m => ({default: m.ExportPage})));
-const ThemeDetailPage = lazy(() => import("@/pages/ThemeDetail").then(m => ({default: m.ThemeDetailPage})));
-const FontDetailPage = lazy(() => import("@/pages/FontDetail").then(m => ({default: m.FontDetailPage})));
-const ThemeComparePage = lazy(() => import("@/pages/ThemeCompare").then(m => ({default: m.ThemeComparePage})));
-const FontPairingsPage = lazy(() => import("@/pages/FontPairings").then(m => ({default: m.FontPairingsPage})));
-const GuidePage = lazy(() => import("@/pages/Guide").then(m => ({default: m.GuidePage})));
-const PrivacyPage = lazy(() => import("@/pages/Privacy").then(m => ({default: m.PrivacyPage})));
-const TermsPage = lazy(() => import("@/pages/Terms").then(m => ({default: m.TermsPage})));
+// lazyWithRetry: 배포 후 stale chunk(MIME 에러) 자동 1회 새로고침 복구.
+const GhosttyPage = lazyWithRetry(() => import("@/pages/Ghostty").then(m => ({default: m.GhosttyPage})));
+const TmuxPage = lazyWithRetry(() => import("@/pages/Tmux").then(m => ({default: m.TmuxPage})));
+const NeovimPage = lazyWithRetry(() => import("@/pages/Neovim").then(m => ({default: m.NeovimPage})));
+const ZshPage = lazyWithRetry(() => import("@/pages/Zsh").then(m => ({default: m.ZshPage})));
+const HelixPage = lazyWithRetry(() => import("@/pages/Helix").then(m => ({default: m.HelixPage})));
+const Iterm2Page = lazyWithRetry(() => import("@/pages/Iterm2").then(m => ({default: m.Iterm2Page})));
+const WarpPage = lazyWithRetry(() => import("@/pages/Warp").then(m => ({default: m.WarpPage})));
+const ThemesPage = lazyWithRetry(() => import("@/pages/Themes").then(m => ({default: m.ThemesPage})));
+const FontsPage = lazyWithRetry(() => import("@/pages/Fonts").then(m => ({default: m.FontsPage})));
+const MyRoutesPage = lazyWithRetry(() => import("@/pages/MyRoutes").then(m => ({default: m.MyRoutesPage})));
+const SettingsPage = lazyWithRetry(() => import("@/pages/Settings").then(m => ({default: m.SettingsPage})));
+const ProfilePage = lazyWithRetry(() => import("@/pages/Profile").then(m => ({default: m.ProfilePage})));
+const DiffPage = lazyWithRetry(() => import("@/pages/Diff").then(m => ({default: m.DiffPage})));
+const ExportPage = lazyWithRetry(() => import("@/pages/Export").then(m => ({default: m.ExportPage})));
+const ThemeDetailPage = lazyWithRetry(() => import("@/pages/ThemeDetail").then(m => ({default: m.ThemeDetailPage})));
+const FontDetailPage = lazyWithRetry(() => import("@/pages/FontDetail").then(m => ({default: m.FontDetailPage})));
+const ThemeComparePage = lazyWithRetry(() => import("@/pages/ThemeCompare").then(m => ({default: m.ThemeComparePage})));
+const FontPairingsPage = lazyWithRetry(() => import("@/pages/FontPairings").then(m => ({default: m.FontPairingsPage})));
+const GuidePage = lazyWithRetry(() => import("@/pages/Guide").then(m => ({default: m.GuidePage})));
+const PrivacyPage = lazyWithRetry(() => import("@/pages/Privacy").then(m => ({default: m.PrivacyPage})));
+const TermsPage = lazyWithRetry(() => import("@/pages/Terms").then(m => ({default: m.TermsPage})));
 
 function PageFallback() {
     return (
@@ -50,6 +52,7 @@ function PageFallback() {
 export default function App() {
     useEffect(() => {
         initAuth();
+        clearChunkReloadFlag();
     }, []);
 
     return (
