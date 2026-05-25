@@ -71,24 +71,33 @@ export function AuthModal() {
         >
             <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Button
-                        variant="outline"
+                    <button
+                        type="button"
                         onClick={() => signInWithProvider("github")}
                         disabled={busy !== null}
-                        className="justify-start"
+                        className="h-11 inline-flex items-center justify-center gap-2 rounded border border-white/10 bg-[#24292f] px-4 font-mono text-[12px] font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#1f2328] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-fixed-dim"
                     >
-                        <Icon name="code" className="text-[16px]" />
+                        <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[12px] font-black text-[#24292f]">
+                            GH
+                        </span>
                         GitHub로 계속
-                    </Button>
-                    <Button
-                        variant="outline"
+                    </button>
+                    <button
+                        type="button"
                         onClick={() => signInWithProvider("google")}
                         disabled={busy !== null}
-                        className="justify-start"
+                        className="h-11 inline-flex items-center justify-center gap-2 rounded border border-[#dadce0] bg-white px-4 font-mono text-[12px] font-semibold uppercase tracking-[0.08em] text-[#3c4043] transition hover:bg-[#f8fafd] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-fixed-dim"
                     >
-                        <Icon name="public" className="text-[16px]" />
+                        <span className="text-[18px] font-black leading-none">
+                            <span className="text-[#4285f4]">G</span>
+                            <span className="text-[#ea4335]">o</span>
+                            <span className="text-[#fbbc05]">o</span>
+                            <span className="text-[#4285f4]">g</span>
+                            <span className="text-[#34a853]">l</span>
+                            <span className="text-[#ea4335]">e</span>
+                        </span>
                         Google로 계속
-                    </Button>
+                    </button>
                 </div>
 
                 <div className="rounded-lg border border-white/[0.06] bg-surface-container-lowest p-3">

@@ -21,6 +21,7 @@ const ThemesPage = lazy(() => import("@/pages/Themes").then(m => ({default: m.Th
 const FontsPage = lazy(() => import("@/pages/Fonts").then(m => ({default: m.FontsPage})));
 const MyRoutesPage = lazy(() => import("@/pages/MyRoutes").then(m => ({default: m.MyRoutesPage})));
 const SettingsPage = lazy(() => import("@/pages/Settings").then(m => ({default: m.SettingsPage})));
+const ProfilePage = lazy(() => import("@/pages/Profile").then(m => ({default: m.ProfilePage})));
 const DiffPage = lazy(() => import("@/pages/Diff").then(m => ({default: m.DiffPage})));
 const ExportPage = lazy(() => import("@/pages/Export").then(m => ({default: m.ExportPage})));
 const ThemeDetailPage = lazy(() => import("@/pages/ThemeDetail").then(m => ({default: m.ThemeDetailPage})));
@@ -78,6 +79,7 @@ export default function App() {
                         <Route path="/diff" element={<DiffPage />} />
                         <Route path="/export" element={<ExportPage />} />
                         <Route path="/settings" element={<SettingsPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>

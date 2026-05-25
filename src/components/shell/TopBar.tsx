@@ -1,9 +1,8 @@
 import {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {Icon} from "@/components/ui/Icon";
 import {useUIStore} from "@/stores/uiStore";
-import {signOut, useAuthStore} from "@/stores/authStore";
-import {toast} from "@/stores/toastStore";
+import {useAuthStore} from "@/stores/authStore";
 
 function localTimeStamp(d = new Date()): string {
     return new Intl.DateTimeFormat(undefined, {
@@ -15,6 +14,7 @@ function localTimeStamp(d = new Date()): string {
 }
 
 export function TopBar() {
+    const navigate = useNavigate();
     const [t, setT] = useState(localTimeStamp());
     const status = useAuthStore(s => s.status);
     const user = useAuthStore(s => s.user);
@@ -29,9 +29,7 @@ export function TopBar() {
             openAuth();
             return;
         }
-        if (!window.confirm(`${user?.email ?? "현재 계정"}에서 로그아웃할까요?`)) return;
-        await signOut();
-        toast("로그아웃했어요. 로컬 설정은 그대로 남아 있습니다.", "success");
+        navigate("/profile");
     }
 
     return (
@@ -84,8 +82,8 @@ export function TopBar() {
                     type="button"
                     onClick={handleAccountClick}
                     className="relative p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
-                    aria-label={status === "signed-in" ? "계정 로그아웃" : "계정 연결"}
-                    title={status === "signed-in" ? user?.email ?? "계정 연결됨" : "계정 연결"}
+                    aria-label={status === "signed-in" ? "프로필" : "계정 연결"}
+                    title={status === "signed-in" ? user?.email ?? "프로필" : "계정 연결"}
                 >
                     <Icon name="account_circle" className="text-[18px]" />
                     {status === "signed-in" && (
