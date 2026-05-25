@@ -83,7 +83,10 @@ export function PrivacyPage() {
                         <strong className="text-on-surface">Cloudflare Pages</strong> — 사이트 호스팅. 표준 웹 액세스 로그 수준의 정보가 Cloudflare 측에 남을 수 있습니다.
                     </li>
                     <li>
-                        <strong className="text-on-surface">분석 / 에러 트래커</strong> — 현재 도입되어 있지 않음. 추후 도입하게 되면 이 페이지에서 사전 고지합니다.
+                        <strong className="text-on-surface">Plausible Analytics</strong> — 방문 페이지·다운로드·로그인 같은 익명 통계만 수집합니다. 쿠키를 사용하지 않으며 개인 식별 정보(이메일, IP 원본 등)는 저장되지 않아요. 환경변수(VITE_PLAUSIBLE_DOMAIN)가 설정되어 있을 때만 활성화되며, 비활성 시 어떤 요청도 외부로 나가지 않습니다.
+                    </li>
+                    <li>
+                        <strong className="text-on-surface">에러 트래커</strong> — 현재 도입되어 있지 않음. 추후 도입하게 되면 이 페이지에서 사전 고지합니다.
                     </li>
                 </ul>
             </ConfigPanel>

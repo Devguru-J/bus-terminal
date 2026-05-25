@@ -161,13 +161,26 @@ lib/
 
 ```bash
 git clone https://github.com/Devguru-J/bus-terminal
-
 cd bus-terminal
-
 bun install
-
 bun run start
 ```
+
+### 환경변수 (선택)
+
+`.env.local` 파일에 채우면 해당 기능이 활성화됩니다. **없어도 앱은 로컬 모드로 동작합니다.**
+
+```bash
+# Supabase 클라우드 동기화 (선택) — 비어 있으면 로그인/스냅샷 비활성
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+
+# Plausible Analytics (선택) — 비어 있으면 통계 수집 안 함
+VITE_PLAUSIBLE_DOMAIN=
+VITE_PLAUSIBLE_HOST=https://plausible.io
+```
+
+> ⚠️ 포크하시는 분께: 이전 버전은 supabase fallback이 하드코딩되어 있어 포크한 환경이 의도치 않게 본 사이트의 DB를 사용할 수 있었습니다. 현재 버전은 env가 비어있으면 클라우드 기능이 완전히 비활성화되어 안전합니다.
 
 ---
 
