@@ -1,5 +1,5 @@
 import {Suspense, useEffect} from "react";
-import {Routes, Route} from "react-router-dom";
+import {Routes, Route, useLocation} from "react-router-dom";
 import {AppShell} from "@/components/shell/AppShell";
 import {ErrorBoundary} from "@/components/shell/ErrorBoundary";
 import {CommandPalette} from "@/components/shell/CommandPalette";
@@ -9,6 +9,7 @@ import {initAuth} from "@/stores/authStore";
 import {HomePage} from "@/pages/Home";
 import {NotFoundPage} from "@/pages/NotFound";
 import {lazyWithRetry, clearChunkReloadFlag} from "@/lib/lazyWithRetry";
+import {trackPageview} from "@/lib/analytics";
 
 // 페이지는 lazy-loading. 첫 번들이 작아지고 라우트 단위로 fetch.
 // lazyWithRetry: 배포 후 stale chunk(MIME 에러) 자동 1회 새로고침 복구.
@@ -50,10 +51,16 @@ function PageFallback() {
 }
 
 export default function App() {
+    const location = useLocation();
+
     useEffect(() => {
         initAuth();
         clearChunkReloadFlag();
     }, []);
+
+    useEffect(() => {
+        trackPageview(location.pathname + location.search);
+    }, [location.pathname, location.search]);
 
     return (
         <>

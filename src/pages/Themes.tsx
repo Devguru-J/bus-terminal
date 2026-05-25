@@ -21,6 +21,7 @@ import {HELIX_THEMES, type HelixTheme} from "@/data/helix";
 import {toast, toastWithUndo} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
 import {PageGuideCard} from "@/components/shell/PageGuideCard";
+import {trackEvent} from "@/lib/analytics";
 
 type Target = "all" | "ghostty" | "warp" | "iterm2" | "neovim" | "helix" | "tmux";
 
@@ -184,6 +185,7 @@ export function ThemesPage() {
 
     function broadcast() {
         const t = activeTheme;
+        trackEvent("Theme Selected", {theme: t.id, target});
         switch (target) {
             case "all": {
                 // 적용 전 스냅샷 — 되돌리기에 사용

@@ -20,6 +20,7 @@ import {helixDefault} from "@/data/helix";
 import {iterm2Default} from "@/data/iterm2";
 import {warpDefault} from "@/data/warp";
 import {downloadText} from "@/lib/download";
+import {trackEvent} from "@/lib/analytics";
 import {
     runConfigDiagnostics,
     summarizeDiagnostics,
@@ -227,6 +228,9 @@ export function ExportPage() {
         fileList.forEach(([name, content], i) =>
             setTimeout(() => downloadText(name, content), i * 150)
         );
+        (Object.keys(selected) as Platform[])
+            .filter(p => selected[p])
+            .forEach(platform => trackEvent("Config Downloaded", {platform}));
         toast(
             `${selectedCount}개 플랫폼 · ${fileList.length}개 설정 파일이 도착했어요.`,
             "success"
@@ -255,6 +259,7 @@ export function ExportPage() {
             warpSettings
         });
         downloadText("bus-terminal-install.sh", script);
+        trackEvent("Config Downloaded", {platform: "install-script"});
         toast(`${selectedCount}개 플랫폼 대상 설치 스크립트를 다운로드했어요.`, "success");
     }
 

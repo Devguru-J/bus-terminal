@@ -19,6 +19,7 @@ import {toast} from "@/stores/toastStore";
 import {downloadText} from "@/lib/download";
 import {clearLocalBackup, collectLocalBackup, countBackupItems, restoreLocalBackup, STORAGE_KEYS} from "@/lib/localBackup";
 import {deleteCloudSnapshot, listCloudSnapshots, saveCloudSnapshot, type CloudSnapshot} from "@/lib/cloudSync";
+import {trackEvent} from "@/lib/analytics";
 
 export function SettingsPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,6 +72,7 @@ export function SettingsPage() {
         setCloudBusy(true);
         try {
             await saveCloudSnapshot(snapshotLabel.trim() || "내 개발환경", payload);
+            trackEvent("Cloud Sync", {action: "save"});
             toast(`${count}개 항목을 클라우드에 저장했어요.`, "success");
             await refreshCloudSnapshots();
         }
@@ -88,6 +90,7 @@ export function SettingsPage() {
         setCloudBusy(true);
         try {
             const restored = restoreLocalBackup(snapshot.data.data);
+            trackEvent("Cloud Sync", {action: "restore"});
             toast(`${restored}개 항목을 복원했어요. 새로고침 후 적용됩니다.`, "success");
             setTimeout(() => window.location.reload(), 900);
         }

@@ -5,6 +5,7 @@ import {Icon} from "@/components/ui/Icon";
 import {supabase} from "@/lib/supabase";
 import {useAuthStore} from "@/stores/authStore";
 import {toast} from "@/stores/toastStore";
+import {trackEvent} from "@/lib/analytics";
 
 type Provider = "github" | "google";
 
@@ -17,6 +18,7 @@ export function AuthModal() {
     async function signInWithProvider(provider: Provider) {
         setBusy(provider);
         try {
+            trackEvent("Auth SignIn", {provider});
             const {error} = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
@@ -39,6 +41,7 @@ export function AuthModal() {
         }
         setBusy("email");
         try {
+            trackEvent("Auth SignIn", {provider: "email"});
             const {error} = await supabase.auth.signInWithOtp({
                 email: trimmed,
                 options: {
