@@ -93,6 +93,26 @@ export function HomePage() {
                     <div className="font-mono text-label-xs uppercase tracking-[0.18em] text-primary-fixed-dim">
                         BusTerminal
                     </div>
+                    <motion.div
+                        initial={{opacity: 0, y: 10, rotate: -4}}
+                        animate={{opacity: 1, y: 0, rotate: -4}}
+                        transition={{duration: 0.4}}
+                        className="neon-sign-board"
+                        aria-label="버스터미널"
+                    >
+                        <span className="neon-sign-cable neon-sign-cable-left" aria-hidden />
+                        <span className="neon-sign-cable neon-sign-cable-right" aria-hidden />
+                        <h2
+                            className="neon-sign-title font-display text-display-lg text-on-surface"
+                            data-text="버스터미널"
+                        >
+                            <span className="neon-sign-letter">버</span>
+                            <span className="neon-sign-letter">스</span>
+                            <span className="neon-sign-letter">터</span>
+                            <span className="neon-sign-letter neon-sign-letter-faulty">미</span>
+                            <span className="neon-sign-letter">널</span>
+                        </h2>
+                    </motion.div>
                     <h1 className="font-display text-display-md text-on-surface leading-[1.05] tracking-tight">
                         내 개발환경,<br />
                         <span className="text-primary-fixed-dim">한 번에</span> 설정하기
