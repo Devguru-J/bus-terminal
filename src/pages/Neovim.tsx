@@ -58,7 +58,7 @@ export function NeovimPage() {
                         <Button variant="ghost" size="sm" onClick={reset}>
                             <Icon name="restart_alt" className="text-[14px]" /> 초기화
                         </Button>
-                        <Button size="md" onClick={handleBoard}>
+                        <Button size="md" onClick={handleBoard} title="현재 설정을 내 노선으로 저장">
                             <Icon name="check_circle" className="text-[16px]" /> 탑승 완료
                         </Button>
                     </>

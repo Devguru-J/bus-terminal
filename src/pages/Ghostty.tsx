@@ -213,10 +213,10 @@ export function GhosttyPage() {
                         <Button variant="outline" size="md" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
-                        <Button variant="outline" size="md" onClick={handleBoard}>
+                        <Button variant="outline" size="md" onClick={handleBoard} title="현재 설정을 내 노선으로 저장">
                             <Icon name="bookmark_add" className="text-[16px]" /> 차고 보관
                         </Button>
-                        <Button size="md" onClick={() => navigate("/export")}>
+                        <Button size="md" onClick={() => navigate("/export")} title="설정 파일 다운로드 화면으로 이동">
                             <Icon name="rocket_launch" className="text-[16px]" /> 출발권 만들기
                         </Button>
                     </>
