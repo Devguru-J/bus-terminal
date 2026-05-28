@@ -83,7 +83,7 @@ export function Iterm2Page() {
                 subtitle="macOS 대표 터미널. .itermcolors 컬러 프리셋과 Dynamic Profile JSON 두 벌이 출발권에 함께 실립니다."
                 actions={
                     <>
-                        <Button variant="outline" size="sm" onClick={importItermColors}>
+                        <Button variant="outline" size="sm" onClick={importItermColors} title=".itermcolors 색상 파일을 가져와 현재 화면에 적용">
                             <Icon name="file_upload" className="text-[16px]" /> .itermcolors 가져오기
                         </Button>
                         <Button variant="outline" size="sm" onClick={handleSave} title="현재 설정을 내 노선으로 저장">
