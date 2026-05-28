@@ -70,7 +70,7 @@ export function HelixPage() {
             <StationHeader
                 title="Helix 승강장"
                 eyebrow="Platform 5 Active"
-                subtitle="Rust로 만들어진 모달 에디터. config.toml + languages.toml 두 벌이 출발권에 함께 실립니다."
+                subtitle="Rust로 만든 모달 에디터입니다. 테마와 언어 설정을 골라 config.toml과 languages.toml 두 벌의 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">

@@ -97,7 +97,7 @@ export function TmuxPage() {
             <StationHeader
                 title="tmux 승강장"
                 eyebrow="Platform 7 Active"
-                subtitle="전문가용 tmux 세션 인터페이스 및 실시간 미리보기. 변경사항은 다음 출발 때 적용됩니다."
+                subtitle="터미널 안에서 창과 세션을 나누는 도구입니다. 키 바인딩과 상태바, 플러그인을 화면에서 정리한 뒤 .tmux.conf 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">

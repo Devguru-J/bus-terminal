@@ -52,7 +52,7 @@ export function ZshPage() {
                     </span>
                 }
                 eyebrow="Platform 6 · ZSH-001"
-                subtitle="프롬프트 · 히스토리 · 플러그인 · 별칭을 조합해 ~/.zshrc를 출발시킵니다."
+                subtitle="기본 셸 환경을 다듬는 곳입니다. 프롬프트, 히스토리, 플러그인, 별칭을 골라 ~/.zshrc 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">

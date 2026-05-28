@@ -82,7 +82,7 @@ export function WarpPage() {
             <StationHeader
                 title="Warp 승강장"
                 eyebrow="Platform 2 Active"
-                subtitle="AI 내장 차세대 터미널. 테마 / 워크플로우 / AI 설정을 한 번에 정리해 출발 준비."
+                subtitle="AI 기능이 들어간 차세대 터미널입니다. 테마, 워크플로우, AI 옵션을 정리해 Warp 설정 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">

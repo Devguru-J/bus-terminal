@@ -141,7 +141,7 @@ export function GhosttyPage() {
                     </span>
                 }
                 eyebrow="Platform 1 Active"
-                subtitle="가장 사람이 가까운 터미널. 폰트·색·창 패딩을 슬라이더로 잡고, 우측 미리보기에서 즉시 확인. 완성하면 ghostty config 한 줄로 출발합니다."
+                subtitle="가장 먼저 만지는 터미널 설정입니다. 폰트, 색상, 창 여백을 슬라이더로 조정하고, 미리보기로 확인한 뒤 Ghostty 설정 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="md" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">

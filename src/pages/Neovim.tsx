@@ -49,7 +49,7 @@ export function NeovimPage() {
                     </span>
                 }
                 eyebrow="Platform 4 · NVM-001"
-                subtitle="lazy.nvim 기반 init.lua를 시각적으로 구성합니다."
+                subtitle="Vim 기반의 확장형 에디터입니다. 테마, 플러그인, 키맵을 화면에서 고른 뒤 lazy.nvim 기반 init.lua 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">

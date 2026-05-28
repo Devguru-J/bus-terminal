@@ -80,7 +80,7 @@ export function Iterm2Page() {
             <StationHeader
                 title="iTerm2 승강장"
                 eyebrow="Platform 3 Active"
-                subtitle="macOS 대표 터미널. .itermcolors 컬러 프리셋과 Dynamic Profile JSON 두 벌이 출발권에 함께 실립니다."
+                subtitle="macOS의 대표 터미널입니다. 색상과 프로파일을 정리해 .itermcolors 컬러 프리셋과 Dynamic Profile JSON 두 벌의 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="sm" onClick={importItermColors} title=".itermcolors 색상 파일을 가져와 현재 화면에 적용">
