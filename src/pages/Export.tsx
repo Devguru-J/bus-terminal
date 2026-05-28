@@ -270,10 +270,9 @@ export function ExportPage() {
                 <StationHeader
                     title="출발권 만들기"
                     eyebrow="Departure"
-                    subtitle="아직 다운로드할 설정이 없어요."
+                    subtitle="아직 점검할 설정이 없습니다. 먼저 승강장에서 설정을 바꿔 주세요."
                 />
                 <EmptyExportState />
-                <DiagnosticsPanel diagnostics={diagnostics} summary={summary} />
             </div>
         );
     }
