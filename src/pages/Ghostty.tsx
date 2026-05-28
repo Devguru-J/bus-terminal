@@ -17,6 +17,7 @@ import {ToggleRow} from "@/components/ui/ToggleRow";
 import {Toggle} from "@/components/ui/Field";
 import {Modal} from "@/components/ui/Modal";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {FormPromptModal} from "@/components/ui/FormPromptModal";
 import {TerminalPreview} from "@/components/platform/TerminalPreview";
 import {StatusDot} from "@/components/ui/Badge";
 import {themes} from "@/data/themes";
@@ -48,6 +49,7 @@ export function GhosttyPage() {
 
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
+    const [keybindOpen, setKeybindOpen] = useState(false);
     const [importBuffer, setImportBuffer] = useState("");
     const [tabPosition, setTabPosition] = useState<"top" | "bottom">("top");
     const [activeSection, setActiveSection] = useState<GhosttySection>("basic");
@@ -127,10 +129,14 @@ export function GhosttyPage() {
     }
 
     function addKeybind() {
-        const binding = window.prompt("Ghostty keybind", "ctrl+shift+t=new_tab");
-        if (!binding?.trim()) return;
-        useGhosttyStore.getState().addKeybind(binding.trim());
-        toast(`${binding.trim()} 단축키를 추가했어요.`, "success");
+        setKeybindOpen(true);
+    }
+
+    function doAddKeybind(values: Record<string, string>) {
+        const binding = values.binding;
+        if (!binding) return;
+        useGhosttyStore.getState().addKeybind(binding);
+        toast(`${binding} 단축키를 추가했어요.`, "success");
     }
 
     const themeName = themes.find(t => t.id === currentThemeId)?.ko ?? "BusTerminal Dark";
@@ -527,6 +533,18 @@ export function GhosttyPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 Ghostty 노선"
+            />
+            <FormPromptModal
+                open={keybindOpen}
+                onClose={() => setKeybindOpen(false)}
+                onSubmit={doAddKeybind}
+                title="Ghostty 단축키 추가"
+                fields={[{
+                    name: "binding",
+                    label: "키바인드 (예: ctrl+shift+t=new_tab)",
+                    initial: "ctrl+shift+t=new_tab",
+                    required: true
+                }]}
             />
 
             {/* Import modal */}

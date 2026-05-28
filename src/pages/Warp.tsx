@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {FormPromptModal} from "@/components/ui/FormPromptModal";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -31,6 +32,7 @@ const COLOR_KEYS: Array<keyof WarpTerminalColors> = [
 export function WarpPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
+    const [workflowOpen, setWorkflowOpen] = useState(false);
     const {
         config,
         setAppearance,
@@ -58,13 +60,11 @@ export function WarpPage() {
     }
 
     function handleAddWorkflow() {
-        const name = window.prompt("워크플로우 이름", "Git pull rebase");
-        if (!name) return;
-        const command = window.prompt(
-            "실행할 명령",
-            "git pull --rebase origin {{branch}}"
-        );
-        if (!command) return;
+        setWorkflowOpen(true);
+    }
+
+    function doAddWorkflow(v: Record<string, string>) {
+        const {name, command} = v;
         addWorkflow({
             id: crypto.randomUUID(),
             name,
@@ -471,6 +471,16 @@ export function WarpPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue={`${config.themeName} 세트`}
+            />
+            <FormPromptModal
+                open={workflowOpen}
+                onClose={() => setWorkflowOpen(false)}
+                onSubmit={doAddWorkflow}
+                title="워크플로우 추가"
+                fields={[
+                    {name: "name", label: "워크플로우 이름", initial: "Git pull rebase", required: true},
+                    {name: "command", label: "실행할 명령", initial: "git pull --rebase origin {{branch}}", required: true}
+                ]}
             />
 
             <ImportWizard

@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {FormPromptModal} from "@/components/ui/FormPromptModal";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -33,6 +34,7 @@ import {cn} from "@/lib/utils";
 export function HelixPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
+    const [keymapOpen, setKeymapOpen] = useState(false);
     const {config, setField, toggleLanguageServer, addKeymap, removeKeymap, exportText} =
         useHelixStore();
     const save = useRoutesStore(s => s.save);
@@ -50,15 +52,17 @@ export function HelixPage() {
     }
 
     function addCustomKeymap() {
-        const mode = window.prompt("모드 (normal / insert / select)", "normal");
-        if (!mode || !["normal", "insert", "select"].includes(mode)) return;
-        const lhs = window.prompt("키 (예: C-s)", "C-s");
-        if (!lhs?.trim()) return;
-        const rhs = window.prompt("동작 (예: :w)", ":w");
-        if (!rhs?.trim()) return;
-        const desc = window.prompt("설명", "Save") ?? "";
-        addKeymap({mode: mode as HelixKeymap["mode"], lhs: lhs.trim(), rhs: rhs.trim(), desc});
-        toast(`${lhs} 키매핑을 추가했어요.`, "success");
+        setKeymapOpen(true);
+    }
+
+    function doAddKeymap(v: Record<string, string>) {
+        const mode = v.mode;
+        if (!["normal", "insert", "select"].includes(mode)) {
+            toast("모드는 normal / insert / select 중 하나여야 합니다.", "warn");
+            return;
+        }
+        addKeymap({mode: mode as HelixKeymap["mode"], lhs: v.lhs, rhs: v.rhs, desc: v.desc});
+        toast(`${v.lhs} 키매핑을 추가했어요.`, "success");
     }
 
     const filteredServers = useMemo(() => {
@@ -496,6 +500,18 @@ export function HelixPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 Helix 노선"
+            />
+            <FormPromptModal
+                open={keymapOpen}
+                onClose={() => setKeymapOpen(false)}
+                onSubmit={doAddKeymap}
+                title="Helix 키매핑 추가"
+                fields={[
+                    {name: "mode", label: "모드 (normal / insert / select)", initial: "normal", required: true},
+                    {name: "lhs", label: "키 (예: C-s)", initial: "C-s", required: true},
+                    {name: "rhs", label: "동작 (예: :w)", initial: ":w", required: true},
+                    {name: "desc", label: "설명", initial: "Save"}
+                ]}
             />
 
             <ImportWizard

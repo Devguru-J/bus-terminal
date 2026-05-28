@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {FormPromptModal} from "@/components/ui/FormPromptModal";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -28,6 +29,8 @@ import {cn} from "@/lib/utils";
 export function TmuxPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
+    const [pluginOpen, setPluginOpen] = useState(false);
+    const [bindingOpen, setBindingOpen] = useState(false);
     const {config, setField, togglePlugin, exportText} = useTmuxStore();
     const save = useRoutesStore(s => s.save);
     const navigate = useNavigate();
@@ -54,32 +57,33 @@ export function TmuxPage() {
     }
 
     function addCustomPlugin() {
-        const plugin = window.prompt("추가할 TPM 플러그인 경로", "tmux-plugins/tmux-open");
-        if (!plugin?.trim()) return;
-        const next = Array.from(new Set([...config.customPlugins, plugin.trim()]));
+        setPluginOpen(true);
+    }
+
+    function doAddPlugin(v: Record<string, string>) {
+        const next = Array.from(new Set([...config.customPlugins, v.plugin]));
         setField("customPlugins", next);
-        toast(`${plugin.trim()} 플러그인을 추가했어요.`, "success");
+        toast(`${v.plugin} 플러그인을 추가했어요.`, "success");
     }
 
     function addCustomBinding() {
-        const key = window.prompt("바인딩 키", "r");
-        if (!key?.trim()) return;
-        const command = window.prompt("tmux 명령", "source-file ~/.tmux.conf \\; display-message 'Reloaded'");
-        if (!command?.trim()) return;
-        const label = window.prompt("표시 이름", "Reload config") ?? "";
+        setBindingOpen(true);
+    }
+
+    function doAddBinding(v: Record<string, string>) {
         setField("keyBindings", [
             ...config.keyBindings,
             {
                 id: `custom-${crypto.randomUUID()}`,
-                key: key.trim(),
-                command: command.trim(),
-                label: label.trim() || command.trim(),
+                key: v.key,
+                command: v.command,
+                label: v.label || v.command,
                 category: "custom",
                 enabled: true,
                 builtin: false
             }
         ]);
-        toast(`${key.trim()} 바인딩을 추가했어요.`, "success");
+        toast(`${v.key} 바인딩을 추가했어요.`, "success");
     }
 
     function resetCustomBindings() {
@@ -414,6 +418,24 @@ export function TmuxPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 tmux 노선"
+            />
+            <FormPromptModal
+                open={pluginOpen}
+                onClose={() => setPluginOpen(false)}
+                onSubmit={doAddPlugin}
+                title="TPM 플러그인 추가"
+                fields={[{name: "plugin", label: "플러그인 경로 (user/repo)", initial: "tmux-plugins/tmux-open", required: true}]}
+            />
+            <FormPromptModal
+                open={bindingOpen}
+                onClose={() => setBindingOpen(false)}
+                onSubmit={doAddBinding}
+                title="커스텀 키바인딩 추가"
+                fields={[
+                    {name: "key", label: "바인딩 키", initial: "r", required: true},
+                    {name: "command", label: "tmux 명령", initial: "source-file ~/.tmux.conf \\; display-message 'Reloaded'", required: true},
+                    {name: "label", label: "표시 이름", initial: "Reload config"}
+                ]}
             />
 
             <ImportWizard
