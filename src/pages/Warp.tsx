@@ -4,6 +4,9 @@ import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {FormPromptModal} from "@/components/ui/FormPromptModal";
+import {PresetModal} from "@/components/ui/PresetModal";
+import {warpPresets} from "@/data/presets";
+import {themes as allThemes} from "@/data/themes";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -33,6 +36,7 @@ export function WarpPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
     const [workflowOpen, setWorkflowOpen] = useState(false);
+    const [presetOpen, setPresetOpen] = useState(false);
     const {
         config,
         setAppearance,
@@ -63,6 +67,15 @@ export function WarpPage() {
         setWorkflowOpen(true);
     }
 
+    function applyPreset(id: string) {
+        if (id === "starter") {
+            const tokyo = allThemes.find(t => t.id === "tokyo-night");
+            if (tokyo) useWarpStore.getState().applyTheme(tokyo);
+            setAi("enabled", true);
+        }
+        toast("프리셋을 적용했어요.", "success");
+    }
+
     function doAddWorkflow(v: Record<string, string>) {
         const {name, command} = v;
         addWorkflow({
@@ -89,6 +102,9 @@ export function WarpPage() {
                 subtitle="AI 기능이 들어간 차세대 터미널입니다. 테마, 워크플로우, AI 옵션을 정리해 Warp 설정 파일로 내보냅니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
+                            <Icon name="auto_awesome" className="text-[16px]" /> 프리셋
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
@@ -471,6 +487,13 @@ export function WarpPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue={`${config.themeName} 세트`}
+            />
+            <PresetModal
+                open={presetOpen}
+                onClose={() => setPresetOpen(false)}
+                onSelect={applyPreset}
+                presets={warpPresets}
+                title="Warp 프리셋"
             />
             <FormPromptModal
                 open={workflowOpen}

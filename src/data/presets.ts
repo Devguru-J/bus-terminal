@@ -43,28 +43,27 @@ export function getGhosttyPreset(id: string): GhosttyPresetApply | null {
 }
 
 export const tmuxPresets: PresetDef[] = [
-    {id: "starter", name: "입문자 추천", description: "상태바 표시 · prefix C-b · 마우스 켜기", badge: "처음"},
-    {id: "minimal", name: "미니멀", description: "상태바 숨김 · 베이스 인덱스 1 · 알림 끔", badge: "미니"}
+    {id: "starter", name: "입문자 추천", description: "상태바 표시 · 마우스 켜기 · 베이스 인덱스 1", badge: "처음"},
+    {id: "minimal", name: "미니멀", description: "상태바 숨김 · 알림 끔", badge: "미니"}
 ];
 
 export const neovimPresets: PresetDef[] = [
-    {id: "starter", name: "Neovim 입문 세트", description: "lazy.nvim · Tokyo Night · 줄 번호 · clipboard", badge: "처음"},
-    {id: "minimal", name: "미니멀", description: "기본 옵션 + 줄 번호만", badge: "미니"}
+    {id: "starter", name: "Neovim 입문 세트", description: "Tokyo Night · 줄 번호 · 클립보드 공유", badge: "처음"}
 ];
 
 export const zshPresets: PresetDef[] = [
-    {id: "starter", name: "입문자 추천", description: "starship 프롬프트 · 자동완성 · git alias", badge: "처음"}
+    {id: "starter", name: "입문자 추천", description: "starship 스타일 프롬프트 · git alias", badge: "처음"}
 ];
 
 export const helixPresets: PresetDef[] = [
-    {id: "starter", name: "입문자 추천", description: "Tokyo Night · 줄 번호 · 자동 저장 안내", badge: "처음"}
+    {id: "starter", name: "입문자 추천", description: "Tokyo Night · 줄 번호 · 자동 저장", badge: "처음"}
 ];
 
 export const warpPresets: PresetDef[] = [
-    {id: "starter", name: "입문자 추천", description: "Tokyo Night · AI 켜기 · git pull rebase 워크플로우", badge: "처음"}
+    {id: "starter", name: "입문자 추천", description: "Tokyo Night · AI 켜기 · 기본 워크플로우", badge: "처음"}
 ];
 
 export const iterm2Presets: PresetDef[] = [
-    {id: "starter", name: "입문자 추천", description: "JetBrains Mono · 13pt · Tokyo Night", badge: "처음"},
+    {id: "starter", name: "입문자 추천", description: "JetBrains Mono · Tokyo Night", badge: "처음"},
     {id: "minimal", name: "미니멀", description: "여백 최소 · 기본 색상", badge: "미니"}
 ];

@@ -4,6 +4,8 @@ import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {FormPromptModal} from "@/components/ui/FormPromptModal";
+import {PresetModal} from "@/components/ui/PresetModal";
+import {tmuxPresets} from "@/data/presets";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -31,6 +33,20 @@ export function TmuxPage() {
     const [saveOpen, setSaveOpen] = useState(false);
     const [pluginOpen, setPluginOpen] = useState(false);
     const [bindingOpen, setBindingOpen] = useState(false);
+    const [presetOpen, setPresetOpen] = useState(false);
+
+    function applyPreset(id: string) {
+        if (id === "starter") {
+            setField("mouse", true);
+            setField("baseIndex", 1);
+            setField("paneBaseIndex", 1);
+            setField("statusInterval", 5);
+        } else if (id === "minimal") {
+            setField("statusInterval", 60);
+            setField("escapeTime", 0);
+        }
+        toast("프리셋을 적용했어요.", "success");
+    }
     const {config, setField, togglePlugin, exportText} = useTmuxStore();
     const save = useRoutesStore(s => s.save);
     const navigate = useNavigate();
@@ -108,6 +124,9 @@ export function TmuxPage() {
                 subtitle="터미널 안에서 창과 세션을 나누는 도구입니다. 키 바인딩과 상태바, 플러그인을 화면에서 정리한 뒤 .tmux.conf 파일로 내보냅니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
+                            <Icon name="auto_awesome" className="text-[16px]" /> 프리셋
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
@@ -418,6 +437,13 @@ export function TmuxPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 tmux 노선"
+            />
+            <PresetModal
+                open={presetOpen}
+                onClose={() => setPresetOpen(false)}
+                onSelect={applyPreset}
+                presets={tmuxPresets}
+                title="tmux 프리셋"
             />
             <FormPromptModal
                 open={pluginOpen}

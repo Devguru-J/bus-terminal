@@ -4,6 +4,8 @@ import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {PresetModal} from "@/components/ui/PresetModal";
+import {zshPresets} from "@/data/presets";
 import {Icon} from "@/components/ui/Icon";
 import {Label, Select, NumberInput, TextInput} from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
@@ -20,6 +22,22 @@ import {cn} from "@/lib/utils";
 export function ZshPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
+    const [presetOpen, setPresetOpen] = useState(false);
+
+    function applyPreset(id: string) {
+        if (id === "starter") {
+            setField("prompt", "starship" as never);
+            setField("shareHistory", true);
+            setField("ignoreDups", true);
+            setField("aliases", [
+                {name: "gs", value: "git status"},
+                {name: "gp", value: "git pull --rebase"},
+                {name: "gc", value: "git commit"},
+                {name: "ll", value: "ls -lah"}
+            ]);
+        }
+        toast("프리셋을 적용했어요.", "success");
+    }
     const {
         config,
         setField,
@@ -59,6 +77,9 @@ export function ZshPage() {
                 subtitle="기본 셸 환경을 다듬는 곳입니다. 프롬프트, 히스토리, 플러그인, 별칭을 골라 ~/.zshrc 파일로 내보냅니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
+                            <Icon name="auto_awesome" className="text-[16px]" /> 프리셋
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
@@ -347,6 +368,13 @@ export function ZshPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 Zsh 노선"
+            />
+            <PresetModal
+                open={presetOpen}
+                onClose={() => setPresetOpen(false)}
+                onSelect={applyPreset}
+                presets={zshPresets}
+                title="zsh 프리셋"
             />
 
             <ImportWizard

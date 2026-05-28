@@ -3,6 +3,8 @@ import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {PresetModal} from "@/components/ui/PresetModal";
+import {neovimPresets} from "@/data/presets";
 import {Icon} from "@/components/ui/Icon";
 import {Label, Select, RangeInput, TextInput} from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
@@ -25,6 +27,18 @@ const LSP_SERVERS = ["ts_ls", "eslint", "lua_ls", "pyright", "rust_analyzer", "g
 export function NeovimPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
+    const [presetOpen, setPresetOpen] = useState(false);
+
+    function applyPreset(id: string) {
+        if (id === "starter") {
+            setField("lineNumbers", true);
+            setField("relativeNumbers", true);
+            setField("clipboard", "unnamedplus");
+            setField("colorscheme", "tokyonight" as never);
+            setField("mouse", true);
+        }
+        toast("프리셋을 적용했어요.", "success");
+    }
     const {config, setField, togglePlugin, addKeymap, removeKeymap, exportText, reset} =
         useNeovimStore();
     const save = useRoutesStore(s => s.save);
@@ -56,6 +70,9 @@ export function NeovimPage() {
                 subtitle="Vim 기반의 확장형 에디터입니다. 테마, 플러그인, 키맵을 화면에서 고른 뒤 lazy.nvim 기반 init.lua 파일로 내보냅니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
+                            <Icon name="auto_awesome" className="text-[16px]" /> 프리셋
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
@@ -422,6 +439,13 @@ export function NeovimPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 Neovim 노선"
+            />
+            <PresetModal
+                open={presetOpen}
+                onClose={() => setPresetOpen(false)}
+                onSelect={applyPreset}
+                presets={neovimPresets}
+                title="Neovim 프리셋"
             />
 
             <ImportWizard

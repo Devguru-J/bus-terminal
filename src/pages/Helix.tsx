@@ -4,6 +4,8 @@ import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {FormPromptModal} from "@/components/ui/FormPromptModal";
+import {PresetModal} from "@/components/ui/PresetModal";
+import {helixPresets} from "@/data/presets";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -35,6 +37,18 @@ export function HelixPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
     const [keymapOpen, setKeymapOpen] = useState(false);
+    const [presetOpen, setPresetOpen] = useState(false);
+
+    function applyPreset(id: string) {
+        if (id === "starter") {
+            setField("theme", "tokyonight");
+            setField("lineNumber", "relative" as never);
+            setField("autoSave", true);
+            setField("trueColor", true);
+            setField("mouse", true);
+        }
+        toast("프리셋을 적용했어요.", "success");
+    }
     const {config, setField, toggleLanguageServer, addKeymap, removeKeymap, exportText} =
         useHelixStore();
     const save = useRoutesStore(s => s.save);
@@ -81,6 +95,9 @@ export function HelixPage() {
                 subtitle="Rust로 만든 모달 에디터입니다. 테마와 언어 설정을 골라 config.toml과 languages.toml 두 벌의 파일로 내보냅니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
+                            <Icon name="auto_awesome" className="text-[16px]" /> 프리셋
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
@@ -500,6 +517,13 @@ export function HelixPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 Helix 노선"
+            />
+            <PresetModal
+                open={presetOpen}
+                onClose={() => setPresetOpen(false)}
+                onSelect={applyPreset}
+                presets={helixPresets}
+                title="Helix 프리셋"
             />
             <FormPromptModal
                 open={keymapOpen}

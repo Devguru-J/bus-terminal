@@ -3,6 +3,9 @@ import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {PresetModal} from "@/components/ui/PresetModal";
+import {iterm2Presets} from "@/data/presets";
+import {themes as allThemes} from "@/data/themes";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -27,6 +30,20 @@ export function Iterm2Page() {
     const navigate = useNavigate();
     const colorsText = useMemo(() => exportColors(), [profile, exportColors]);
     const [saveOpen, setSaveOpen] = useState(false);
+    const [presetOpen, setPresetOpen] = useState(false);
+
+    function applyPreset(id: string) {
+        if (id === "starter") {
+            setField("fontFamily", "JetBrains Mono");
+            setField("fontSize", 13);
+            const tokyo = allThemes.find(t => t.id === "tokyo-night");
+            if (tokyo) useIterm2Store.getState().applyTheme(tokyo);
+        } else if (id === "minimal") {
+            setField("horizontalSpacing", 1);
+            setField("verticalSpacing", 1);
+        }
+        toast("프리셋을 적용했어요.", "success");
+    }
 
     function handleSave() {
         setSaveOpen(true);
@@ -87,6 +104,9 @@ export function Iterm2Page() {
                 subtitle="macOS의 대표 터미널입니다. 색상과 프로파일을 정리해 .itermcolors 컬러 프리셋과 Dynamic Profile JSON 두 벌의 파일로 내보냅니다."
                 actions={
                     <>
+                        <Button variant="outline" size="sm" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
+                            <Icon name="auto_awesome" className="text-[16px]" /> 프리셋
+                        </Button>
                         <Button variant="outline" size="sm" onClick={importItermColors} title=".itermcolors 색상 파일을 가져와 현재 화면에 적용">
                             <Icon name="file_upload" className="text-[16px]" /> .itermcolors 가져오기
                         </Button>
@@ -510,6 +530,13 @@ export function Iterm2Page() {
                 title="차고 보관"
                 label="프로파일 이름"
                 initialValue={profile.profileName}
+            />
+            <PresetModal
+                open={presetOpen}
+                onClose={() => setPresetOpen(false)}
+                onSelect={applyPreset}
+                presets={iterm2Presets}
+                title="iTerm2 프리셋"
             />
         </div>
     );
