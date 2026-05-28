@@ -121,36 +121,9 @@ export function GuidePage() {
                 </ol>
             </ConfigPanel>
 
-            {/* 3. 용어 안내 */}
+            {/* 3. 추천 시작 경로 — 행동 가이드 우선 */}
             <ConfigPanel
-                title="③ 이 단어들이 자주 나와요"
-                actions={<Badge tone="muted">용어집</Badge>}
-            >
-                <p className="text-[12px] text-on-surface-variant mb-3">
-                    버스터미널은 버스 정류장 메타포를 씁니다. 처음엔 익숙하지 않을 수 있어요.
-                </p>
-                <div className="divide-y divide-white/[0.05]">
-                    {TERM_GLOSSARY.map(g => (
-                        <div key={g.term} className="py-3 grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-1 sm:gap-4">
-                            <div>
-                                <span className="font-mono text-code-sm text-primary-fixed-dim">
-                                    {g.term}
-                                </span>
-                            </div>
-                            <div className="min-w-0">
-                                <div className="text-body-md text-on-surface">{g.meaning}</div>
-                                <div className="text-[11px] text-on-surface-variant mt-0.5">
-                                    예) {g.example}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </ConfigPanel>
-
-            {/* 4. 추천 시작 경로 */}
-            <ConfigPanel
-                title="④ 어떻게 시작하는 게 좋을까요?"
+                title="③ 어떻게 시작하는 게 좋을까요?"
                 actions={<Badge tone="info">추천 경로</Badge>}
             >
                 <div className="space-y-3">
@@ -175,6 +148,33 @@ export function GuidePage() {
                         primaryTo="/themes/compare"
                         primaryLabel="설정 비교 열기"
                     />
+                </div>
+            </ConfigPanel>
+
+            {/* 4. 용어 안내 — 행동 가이드 뒤로 */}
+            <ConfigPanel
+                title="④ 이 단어들이 자주 나와요"
+                actions={<Badge tone="muted">용어집</Badge>}
+            >
+                <p className="text-[12px] text-on-surface-variant mb-3">
+                    버스터미널은 버스 정류장 메타포를 씁니다. 처음엔 익숙하지 않을 수 있어요.
+                </p>
+                <div className="divide-y divide-white/[0.05]">
+                    {TERM_GLOSSARY.map(g => (
+                        <div key={g.term} className="py-3 grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-1 sm:gap-4">
+                            <div>
+                                <span className="font-mono text-code-sm text-primary-fixed-dim">
+                                    {g.term}
+                                </span>
+                            </div>
+                            <div className="min-w-0">
+                                <div className="text-body-md text-on-surface">{g.meaning}</div>
+                                <div className="text-[11px] text-on-surface-variant mt-0.5">
+                                    예) {g.example}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </ConfigPanel>
 

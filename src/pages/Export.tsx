@@ -423,6 +423,16 @@ function PlatformSelector({
                     </ul>
                 </details>
             )}
+            <div className="mt-4 rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-3">
+                <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-amber-300/80 mb-1">
+                    적용 안내
+                </div>
+                <p className="text-body-sm text-on-surface-variant leading-relaxed">
+                    다운로드한 파일은 바로 적용되지 않습니다. 기존 설정을 백업한 뒤
+                    각 도구의 설정 경로(카드 하단의 경로)에 직접 옮겨 주세요.
+                    설치 스크립트는 고급 사용자용입니다.
+                </p>
+            </div>
         </section>
     );
 }

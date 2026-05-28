@@ -290,7 +290,7 @@ export function ThemesPage() {
                 steps={[
                     {title: "1. 테마 고르기", detail: "26개 중 마음에 드는 카드 클릭"},
                     {title: "2. 적용 대상 선택", detail: "하단 dock — '전체' 또는 특정 도구"},
-                    {title: "3. 적용 버튼", detail: "선택한 도구(들)에 즉시 환승"}
+                    {title: "3. 적용 버튼", detail: "선택한 도구(들)의 색상 설정만 변경. 적용 직후 되돌리기 버튼이 잠시 표시됨"}
                 ]}
             />
 
