@@ -64,8 +64,8 @@ export function OnboardingModal() {
             onClose={close}
             title={current.title}
             footer={
-                <div className="flex items-center justify-between w-full">
-                    <div className="flex gap-1.5" aria-label={`${step + 1} / ${STEPS.length}`}>
+                <div className="flex items-center justify-between w-full gap-3 flex-wrap">
+                    <div className="flex gap-1.5 shrink-0" aria-label={`${step + 1} / ${STEPS.length}`}>
                         {STEPS.map((_, i) => (
                             <span
                                 key={i}
@@ -75,7 +75,7 @@ export function OnboardingModal() {
                             />
                         ))}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 shrink-0 ml-auto">
                         <Button variant="ghost" onClick={close}>
                             건너뛰기
                         </Button>
