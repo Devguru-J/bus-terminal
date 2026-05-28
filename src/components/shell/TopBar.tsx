@@ -56,7 +56,7 @@ export function TopBar() {
                 </span>
                 <Link
                     to="/"
-                    className="p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
+                    className="hidden lg:inline-flex p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
                     aria-label="메인으로 돌아가기"
                     title="메인으로 돌아가기"
                 >
