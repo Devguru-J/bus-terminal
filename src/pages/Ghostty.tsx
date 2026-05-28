@@ -18,6 +18,8 @@ import {Toggle} from "@/components/ui/Field";
 import {Modal} from "@/components/ui/Modal";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {FormPromptModal} from "@/components/ui/FormPromptModal";
+import {PresetModal} from "@/components/ui/PresetModal";
+import {ghosttyPresets, getGhosttyPreset} from "@/data/presets";
 import {TerminalPreview} from "@/components/platform/TerminalPreview";
 import {StatusDot} from "@/components/ui/Badge";
 import {themes} from "@/data/themes";
@@ -50,6 +52,7 @@ export function GhosttyPage() {
     const [importOpen, setImportOpen] = useState(false);
     const [saveOpen, setSaveOpen] = useState(false);
     const [keybindOpen, setKeybindOpen] = useState(false);
+    const [presetOpen, setPresetOpen] = useState(false);
     const [importBuffer, setImportBuffer] = useState("");
     const [tabPosition, setTabPosition] = useState<"top" | "bottom">("top");
     const [activeSection, setActiveSection] = useState<GhosttySection>("basic");
@@ -132,6 +135,18 @@ export function GhosttyPage() {
         setKeybindOpen(true);
     }
 
+    function applyPreset(id: string) {
+        const p = getGhosttyPreset(id);
+        if (!p) return;
+        const setField = useGhosttyStore.getState().setField;
+        for (const [k, v] of Object.entries(p.config)) setField(k, v);
+        if (p.themeId) {
+            const t = themes.find(x => x.id === p.themeId);
+            if (t) useGhosttyStore.getState().applyTheme(t);
+        }
+        toast("프리셋을 적용했어요.", "success");
+    }
+
     function doAddKeybind(values: Record<string, string>) {
         const binding = values.binding;
         if (!binding) return;
@@ -154,6 +169,9 @@ export function GhosttyPage() {
                 subtitle="가장 먼저 만지는 터미널 설정입니다. 폰트, 색상, 창 여백을 슬라이더로 조정하고, 미리보기로 확인한 뒤 Ghostty 설정 파일로 내보냅니다."
                 actions={
                     <>
+                        <Button variant="outline" size="md" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
+                            <Icon name="auto_awesome" className="text-[16px]" /> 프리셋
+                        </Button>
                         <Button variant="outline" size="md" onClick={() => setImportOpen(true)} title="기존 설정 파일을 가져와서 적용">
                             <Icon name="sync_alt" className="text-[16px]" /> 환승하기
                         </Button>
@@ -533,6 +551,13 @@ export function GhosttyPage() {
                 onClose={() => setSaveOpen(false)}
                 onSubmit={doSaveBoard}
                 initialValue="내 Ghostty 노선"
+            />
+            <PresetModal
+                open={presetOpen}
+                onClose={() => setPresetOpen(false)}
+                onSelect={applyPreset}
+                presets={ghosttyPresets}
+                title="Ghostty 프리셋"
             />
             <FormPromptModal
                 open={keybindOpen}
