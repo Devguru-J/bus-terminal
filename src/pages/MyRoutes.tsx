@@ -4,6 +4,8 @@ import {RouteTable} from "@/components/platform/RouteTable";
 import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
 import {TextInput} from "@/components/ui/Field";
+import {SaveNameModal} from "@/components/ui/SaveNameModal";
+import {useConfirmDialog} from "@/components/ui/ConfirmModal";
 import {useRoutesStore} from "@/stores/routesStore";
 import {useGhosttyStore} from "@/stores/ghosttyStore";
 import {downloadText} from "@/lib/download";
@@ -31,6 +33,8 @@ export function MyRoutesPage() {
     const {routes, remove, rename, save} = useRoutesStore();
     const importGhostty = useGhosttyStore(s => s.importText);
     const [query, setQuery] = useState("");
+    const [renameTarget, setRenameTarget] = useState<{id: string; name: string} | null>(null);
+    const {confirm, dialog: confirmDialog} = useConfirmDialog();
     useEffect(() => {
         const encoded = readShareFromHash(window.location.hash);
         if (!encoded) return;
@@ -95,12 +99,7 @@ export function MyRoutesPage() {
                         );
                     }
                 }}
-                onRename={r => {
-                    const next = prompt("새 노선 이름", r.name);
-                    if (!next?.trim()) return;
-                    rename(r.id, next.trim());
-                    toast("노선 이름을 변경했어요.", "success");
-                }}
+                onRename={r => setRenameTarget({id: r.id, name: r.name})}
                 onDuplicate={r => {
                     save({name: `${r.name} copy`, platform: r.platform, text: r.text});
                     toast(`"${r.name}" 노선을 복제했어요.`, "success");
@@ -124,13 +123,33 @@ export function MyRoutesPage() {
                         ok ? "success" : "warn"
                     );
                 }}
-                onDelete={r => {
-                    if (confirm(`"${r.name}"을(를) 삭제하시겠어요?`)) {
+                onDelete={async r => {
+                    if (await confirm({
+                        title: "노선 삭제",
+                        message: `"${r.name}"을(를) 삭제합니다.`,
+                        confirmLabel: "삭제",
+                        danger: true
+                    })) {
                         remove(r.id);
+                        toast("삭제했어요.", "success");
                     }
                 }}
             />
 
+            <SaveNameModal
+                open={!!renameTarget}
+                onClose={() => setRenameTarget(null)}
+                onSubmit={name => {
+                    if (!renameTarget) return;
+                    rename(renameTarget.id, name);
+                    toast("노선 이름을 변경했어요.", "success");
+                }}
+                title="노선 이름 변경"
+                label="새 노선 이름"
+                initialValue={renameTarget?.name ?? ""}
+                submitLabel="변경"
+            />
+            {confirmDialog}
         </div>
     );
 }
