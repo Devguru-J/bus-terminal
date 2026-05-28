@@ -124,7 +124,7 @@ export function HomePage() {
                     <div className="flex flex-wrap items-center gap-3 pt-1">
                         <Link to="/ghostty">
                             <Button size="lg">
-                                <Icon name="play_arrow" className="text-[16px]" /> 시작하기
+                                <Icon name="play_arrow" className="text-[16px]" /> Ghostty로 시작하기
                             </Button>
                         </Link>
                         <Link to="/guide">
