@@ -4,6 +4,7 @@ import {motion} from "framer-motion";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {ThemeCard} from "@/components/platform/ThemeCard";
 import {Button} from "@/components/ui/Button";
+import {useConfirmDialog} from "@/components/ui/ConfirmModal";
 import {Icon} from "@/components/ui/Icon";
 import {Select, TextInput} from "@/components/ui/Field";
 import {themes as builtinThemes, themeCategories, type RouteTheme, type ThemeTag} from "@/data/themes";
@@ -109,6 +110,7 @@ export function ThemesPage() {
     const [tagFilter, setTagFilter] = useState<ThemeTag | "all" | "favorites" | "imported">("popular");
     const [sort, setSort] = useState<SortId>("default");
     const [active, setActive] = useState(builtinThemes[0].id);
+    const {confirm, dialog: confirmDialog} = useConfirmDialog();
     const [target, setTarget] = useState<Target>("all");
     const [importOpen, setImportOpen] = useState(false);
 
@@ -378,12 +380,13 @@ export function ThemesPage() {
                             onFavorite={() => toggleFavorite(t.id)}
                             onDelete={
                                 userIds.has(t.id)
-                                    ? () => {
-                                          if (
-                                              window.confirm(
-                                                  `"${t.ko}" 사용자 테마를 삭제할까요?`
-                                              )
-                                          ) {
+                                    ? async () => {
+                                          if (await confirm({
+                                              title: "사용자 테마 삭제",
+                                              message: `"${t.ko}" 사용자 테마를 삭제합니다.`,
+                                              confirmLabel: "삭제",
+                                              danger: true
+                                          })) {
                                               removeUserTheme(t.id);
                                               toast("삭제했어요.", "success");
                                           }
@@ -446,6 +449,7 @@ export function ThemesPage() {
                 onClose={() => setImportOpen(false)}
                 onImported={id => setActive(id)}
             />
+            {confirmDialog}
         </div>
     );
 }

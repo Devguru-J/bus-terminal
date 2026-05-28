@@ -4,6 +4,7 @@ import {StationHeader} from "@/components/shell/StationHeader";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {Badge} from "@/components/ui/Badge";
 import {Button} from "@/components/ui/Button";
+import {useConfirmDialog} from "@/components/ui/ConfirmModal";
 import {Icon} from "@/components/ui/Icon";
 import {useAuthStore, signOut} from "@/stores/authStore";
 import {toast} from "@/stores/toastStore";
@@ -29,6 +30,7 @@ export function ProfilePage() {
     const openAuth = useAuthStore(s => s.openModal);
     const [snapshots, setSnapshots] = useState<CloudSnapshot[]>([]);
     const [loading, setLoading] = useState(false);
+    const {confirm, dialog: confirmDialog} = useConfirmDialog();
 
     const metadata = user?.user_metadata ?? {};
     const avatarUrl = metaString(metadata.avatar_url) || metaString(metadata.picture);
@@ -53,7 +55,11 @@ export function ProfilePage() {
     }, [user]);
 
     async function handleSignOut() {
-        if (!window.confirm("로그아웃할까요? 로컬 설정은 이 브라우저에 그대로 남아 있습니다.")) return;
+        if (!(await confirm({
+            title: "로그아웃",
+            message: "로그아웃합니다. 로컬 설정은 이 브라우저에 그대로 남습니다.",
+            confirmLabel: "로그아웃"
+        }))) return;
         await signOut();
         toast("로그아웃했어요.", "success");
         navigate("/");
@@ -176,6 +182,7 @@ export function ProfilePage() {
                     </div>
                 )}
             </ConfigPanel>
+            {confirmDialog}
         </div>
     );
 }

@@ -2,6 +2,7 @@ import {useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
+import {useConfirmDialog} from "@/components/ui/ConfirmModal";
 import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
 import {themes as builtinThemes, themeToConfigSnippet} from "@/data/themes";
@@ -66,6 +67,7 @@ export function ThemeDetailPage() {
     const setHelixField = useHelixStore(s => s.setField);
 
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
+    const {confirm, dialog: confirmDialog} = useConfirmDialog();
 
     if (!theme) {
         return (
@@ -134,8 +136,13 @@ export function ThemeDetailPage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => {
-                                    if (window.confirm(`"${theme.ko}" 사용자 테마를 삭제할까요?`)) {
+                                onClick={async () => {
+                                    if (await confirm({
+                                        title: "사용자 테마 삭제",
+                                        message: `"${theme.ko}" 사용자 테마를 삭제합니다.`,
+                                        confirmLabel: "삭제",
+                                        danger: true
+                                    })) {
                                         removeUserTheme(theme.id);
                                         toast("삭제했어요.", "success");
                                         window.history.back();
@@ -337,6 +344,7 @@ export function ThemeDetailPage() {
                     </Button>
                 </div>
             </div>
+            {confirmDialog}
         </div>
     );
 

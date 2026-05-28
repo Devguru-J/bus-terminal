@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {Button} from "@/components/ui/Button";
+import {useConfirmDialog} from "@/components/ui/ConfirmModal";
 import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
 import {useAuthStore} from "@/stores/authStore";
@@ -30,6 +31,7 @@ export function SettingsPage() {
     const [cloudBusy, setCloudBusy] = useState(false);
     const [snapshots, setSnapshots] = useState<CloudSnapshot[]>([]);
     const [snapshotLabel, setSnapshotLabel] = useState("내 개발환경");
+    const {confirm, dialog: confirmDialog} = useConfirmDialog();
 
     function exportBackup() {
         const payload = collectLocalBackup();
@@ -86,7 +88,11 @@ export function SettingsPage() {
 
     async function restoreFromCloud(snapshot: CloudSnapshot) {
         const count = countBackupItems(snapshot.data.data);
-        if (!window.confirm(`'${snapshot.label}' 스냅샷의 ${count}개 항목으로 현재 로컬 설정을 대체할까요?`)) return;
+        if (!(await confirm({
+            title: "클라우드에서 복원",
+            message: `'${snapshot.label}' 스냅샷의 ${count}개 항목으로 현재 로컬 설정을 대체합니다. 계속할까요?`,
+            confirmLabel: "복원"
+        }))) return;
         setCloudBusy(true);
         try {
             const restored = restoreLocalBackup(snapshot.data.data);
@@ -103,7 +109,12 @@ export function SettingsPage() {
     }
 
     async function removeCloudSnapshot(snapshot: CloudSnapshot) {
-        if (!window.confirm(`'${snapshot.label}' 스냅샷을 삭제할까요? 로컬 설정은 삭제되지 않습니다.`)) return;
+        if (!(await confirm({
+            title: "스냅샷 삭제",
+            message: `'${snapshot.label}' 스냅샷을 삭제합니다. 로컬 설정은 삭제되지 않습니다.`,
+            confirmLabel: "삭제",
+            danger: true
+        }))) return;
         setCloudBusy(true);
         try {
             await deleteCloudSnapshot(snapshot.id);
@@ -134,13 +145,12 @@ export function SettingsPage() {
                 toast("백업 파일 형식이 아닙니다.", "warn");
                 return;
             }
-            if (
-                !window.confirm(
-                    `복원하면 현재 저장된 모든 설정이 백업 파일로 대체됩니다. 진행할까요?\n\n백업 시각: ${
-                        payload.exportedAt ?? "unknown"
-                    }`
-                )
-            ) {
+            if (!(await confirm({
+                title: "백업 파일 복원",
+                message: `복원하면 현재 저장된 모든 설정이 백업 파일로 대체됩니다. 백업 시각: ${payload.exportedAt ?? "unknown"}`,
+                confirmLabel: "복원",
+                danger: true
+            }))) {
                 return;
             }
             let restored = 0;
@@ -159,8 +169,13 @@ export function SettingsPage() {
         }
     }
 
-    function resetAll() {
-        if (!window.confirm("정말로 모든 설정/노선/즐겨찾기를 초기화할까요?")) return;
+    async function resetAll() {
+        if (!(await confirm({
+            title: "전체 초기화",
+            message: "모든 설정, 노선, 즐겨찾기가 삭제됩니다. 되돌릴 수 없습니다.",
+            confirmLabel: "초기화",
+            danger: true
+        }))) return;
         clearLocalBackup();
         toast("모두 초기화했어요. 새로고침 합니다.", "success");
         setTimeout(() => window.location.reload(), 800);
@@ -314,59 +329,70 @@ export function SettingsPage() {
                         title="Ghostty 노선 초기화"
                         desc="모든 GUI 값을 기본값으로 되돌립니다."
                         store={useGhosttyStore.getState().resetAll}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="Warp 노선 초기화"
                         desc="테마·AI·워크플로우를 기본값으로 되돌립니다."
                         store={useWarpStore.getState().reset}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="iTerm2 프로파일 초기화"
                         desc="색·폰트·핫키를 기본값으로 되돌립니다."
                         store={useIterm2Store.getState().reset}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="Neovim 노선 초기화"
                         desc="플러그인·키 매핑을 기본값으로 되돌립니다."
                         store={useNeovimStore.getState().reset}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="Helix 노선 초기화"
                         desc="theme·LSP·statusline을 기본값으로 되돌립니다."
                         store={useHelixStore.getState().reset}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="Zsh 노선 초기화"
                         desc="prompt·alias·plugins을 기본값으로 되돌립니다."
                         store={useZshStore.getState().reset}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="tmux 노선 초기화"
                         desc="status·키바인딩·플러그인을 기본값으로 되돌립니다."
                         store={useTmuxStore.getState().reset}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="차고 비우기"
                         desc="저장된 모든 노선을 삭제합니다."
                         store={useRoutesStore.getState().clear}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="사용자 테마 전체 삭제"
                         desc="외부에서 가져온 테마를 모두 삭제합니다."
                         store={useUserThemesStore.getState().clear}
+                        confirm={confirm}
                     />
                     <DangerRow
                         title="즐겨찾기 비우기"
                         desc="테마·폰트 즐겨찾기를 모두 비웁니다."
                         store={useFavoritesStore.getState().clear}
+                        confirm={confirm}
                     />
                 </div>
             </ConfigPanel>
+            {confirmDialog}
         </div>
     );
 }
 
-function DangerRow({title, desc, store}: {title: string; desc: string; store: () => void}) {
+function DangerRow({title, desc, store, confirm}: {title: string; desc: string; store: () => void; confirm: (opts: {title?: string; message: React.ReactNode; confirmLabel?: string; danger?: boolean}) => Promise<boolean>}) {
     return (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-surface-container-lowest px-4 py-3">
             <div className="min-w-0">
@@ -376,8 +402,8 @@ function DangerRow({title, desc, store}: {title: string; desc: string; store: ()
             <Button
                 variant="danger"
                 size="sm"
-                onClick={() => {
-                    if (window.confirm(`${title}? 되돌릴 수 없어요.`)) {
+                onClick={async () => {
+                    if (await confirm({title, message: `${title}을(를) 진행합니다. 되돌릴 수 없습니다.`, confirmLabel: "초기화", danger: true})) {
                         store();
                         toast("초기화했어요.", "success");
                     }
