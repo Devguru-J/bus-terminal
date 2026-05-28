@@ -1,7 +1,8 @@
-import {useMemo} from "react";
+import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
+import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -25,10 +26,13 @@ export function Iterm2Page() {
     const save = useRoutesStore(s => s.save);
     const navigate = useNavigate();
     const colorsText = useMemo(() => exportColors(), [profile, exportColors]);
+    const [saveOpen, setSaveOpen] = useState(false);
 
     function handleSave() {
-        const name = window.prompt("차고에 보관할 프로파일 이름?", profile.profileName);
-        if (!name) return;
+        setSaveOpen(true);
+    }
+
+    function doSaveBoard(name: string) {
         save({name, platform: "iterm2", text: colorsText});
         toast(`"${name}" 프로파일이 차고에 보관되었어요.`, "success");
     }
@@ -499,6 +503,14 @@ export function Iterm2Page() {
                     </ConfigPanel>
                 </div>
             </div>
+            <SaveNameModal
+                open={saveOpen}
+                onClose={() => setSaveOpen(false)}
+                onSubmit={doSaveBoard}
+                title="차고 보관"
+                label="프로파일 이름"
+                initialValue={profile.profileName}
+            />
         </div>
     );
 }

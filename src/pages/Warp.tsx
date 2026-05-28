@@ -2,6 +2,7 @@ import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
+import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -29,6 +30,7 @@ const COLOR_KEYS: Array<keyof WarpTerminalColors> = [
 
 export function WarpPage() {
     const [importOpen, setImportOpen] = useState(false);
+    const [saveOpen, setSaveOpen] = useState(false);
     const {
         config,
         setAppearance,
@@ -47,8 +49,10 @@ export function WarpPage() {
     const themeYaml = useMemo(() => exportTheme(), [config, exportTheme]);
 
     function handleSave() {
-        const name = window.prompt("차고에 보관할 노선 이름?", `${config.themeName} 세트`);
-        if (!name) return;
+        setSaveOpen(true);
+    }
+
+    function doSaveBoard(name: string) {
         save({name, platform: "warp", text: themeYaml});
         toast(`"${name}" 노선이 차고에 보관되었어요.`, "success");
     }
@@ -461,6 +465,13 @@ export function WarpPage() {
                 </div>
             </div>
 
+
+            <SaveNameModal
+                open={saveOpen}
+                onClose={() => setSaveOpen(false)}
+                onSubmit={doSaveBoard}
+                initialValue={`${config.themeName} 세트`}
+            />
 
             <ImportWizard
                 open={importOpen}

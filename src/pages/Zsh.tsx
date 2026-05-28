@@ -3,6 +3,7 @@ import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
+import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {Icon} from "@/components/ui/Icon";
 import {Label, Select, NumberInput, TextInput} from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
@@ -18,6 +19,7 @@ import {cn} from "@/lib/utils";
 
 export function ZshPage() {
     const [importOpen, setImportOpen] = useState(false);
+    const [saveOpen, setSaveOpen] = useState(false);
     const {
         config,
         setField,
@@ -35,8 +37,10 @@ export function ZshPage() {
     const currentPrompt = ZSH_PROMPTS.find(p => p.id === config.prompt) ?? ZSH_PROMPTS[0];
 
     function handleBoard() {
-        const name = window.prompt("차고에 보관할 노선 이름?", "내 Zsh 노선");
-        if (!name) return;
+        setSaveOpen(true);
+    }
+
+    function doSaveBoard(name: string) {
         save({name, platform: "zsh", text: exported});
         toast(`"${name}" 노선이 차고에 보관되었어요.`, "success");
         navigate("/export");
@@ -337,6 +341,13 @@ export function ZshPage() {
                 </div>
             </div>
 
+
+            <SaveNameModal
+                open={saveOpen}
+                onClose={() => setSaveOpen(false)}
+                onSubmit={doSaveBoard}
+                initialValue="내 Zsh 노선"
+            />
 
             <ImportWizard
                 open={importOpen}

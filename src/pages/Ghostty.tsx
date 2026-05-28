@@ -16,6 +16,7 @@ import {
 import {ToggleRow} from "@/components/ui/ToggleRow";
 import {Toggle} from "@/components/ui/Field";
 import {Modal} from "@/components/ui/Modal";
+import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {TerminalPreview} from "@/components/platform/TerminalPreview";
 import {StatusDot} from "@/components/ui/Badge";
 import {themes} from "@/data/themes";
@@ -46,6 +47,7 @@ export function GhosttyPage() {
     const navigate = useNavigate();
 
     const [importOpen, setImportOpen] = useState(false);
+    const [saveOpen, setSaveOpen] = useState(false);
     const [importBuffer, setImportBuffer] = useState("");
     const [tabPosition, setTabPosition] = useState<"top" | "bottom">("top");
     const [activeSection, setActiveSection] = useState<GhosttySection>("basic");
@@ -116,8 +118,10 @@ export function GhosttyPage() {
     }
 
     function handleBoard() {
-        const name = window.prompt("차고에 보관할 노선 이름?", "내 Ghostty 노선");
-        if (!name) return;
+        setSaveOpen(true);
+    }
+
+    function doSaveBoard(name: string) {
         save({name, platform: "ghostty", text: exported});
         toast(`"${name}" 노선이 차고에 보관되었어요.`, "success");
     }
@@ -517,6 +521,13 @@ export function GhosttyPage() {
                     </motion.div>
                 </section>
             </div>
+
+            <SaveNameModal
+                open={saveOpen}
+                onClose={() => setSaveOpen(false)}
+                onSubmit={doSaveBoard}
+                initialValue="내 Ghostty 노선"
+            />
 
             {/* Import modal */}
             <Modal

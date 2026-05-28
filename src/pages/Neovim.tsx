@@ -2,6 +2,7 @@ import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
+import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {Icon} from "@/components/ui/Icon";
 import {Label, Select, RangeInput, TextInput} from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
@@ -23,6 +24,7 @@ const LSP_SERVERS = ["ts_ls", "eslint", "lua_ls", "pyright", "rust_analyzer", "g
 
 export function NeovimPage() {
     const [importOpen, setImportOpen] = useState(false);
+    const [saveOpen, setSaveOpen] = useState(false);
     const {config, setField, togglePlugin, addKeymap, removeKeymap, exportText, reset} =
         useNeovimStore();
     const save = useRoutesStore(s => s.save);
@@ -32,8 +34,10 @@ export function NeovimPage() {
     const exported = useMemo(() => exportText(), [config, exportText]);
 
     function handleBoard() {
-        const name = window.prompt("차고에 보관할 노선 이름?", "내 Neovim 노선");
-        if (!name) return;
+        setSaveOpen(true);
+    }
+
+    function doSaveBoard(name: string) {
         save({name, platform: "neovim", text: exported});
         toast(`"${name}" 노선이 차고에 보관되었어요.`, "success");
         navigate("/export");
@@ -412,6 +416,13 @@ export function NeovimPage() {
                     </ConfigPanel>
                 </div>
             </div>
+
+            <SaveNameModal
+                open={saveOpen}
+                onClose={() => setSaveOpen(false)}
+                onSubmit={doSaveBoard}
+                initialValue="내 Neovim 노선"
+            />
 
             <ImportWizard
                 open={importOpen}

@@ -2,6 +2,7 @@ import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Button} from "@/components/ui/Button";
+import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {Icon} from "@/components/ui/Icon";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {
@@ -31,6 +32,7 @@ import {cn} from "@/lib/utils";
 
 export function HelixPage() {
     const [importOpen, setImportOpen] = useState(false);
+    const [saveOpen, setSaveOpen] = useState(false);
     const {config, setField, toggleLanguageServer, addKeymap, removeKeymap, exportText} =
         useHelixStore();
     const save = useRoutesStore(s => s.save);
@@ -39,8 +41,10 @@ export function HelixPage() {
     const exported = useMemo(() => exportText(), [config, exportText]);
 
     function handleSave() {
-        const name = window.prompt("차고에 보관할 노선 이름?", "내 Helix 노선");
-        if (!name) return;
+        setSaveOpen(true);
+    }
+
+    function doSaveBoard(name: string) {
         save({name, platform: "helix", text: exported});
         toast(`"${name}" 노선이 차고에 보관되었어요.`, "success");
     }
@@ -486,6 +490,13 @@ export function HelixPage() {
                 </div>
             </div>
 
+
+            <SaveNameModal
+                open={saveOpen}
+                onClose={() => setSaveOpen(false)}
+                onSubmit={doSaveBoard}
+                initialValue="내 Helix 노선"
+            />
 
             <ImportWizard
                 open={importOpen}
