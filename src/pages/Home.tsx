@@ -186,6 +186,14 @@ export function HomePage() {
                         </li>
                     ))}
                 </ol>
+                <Link
+                    to="/tools"
+                    className="mt-3 inline-flex items-center gap-1.5 text-[13px] text-on-surface-variant hover:text-primary-fixed-dim transition"
+                >
+                    <Icon name="lightbulb" className="text-[15px]" />
+                    어떤 도구인지 잘 모르겠다면 — 툴 소개부터 보기
+                    <Icon name="arrow_forward" className="text-[14px]" />
+                </Link>
             </section>
 
             {/* Platforms grid */}
