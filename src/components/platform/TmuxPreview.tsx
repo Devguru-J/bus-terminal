@@ -103,8 +103,11 @@ function renderSegments(segments: string[]): string {
 
     return segments
         .map(seg => {
+            // XSS 방지를 위해 세그먼트 원본을 먼저 HTML 이스케이프 처리합니다.
+            const escapedSeg = escapeHtml(seg);
+
             // tag tokens of form #[fg=#xxx,bg=#xxx]
-            const html = seg.replace(/#\[([^\]]*)\]/g, (_match, attrs: string) => {
+            const html = escapedSeg.replace(/#\[([^\]]*)\]/g, (_match, attrs: string) => {
                 const a = parseStyle(attrs);
                 return `</span><span style="color:${escapeAttr(a.fg)};background:${escapeAttr(
                     a.bg === "#1e1e2e" ? "transparent" : a.bg
@@ -117,6 +120,12 @@ function renderSegments(segments: string[]): string {
             return `<span>${replaced}</span>`;
         })
         .join("");
+}
+
+function escapeHtml(text: string): string {
+    return text.replace(/[&<>"']/g, c =>
+        ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c] ?? c)
+    );
 }
 
 function escapeAttr(v: string): string {
