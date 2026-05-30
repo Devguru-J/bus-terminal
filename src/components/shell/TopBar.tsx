@@ -19,6 +19,9 @@ export function TopBar() {
     const status = useAuthStore(s => s.status);
     const user = useAuthStore(s => s.user);
     const openAuth = useAuthStore(s => s.openModal);
+
+    const metadata = user?.user_metadata ?? {};
+    const avatarUrl = typeof metadata.avatar_url === "string" ? metadata.avatar_url : (typeof metadata.picture === "string" ? metadata.picture : "");
     useEffect(() => {
         const i = setInterval(() => setT(localTimeStamp()), 30_000);
         return () => clearInterval(i);
@@ -82,11 +85,20 @@ export function TopBar() {
                     <button
                         type="button"
                         onClick={handleAccountClick}
-                        className="relative p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
+                        className="relative p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition flex items-center justify-center"
                         aria-label="프로필"
                         title={user?.email ?? "프로필"}
                     >
-                        <Icon name="account_circle" className="text-[18px]" />
+                        {avatarUrl ? (
+                            <img
+                                src={avatarUrl}
+                                alt="프로필"
+                                className="h-[20px] w-[20px] rounded-full object-cover border border-white/10"
+                                referrerPolicy="no-referrer"
+                            />
+                        ) : (
+                            <Icon name="account_circle" className="text-[18px]" />
+                        )}
                         <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-fixed-dim" />
                     </button>
                 ) : (
