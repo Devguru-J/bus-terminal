@@ -76,6 +76,16 @@ export default function App() {
                 page_path: path,
                 page_title: document.title
             });
+
+            // [SEO 개선] 페이지 경로에 맞춰 동적으로 Canonical URL을 갱신합니다.
+            let canonicalLink = document.querySelector("link[rel='canonical']");
+            if (!canonicalLink) {
+                canonicalLink = document.createElement("link");
+                canonicalLink.setAttribute("rel", "canonical");
+                document.head.appendChild(canonicalLink);
+            }
+            const canonicalUrl = `https://busterminal.dev${location.pathname}`;
+            canonicalLink.setAttribute("href", canonicalUrl);
         }
     }, [location.pathname, location.search]);
 
