@@ -171,6 +171,7 @@ export function ExportPage() {
     // 초기 선택 — 수정된 플랫폼만 (fallback 없음 — 위험)
     const initialSelected = useMemo(() => computeInitialSelection(modified), [modified]);
     const [selected, setSelected] = useState<Record<Platform, boolean>>(initialSelected);
+    const [downloadedPlatforms, setDownloadedPlatforms] = useState<Partial<Record<Platform, boolean>>>({});
 
     // modified가 바뀌면 선택 상태도 자동 동기화 (render 중이 아닌 effect로)
     const stamp = useMemo(
@@ -232,6 +233,13 @@ export function ExportPage() {
         (Object.keys(selected) as Platform[])
             .filter(p => selected[p])
             .forEach(platform => trackEvent("Config Downloaded", {platform}));
+        setDownloadedPlatforms(
+            Object.fromEntries(
+                (Object.keys(selected) as Platform[])
+                    .filter(p => selected[p])
+                    .map(p => [p, true])
+            ) as Partial<Record<Platform, boolean>>
+        );
         toast(
             `${selectedCount}개 플랫폼 · ${fileList.length}개 설정 파일이 도착했어요.`,
             "success"
@@ -312,7 +320,7 @@ export function ExportPage() {
                 fileList={fileList}
             />
 
-            <ApplyGuide selected={selected} />
+            <ApplyGuide selected={selected} downloadedPlatforms={downloadedPlatforms} />
 
             <AdvancedInstall
                 selectedCount={selectedCount}

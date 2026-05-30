@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {Icon} from "@/components/ui/Icon";
+import {useUIStore} from "@/stores/uiStore";
 
 interface Step {
     title: string;
@@ -20,8 +21,15 @@ interface Props {
 export function PageGuideCard({storageKey, title, steps}: Props) {
     const [open, setOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const beginnerMode = useUIStore(s => s.beginnerMode);
+    const setBeginnerMode = useUIStore(s => s.setBeginnerMode);
 
     useEffect(() => {
+        if (beginnerMode) {
+            setOpen(true);
+            setMounted(true);
+            return;
+        }
         // 첫 방문 여부: localStorage 키가 없으면 처음
         try {
             const seen = localStorage.getItem(storageKey);
@@ -31,7 +39,7 @@ export function PageGuideCard({storageKey, title, steps}: Props) {
             setOpen(false);
         }
         setMounted(true);
-    }, [storageKey]);
+    }, [storageKey, beginnerMode]);
 
     function close() {
         setOpen(false);
@@ -69,19 +77,29 @@ export function PageGuideCard({storageKey, title, steps}: Props) {
             <div className="flex items-start justify-between gap-3 mb-3">
                 <div>
                     <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-primary-fixed-dim">
-                        이 페이지에서 할 일
+                        {beginnerMode ? "초보 모드에서 할 일" : "이 페이지에서 할 일"}
                     </div>
                     <h3 className="font-display text-title-md text-on-surface mt-1">{title}</h3>
                 </div>
-                <button
-                    type="button"
-                    onClick={close}
-                    className="text-on-surface-variant hover:text-on-surface p-1 rounded"
-                    aria-label="안내 닫기"
-                    title="안내 닫기 (오른쪽 작은 칩으로 다시 열 수 있어요)"
-                >
-                    <Icon name="close" className="text-[16px]" />
-                </button>
+                {beginnerMode ? (
+                    <button
+                        type="button"
+                        onClick={() => setBeginnerMode(false)}
+                        className="rounded-full border border-white/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-on-surface-variant hover:border-white/20 hover:text-on-surface transition"
+                    >
+                        초보 모드 끄기
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={close}
+                        className="text-on-surface-variant hover:text-on-surface p-1 rounded"
+                        aria-label="안내 닫기"
+                        title="안내 닫기 (오른쪽 작은 칩으로 다시 열 수 있어요)"
+                    >
+                        <Icon name="close" className="text-[16px]" />
+                    </button>
+                )}
             </div>
             <ol className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {steps.map((s, i) => (

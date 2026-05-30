@@ -14,6 +14,13 @@
   <url><loc>https://busterminal.dev/themes/compare</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://busterminal.dev/fonts</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://busterminal.dev/fonts/pairings</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://busterminal.dev/guides/ghostty-config-location</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://busterminal.dev/guides/warp-theme-apply</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://busterminal.dev/guides/iterm2-itermcolors-import</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://busterminal.dev/guides/neovim-init-lua-apply</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://busterminal.dev/guides/helix-config-toml-apply</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://busterminal.dev/guides/zshrc-apply</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://busterminal.dev/guides/tmux-conf-apply</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://busterminal.dev/privacy</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
   <url><loc>https://busterminal.dev/terms</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
 </urlset>

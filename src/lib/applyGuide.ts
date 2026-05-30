@@ -9,6 +9,9 @@ export interface ApplyGuideFile {
 export interface ApplyGuide {
     id: ExportPlatform;
     label: string;
+    slug: string;
+    seoTitle: string;
+    seoDescription: string;
     summary: string;
     files: ApplyGuideFile[];
     steps: string[];
@@ -21,6 +24,9 @@ export const APPLY_GUIDES: Record<ExportPlatform, ApplyGuide> = {
     ghostty: {
         id: "ghostty",
         label: "Ghostty",
+        slug: "ghostty-config-location",
+        seoTitle: "Ghostty 설정 파일 위치와 적용 방법 | 버스터미널",
+        seoDescription: "Ghostty config 파일을 어디에 넣어야 하는지, ghostty-config를 ~/.config/ghostty/config로 적용하는 방법을 단계별로 안내합니다.",
         summary: "다운로드한 ghostty-config 파일을 Ghostty 설정 파일 이름인 config로 옮깁니다.",
         files: [
             {
@@ -44,6 +50,9 @@ export const APPLY_GUIDES: Record<ExportPlatform, ApplyGuide> = {
     warp: {
         id: "warp",
         label: "Warp",
+        slug: "warp-theme-apply",
+        seoTitle: "Warp 테마 YAML 적용 방법 | 버스터미널",
+        seoDescription: "Warp theme YAML과 workflow YAML을 ~/.warp/themes, ~/.warp/workflows에 넣고 Warp에서 확인하는 방법을 안내합니다.",
         summary: "테마와 워크플로우 파일은 Warp 폴더에 넣고, settings 파일은 수동 적용 체크리스트로 봅니다.",
         files: [
             {
@@ -78,6 +87,9 @@ export const APPLY_GUIDES: Record<ExportPlatform, ApplyGuide> = {
     iterm2: {
         id: "iterm2",
         label: "iTerm2",
+        slug: "iterm2-itermcolors-import",
+        seoTitle: "iTerm2 .itermcolors 가져오기와 Dynamic Profile 적용 | 버스터미널",
+        seoDescription: "iTerm2 컬러 프리셋 .itermcolors를 Import하고 DynamicProfiles 폴더에 프로파일 JSON을 넣는 방법을 안내합니다.",
         summary: "컬러 프리셋은 iTerm2에서 Import하고, 프로파일 JSON은 DynamicProfiles 폴더에 둡니다.",
         files: [
             {
@@ -106,6 +118,9 @@ export const APPLY_GUIDES: Record<ExportPlatform, ApplyGuide> = {
     neovim: {
         id: "neovim",
         label: "Neovim",
+        slug: "neovim-init-lua-apply",
+        seoTitle: "Neovim init.lua 적용 방법 | 버스터미널",
+        seoDescription: "다운로드한 init.lua를 ~/.config/nvim/init.lua로 옮기고 Neovim에서 lazy.nvim 플러그인을 동기화하는 방법을 안내합니다.",
         summary: "init.lua를 ~/.config/nvim/init.lua로 옮긴 뒤 Neovim에서 플러그인을 동기화합니다.",
         files: [
             {
@@ -130,6 +145,9 @@ export const APPLY_GUIDES: Record<ExportPlatform, ApplyGuide> = {
     helix: {
         id: "helix",
         label: "Helix",
+        slug: "helix-config-toml-apply",
+        seoTitle: "Helix config.toml 적용 방법 | 버스터미널",
+        seoDescription: "Helix config.toml과 languages.toml을 ~/.config/helix 폴더에 넣고 hx에서 확인하는 방법을 안내합니다.",
         summary: "config.toml과 languages.toml을 ~/.config/helix 폴더에 넣습니다.",
         files: [
             {
@@ -160,6 +178,9 @@ export const APPLY_GUIDES: Record<ExportPlatform, ApplyGuide> = {
     zsh: {
         id: "zsh",
         label: "Zsh",
+        slug: "zshrc-apply",
+        seoTitle: "Zsh .zshrc 적용 방법 | 버스터미널",
+        seoDescription: "다운로드한 .zshrc와 starship.toml을 홈 폴더와 ~/.config에 배치하고 source ~/.zshrc로 적용하는 방법을 안내합니다.",
         summary: ".zshrc는 홈 폴더에, Starship 설정은 ~/.config/starship.toml에 둡니다.",
         files: [
             {
@@ -190,6 +211,9 @@ export const APPLY_GUIDES: Record<ExportPlatform, ApplyGuide> = {
     tmux: {
         id: "tmux",
         label: "tmux",
+        slug: "tmux-conf-apply",
+        seoTitle: "tmux .tmux.conf 적용 방법 | 버스터미널",
+        seoDescription: "다운로드한 .tmux.conf를 홈 폴더에 두고 tmux source-file ~/.tmux.conf로 다시 읽는 방법을 안내합니다.",
         summary: ".tmux.conf를 홈 폴더에 둔 뒤 실행 중인 tmux에서 source-file을 실행합니다.",
         files: [
             {
@@ -224,4 +248,8 @@ export const APPLY_GUIDE_ORDER: ExportPlatform[] = [
 
 export function getApplyGuide(id: ExportPlatform) {
     return APPLY_GUIDES[id];
+}
+
+export function getApplyGuideBySlug(slug: string) {
+    return APPLY_GUIDE_ORDER.map(id => APPLY_GUIDES[id]).find(guide => guide.slug === slug);
 }

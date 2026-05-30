@@ -31,6 +31,15 @@ describe("seo metadata", () => {
         expect(meta.robots).toBe("noindex, follow");
     });
 
+    it("returns indexable metadata for SEO apply guide pages", () => {
+        const meta = getSeoMeta("/guides/tmux-conf-apply");
+
+        expect(meta.title).toBe("tmux .tmux.conf 적용 방법 | 버스터미널");
+        expect(meta.description).toContain("tmux source-file");
+        expect(meta.path).toBe("/guides/tmux-conf-apply");
+        expect(meta.robots).toBeUndefined();
+    });
+
     it("applies title, description, robots, canonical, and social tags", () => {
         applySeoMeta(getSeoMeta("/ghostty"));
 

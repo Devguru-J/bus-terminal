@@ -19,6 +19,8 @@ export function TopBar() {
     const status = useAuthStore(s => s.status);
     const user = useAuthStore(s => s.user);
     const openAuth = useAuthStore(s => s.openModal);
+    const beginnerMode = useUIStore(s => s.beginnerMode);
+    const toggleBeginnerMode = useUIStore(s => s.toggleBeginnerMode);
 
     const metadata = user?.user_metadata ?? {};
     const avatarUrl = typeof metadata.avatar_url === "string" ? metadata.avatar_url : (typeof metadata.picture === "string" ? metadata.picture : "");
@@ -57,6 +59,21 @@ export function TopBar() {
                 <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hidden sm:inline mr-3">
                     {t}
                 </span>
+                <button
+                    type="button"
+                    onClick={toggleBeginnerMode}
+                    className={`inline-flex items-center gap-1.5 h-9 rounded-full border px-2.5 sm:px-3 font-mono text-[11px] uppercase tracking-[0.12em] transition active:scale-[0.97] ${
+                        beginnerMode
+                            ? "border-primary-fixed-dim/45 bg-primary-fixed-dim/[0.12] text-primary-fixed-dim"
+                            : "border-white/10 bg-white/[0.02] text-on-surface-variant hover:text-on-surface hover:border-white/20"
+                    }`}
+                    aria-pressed={beginnerMode}
+                    aria-label="초보 모드 전환"
+                    title={beginnerMode ? "초보 모드 끄기" : "초보 모드 켜기"}
+                >
+                    <Icon name="school" className="text-[15px]" />
+                    <span className="hidden sm:inline">초보</span>
+                </button>
                 <Link
                     to="/"
                     className="hidden lg:flex items-center justify-center h-9 w-9 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"

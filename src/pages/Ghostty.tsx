@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {motion} from "framer-motion";
 import {StationHeader} from "@/components/shell/StationHeader";
@@ -29,6 +29,7 @@ import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
 import {cn} from "@/lib/utils";
 import {PageGuideCard} from "@/components/shell/PageGuideCard";
+import {useUIStore} from "@/stores/uiStore";
 
 // Google Fonts에 실제로 로드되는 폰트만 노출. (Cascadia/Iosevka는 GF에 없음)
 const FONTS = [
@@ -47,6 +48,8 @@ export function GhosttyPage() {
         useGhosttyStore();
     const save = useRoutesStore(s => s.save);
     const routesCount = useRoutesStore(s => s.routes.length);
+    const beginnerMode = useUIStore(s => s.beginnerMode);
+    const setBeginnerMode = useUIStore(s => s.setBeginnerMode);
     const navigate = useNavigate();
 
     const [importOpen, setImportOpen] = useState(false);
@@ -156,6 +159,12 @@ export function GhosttyPage() {
 
     const themeName = themes.find(t => t.id === currentThemeId)?.ko ?? "BusTerminal Dark";
 
+    useEffect(() => {
+        if (beginnerMode && activeSection !== "basic") {
+            setActiveSection("basic");
+        }
+    }, [activeSection, beginnerMode]);
+
     return (
         <div className="max-w-7xl mx-auto">
             <StationHeader
@@ -206,18 +215,31 @@ export function GhosttyPage() {
                                 label="기본"
                                 onClick={() => setActiveSection("basic")}
                             />
-                            <SectionTab
-                                active={activeSection === "advanced"}
-                                icon="manufacturing"
-                                label="고급"
-                                onClick={() => setActiveSection("advanced")}
-                            />
-                            <SectionTab
-                                active={activeSection === "expert"}
-                                icon="search"
-                                label="전문가"
-                                onClick={() => setActiveSection("expert")}
-                            />
+                            {beginnerMode ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setBeginnerMode(false)}
+                                    className="col-span-2 h-10 rounded-lg font-mono text-label-xs uppercase tracking-[0.12em] transition inline-flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface hover:bg-white/[0.04]"
+                                >
+                                    <Icon name="manufacturing" className="text-[15px]" />
+                                    고급 설정 보기
+                                </button>
+                            ) : (
+                                <>
+                                    <SectionTab
+                                        active={activeSection === "advanced"}
+                                        icon="manufacturing"
+                                        label="고급"
+                                        onClick={() => setActiveSection("advanced")}
+                                    />
+                                    <SectionTab
+                                        active={activeSection === "expert"}
+                                        icon="search"
+                                        label="전문가"
+                                        onClick={() => setActiveSection("expert")}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
 

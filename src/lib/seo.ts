@@ -1,3 +1,5 @@
+import {getApplyGuideBySlug} from "./applyGuide";
+
 const SITE_URL = "https://busterminal.dev";
 const SITE_NAME = "버스터미널";
 const DEFAULT_IMAGE = `${SITE_URL}/og.svg`;
@@ -168,6 +170,18 @@ export function getSeoMeta(pathname: string): SeoMeta {
                 "개발자용 폰트의 한글, 영문, 코드 표본을 확인하고 터미널 설정에 적용합니다.",
             path: normalized
         };
+    }
+
+    if (normalized.startsWith("/guides/")) {
+        const slug = normalized.replace("/guides/", "");
+        const guide = getApplyGuideBySlug(slug);
+        if (guide) {
+            return {
+                title: guide.seoTitle,
+                description: guide.seoDescription,
+                path: normalized
+            };
+        }
     }
 
     return {

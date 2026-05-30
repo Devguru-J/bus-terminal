@@ -8,6 +8,8 @@ import {useUIStore} from "@/stores/uiStore";
 
 function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
     const navigate = useNavigate();
+    const beginnerMode = useUIStore(s => s.beginnerMode);
+    const toggleBeginnerMode = useUIStore(s => s.toggleBeginnerMode);
     function go(path: string) {
         navigate(path);
         onNavigate?.();
@@ -41,6 +43,19 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                     <Icon name="route" className="text-[16px]" />
                     도구 고르기
                 </Button>
+                <button
+                    type="button"
+                    onClick={toggleBeginnerMode}
+                    className={`mt-2 w-full inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] transition active:scale-[0.98] ${
+                        beginnerMode
+                            ? "border-primary-fixed-dim/45 bg-primary-fixed-dim/[0.12] text-primary-fixed-dim"
+                            : "border-white/10 bg-white/[0.02] text-on-surface-variant hover:text-on-surface hover:border-white/20"
+                    }`}
+                    aria-pressed={beginnerMode}
+                >
+                    <Icon name="school" className="text-[15px]" />
+                    {beginnerMode ? "초보 모드 켜짐" : "초보 모드"}
+                </button>
             </div>
 
             {/* Platforms */}

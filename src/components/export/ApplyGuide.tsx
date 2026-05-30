@@ -1,4 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
+import {Link} from "react-router-dom";
 import {Button} from "@/components/ui/Button";
 import {Badge} from "@/components/ui/Badge";
 import {Icon} from "@/components/ui/Icon";
@@ -10,15 +11,23 @@ import {cn} from "@/lib/utils";
 
 interface Props {
     selected: Record<ExportPlatform, boolean>;
+    downloadedPlatforms?: Partial<Record<ExportPlatform, boolean>>;
 }
 
-export function ApplyGuide({selected}: Props) {
+type ChecklistKey = "downloaded" | "backedUp" | "copied" | "placed" | "verified";
+type ChecklistState = Record<ExportPlatform, Record<ChecklistKey, boolean>>;
+
+const CHECKLIST_STORAGE_KEY = "bus-terminal:apply-checklist";
+const CHECKLIST_KEYS: ChecklistKey[] = ["downloaded", "backedUp", "copied", "placed", "verified"];
+
+export function ApplyGuide({selected, downloadedPlatforms = {}}: Props) {
     const activePlatforms = useMemo(
         () => APPLY_GUIDE_ORDER.filter(id => selected[id]),
         [selected]
     );
     const visiblePlatforms = activePlatforms.length > 0 ? activePlatforms : APPLY_GUIDE_ORDER;
     const [current, setCurrent] = useState<ExportPlatform>(visiblePlatforms[0] ?? "ghostty");
+    const [checklist, setChecklist] = useState<ChecklistState>(() => readChecklistState());
 
     useEffect(() => {
         if (!visiblePlatforms.includes(current)) {
@@ -26,10 +35,37 @@ export function ApplyGuide({selected}: Props) {
         }
     }, [current, visiblePlatforms]);
 
+    useEffect(() => {
+        const downloadedIds = APPLY_GUIDE_ORDER.filter(id => downloadedPlatforms[id]);
+        if (downloadedIds.length === 0) return;
+        setChecklist(prev => {
+            let changed = false;
+            const next = cloneChecklist(prev);
+            downloadedIds.forEach(id => {
+                if (!next[id].downloaded) {
+                    next[id].downloaded = true;
+                    changed = true;
+                }
+            });
+            if (changed) writeChecklistState(next);
+            return changed ? next : prev;
+        });
+    }, [downloadedPlatforms]);
+
     const guide = APPLY_GUIDES[current];
+
+    function setChecklistItem(platform: ExportPlatform, key: ChecklistKey, value: boolean) {
+        setChecklist(prev => {
+            const next = cloneChecklist(prev);
+            next[platform][key] = value;
+            writeChecklistState(next);
+            return next;
+        });
+    }
 
     async function copyCommands() {
         const ok = await copyText(guide.commands.join("\n"));
+        if (ok) setChecklistItem(guide.id, "copied", true);
         toast(ok ? `${guide.label} 적용 명령을 복사했어요.` : "복사 권한을 확인해 주세요.", ok ? "success" : "warn");
     }
 
@@ -76,7 +112,12 @@ export function ApplyGuide({selected}: Props) {
                         </div>
                     </div>
 
-                    <GuideDetail guide={guide} onCopy={copyCommands} />
+                    <GuideDetail
+                        guide={guide}
+                        onCopy={copyCommands}
+                        progress={checklist[guide.id]}
+                        onToggleProgress={(key, value) => setChecklistItem(guide.id, key, value)}
+                    />
                 </div>
             </div>
         </section>
@@ -98,7 +139,17 @@ function MiniStep({n, icon, title, text}: {n: number; icon: string; title: strin
     );
 }
 
-function GuideDetail({guide, onCopy}: {guide: ApplyGuideData; onCopy: () => void}) {
+function GuideDetail({
+    guide,
+    onCopy,
+    progress,
+    onToggleProgress
+}: {
+    guide: ApplyGuideData;
+    onCopy: () => void;
+    progress: Record<ChecklistKey, boolean>;
+    onToggleProgress: (key: ChecklistKey, value: boolean) => void;
+}) {
     return (
         <div className="p-4 space-y-4">
             <div className="flex items-start justify-between gap-3">
@@ -116,6 +167,11 @@ function GuideDetail({guide, onCopy}: {guide: ApplyGuideData; onCopy: () => void
                     명령 복사
                 </Button>
             </div>
+
+            <ApplyProgress
+                progress={progress}
+                onToggle={onToggleProgress}
+            />
 
             <div className="rounded-lg border border-white/[0.06] bg-background/35">
                 <div className="grid grid-cols-[0.9fr_1.1fr] gap-3 border-b border-white/[0.06] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-on-surface-variant">
@@ -195,6 +251,132 @@ function GuideDetail({guide, onCopy}: {guide: ApplyGuideData; onCopy: () => void
                     </div>
                 )}
             </div>
+
+            <Link
+                to={`/guides/${guide.slug}`}
+                className="inline-flex items-center gap-1 font-mono text-label-xs uppercase tracking-[0.14em] text-primary-fixed-dim hover:underline"
+            >
+                자세한 적용 가이드 보기
+                <Icon name="arrow_forward" className="text-[14px]" />
+            </Link>
         </div>
     );
+}
+
+function ApplyProgress({
+    progress,
+    onToggle
+}: {
+    progress: Record<ChecklistKey, boolean>;
+    onToggle: (key: ChecklistKey, value: boolean) => void;
+}) {
+    const completed = CHECKLIST_KEYS.filter(key => progress[key]).length;
+    const pct = Math.round((completed / CHECKLIST_KEYS.length) * 100);
+    const items: Array<{key: ChecklistKey; title: string; detail: string}> = [
+        {key: "downloaded", title: "파일 다운로드", detail: "설정 파일을 Downloads 폴더에 받았어요."},
+        {key: "backedUp", title: "기존 설정 백업", detail: "덮어쓰기 전에 .bak 파일을 남겼어요."},
+        {key: "copied", title: "명령 복사", detail: "아래 명령을 복사했거나 직접 준비했어요."},
+        {key: "placed", title: "정해진 위치에 넣기", detail: "받은 파일을 실제 설정 경로로 옮겼어요."},
+        {key: "verified", title: "적용 확인", detail: "앱을 다시 열고 바뀐 화면을 확인했어요."}
+    ];
+
+    return (
+        <div className="rounded-lg border border-primary-fixed-dim/20 bg-primary-fixed-dim/[0.045] p-3">
+            <div className="flex items-center justify-between gap-3">
+                <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-primary-fixed-dim">
+                        적용 성공 체크리스트
+                    </div>
+                    <div className="mt-1 text-[12px] text-on-surface-variant">
+                        {completed} / {CHECKLIST_KEYS.length} 완료
+                    </div>
+                </div>
+                <div className="font-mono text-[18px] text-primary-fixed-dim">{pct}%</div>
+            </div>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+                <div
+                    className="h-full rounded-full bg-primary-fixed-dim transition-all duration-300"
+                    style={{width: `${pct}%`}}
+                />
+            </div>
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {items.map(item => (
+                    <label
+                        key={item.key}
+                        className={cn(
+                            "flex gap-2 rounded-lg border p-2.5 cursor-pointer transition active:scale-[0.99]",
+                            progress[item.key]
+                                ? "border-primary-fixed-dim/45 bg-primary-fixed-dim/[0.08]"
+                                : "border-white/[0.06] bg-surface-container-lowest/60 hover:border-white/15"
+                        )}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={progress[item.key]}
+                            onChange={e => onToggle(item.key, e.target.checked)}
+                            className="mt-1 h-4 w-4 shrink-0 accent-primary-fixed-dim"
+                        />
+                        <span className="min-w-0">
+                            <span className="block text-code-sm text-on-surface">{item.title}</span>
+                            <span className="mt-0.5 block text-[11px] leading-relaxed text-on-surface-variant">
+                                {item.detail}
+                            </span>
+                        </span>
+                    </label>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function emptyChecklistForPlatform(): Record<ChecklistKey, boolean> {
+    return {
+        downloaded: false,
+        backedUp: false,
+        copied: false,
+        placed: false,
+        verified: false
+    };
+}
+
+function defaultChecklistState(): ChecklistState {
+    return Object.fromEntries(
+        APPLY_GUIDE_ORDER.map(id => [id, emptyChecklistForPlatform()])
+    ) as ChecklistState;
+}
+
+function cloneChecklist(state: ChecklistState): ChecklistState {
+    return Object.fromEntries(
+        APPLY_GUIDE_ORDER.map(id => [id, {...state[id]}])
+    ) as ChecklistState;
+}
+
+function readChecklistState(): ChecklistState {
+    const fallback = defaultChecklistState();
+    try {
+        const raw = localStorage.getItem(CHECKLIST_STORAGE_KEY);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw) as Partial<ChecklistState>;
+        return Object.fromEntries(
+            APPLY_GUIDE_ORDER.map(id => [
+                id,
+                {
+                    ...emptyChecklistForPlatform(),
+                    ...(parsed[id] ?? {})
+                }
+            ])
+        ) as ChecklistState;
+    }
+    catch {
+        return fallback;
+    }
+}
+
+function writeChecklistState(state: ChecklistState) {
+    try {
+        localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(state));
+    }
+    catch {
+        // localStorage가 막혀도 체크리스트 UI는 현재 세션에서만 동작하면 된다.
+    }
 }

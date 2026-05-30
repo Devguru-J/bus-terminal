@@ -35,6 +35,7 @@ const FontDetailPage = lazyWithRetry(() => import("@/pages/FontDetail").then(m =
 const ThemeComparePage = lazyWithRetry(() => import("@/pages/ThemeCompare").then(m => ({default: m.ThemeComparePage})));
 const FontPairingsPage = lazyWithRetry(() => import("@/pages/FontPairings").then(m => ({default: m.FontPairingsPage})));
 const GuidePage = lazyWithRetry(() => import("@/pages/Guide").then(m => ({default: m.GuidePage})));
+const ApplyGuideDetailPage = lazyWithRetry(() => import("@/pages/ApplyGuideDetail").then(m => ({default: m.ApplyGuideDetailPage})));
 const ToolsPage = lazyWithRetry(() => import("@/pages/Tools").then(m => ({default: m.ToolsPage})));
 const FeedbackPage = lazyWithRetry(() => import("@/pages/Feedback").then(m => ({default: m.FeedbackPage})));
 const PrivacyPage = lazyWithRetry(() => import("@/pages/Privacy").then(m => ({default: m.PrivacyPage})));
@@ -90,6 +91,7 @@ export default function App() {
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/guide" element={<GuidePage />} />
+                        <Route path="/guides/:slug" element={<ApplyGuideDetailPage />} />
                         <Route path="/tools" element={<ToolsPage />} />
                         <Route path="/feedback" element={<FeedbackPage />} />
                         <Route path="/privacy" element={<PrivacyPage />} />
