@@ -103,7 +103,7 @@ export function FeedbackPage() {
             <StationHeader
                 title="의견 보내기"
                 eyebrow="Feedback · 민원 창구"
-                subtitle="버그, 개선 요청, 새 도구 요청을 남겨주세요. 출시 초반에는 작은 제보 하나가 제품을 빠르게 단단하게 만듭니다."
+                subtitle="버그, 개선 요청, 새 도구 요청을 남겨주세요."
                 actions={<Badge tone="info">GitHub Issues</Badge>}
             />
 
