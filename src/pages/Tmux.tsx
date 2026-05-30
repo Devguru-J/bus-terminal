@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
 import {TmuxPreview} from "@/components/platform/TmuxPreview";
-import {Badge} from "@/components/ui/Badge";
+import {Badge, StatusDot} from "@/components/ui/Badge";
 import {tmuxDefaultKeyBindings, tmuxPlugins, type TmuxKeyBinding} from "@/data/tmux";
 import {useTmuxStore} from "@/stores/tmuxStore";
 import {useRoutesStore} from "@/stores/routesStore";
@@ -120,7 +120,12 @@ export function TmuxPage() {
     return (
         <div className="max-w-7xl mx-auto">
             <StationHeader
-                title="tmux 승강장"
+                title={
+                    <span className="inline-flex items-center gap-3">
+                        tmux 승강장
+                        <StatusDot />
+                    </span>
+                }
                 eyebrow="Platform 7 Active"
                 subtitle="터미널 안에서 창과 세션을 나누는 도구입니다. 키 바인딩과 상태바, 플러그인을 화면에서 정리한 뒤 .tmux.conf 파일로 내보냅니다."
                 actions={

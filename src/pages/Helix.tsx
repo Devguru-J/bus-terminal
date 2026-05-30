@@ -18,7 +18,7 @@ import {
     Select
 } from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
-import {Badge} from "@/components/ui/Badge";
+import {Badge, StatusDot} from "@/components/ui/Badge";
 import {
     HELIX_THEMES,
     HELIX_LINE_NUMBER,
@@ -91,7 +91,12 @@ export function HelixPage() {
     return (
         <div className="max-w-7xl mx-auto">
             <StationHeader
-                title="Helix 승강장"
+                title={
+                    <span className="inline-flex items-center gap-3">
+                        Helix 승강장
+                        <StatusDot />
+                    </span>
+                }
                 eyebrow="Platform 5 Active"
                 subtitle="Rust로 만든 모달 에디터입니다. 테마와 언어 설정을 골라 config.toml과 languages.toml 두 벌의 파일로 내보냅니다."
                 actions={

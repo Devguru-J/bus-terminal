@@ -19,7 +19,7 @@ import {
     TextInput
 } from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
-import {Badge} from "@/components/ui/Badge";
+import {Badge, StatusDot} from "@/components/ui/Badge";
 import {WARP_FONT_FAMILIES, type WarpTerminalColors} from "@/data/warp";
 import {useWarpStore} from "@/stores/warpStore";
 import {useRoutesStore} from "@/stores/routesStore";
@@ -98,7 +98,12 @@ export function WarpPage() {
     return (
         <div className="max-w-7xl mx-auto">
             <StationHeader
-                title="Warp 승강장"
+                title={
+                    <span className="inline-flex items-center gap-3">
+                        Warp 승강장
+                        <StatusDot />
+                    </span>
+                }
                 eyebrow="Platform 2 Active"
                 subtitle="AI 기능이 들어간 차세대 터미널입니다. 테마, 워크플로우, AI 옵션을 정리해 Warp 설정 파일로 내보냅니다."
                 actions={

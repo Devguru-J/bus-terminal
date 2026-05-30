@@ -18,7 +18,7 @@ import {
     TextInput
 } from "@/components/ui/Field";
 import {ToggleRow} from "@/components/ui/ToggleRow";
-import {Badge} from "@/components/ui/Badge";
+import {Badge, StatusDot} from "@/components/ui/Badge";
 import {TerminalPreview} from "@/components/platform/TerminalPreview";
 import {ITERM_FONT_FAMILIES} from "@/data/iterm2";
 import {useIterm2Store} from "@/stores/iterm2Store";
@@ -101,7 +101,12 @@ export function Iterm2Page() {
     return (
         <div className="max-w-7xl mx-auto">
             <StationHeader
-                title="iTerm2 승강장"
+                title={
+                    <span className="inline-flex items-center gap-3">
+                        iTerm2 승강장
+                        <StatusDot />
+                    </span>
+                }
                 eyebrow="Platform 3 Active"
                 subtitle="macOS의 대표 터미널입니다. 색상과 프로파일을 정리해 .itermcolors 컬러 프리셋과 Dynamic Profile JSON 두 벌의 파일로 내보냅니다."
                 actions={

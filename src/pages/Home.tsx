@@ -94,9 +94,6 @@ export function HomePage() {
             {/* Hero — 절제된 단일 메시지 */}
             <section className="pt-6 pb-2">
                 <div className="flex flex-col items-start gap-5 max-w-2xl">
-                    <div className="font-mono text-label-xs uppercase tracking-[0.18em] text-primary-fixed-dim">
-                        BusTerminal
-                    </div>
                     <motion.div
                         initial={{opacity: 0, y: 10, rotate: -4}}
                         animate={{opacity: 1, y: 0, rotate: -4}}

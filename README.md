@@ -1,279 +1,283 @@
 <div align="center">
+  <img src="./public/logo.png" alt="BusTerminal logo" width="96" />
 
-<img src="docs/images/logo.png" alt="BusTerminal" width="120" />
+  # BusTerminal
 
-# BusTerminal
+  **터미널, 에디터, 셸 설정을 시각적으로 조립하고 실제 config 파일로 내보내는 개발 환경 환승센터.**
 
-**개발자 환경을 한 번에 설계하고, 한 번에 내보냅니다.**
+  Ghostty · Warp · iTerm2 · Neovim · Helix · Zsh · tmux를 한 곳에서 다듬고,  
+  내 손에 남는 설정 파일로 가져갑니다.
 
-터미널 · 에디터 · 셸 설정을 시각적으로 조립하고, 즉시 사용 가능한 config 파일로 export 하는 단일 워크스페이스.
+  <p>
+    <a href="https://busterminal.dev"><strong>Live Demo</strong></a>
+    ·
+    <a href="https://busterminal.dev/guide">Guide</a>
+    ·
+    <a href="./docs/ROADMAP.md">Roadmap</a>
+    ·
+    <a href="https://github.com/Devguru-J/bus-terminal/issues/new">Feedback</a>
+  </p>
 
-[ [Live Demo](https://busterminal.dev) ]&nbsp;·&nbsp;
-[ [Documentation](https://busterminal.dev/guide) ]&nbsp;·&nbsp;
-[ [Releases](https://github.com/Devguru-J/bus-terminal/releases) ]&nbsp;·&nbsp;
-[ [Report Issue](https://github.com/Devguru-J/bus-terminal/issues/new) ]
-
-<sub>MIT License · React 18 · TypeScript · Vite · Supabase (optional)</sub>
-
+  <sub>React 18 · TypeScript · Vite · Zustand · Supabase optional · MIT</sub>
 </div>
 
----
+<br />
 
-## 왜 BusTerminal인가
-
-개발 환경을 새로 만든다는 건 여전히 비용이 큰 작업입니다.
-
-- **Fragmented configs** — Ghostty는 key=value, Warp는 YAML, Neovim은 Lua, tmux는 자체 DSL. 같은 의도("폰트는 JetBrains Mono, 컬러는 Tokyo Night")를 7번 다시 씁니다.
-- **Setup fatigue** — 새 머신 / 새 회사 / 새 OS에서 dotfiles를 정확히 그대로 옮기는 데 반나절이 사라집니다.
-- **Theme fragmentation** — 같은 "Tokyo Night"도 플랫폼마다 색이 미묘하게 다르고, 어디서 받은 어느 버전인지 추적하기 어렵습니다.
-- **Editor/shell inconsistency** — Neovim의 background와 터미널의 background가 6단계 어긋난 채로 한 달째 방치됩니다.
-
-BusTerminal은 이 4가지 통증을 한 화면에서 해결합니다.
-**시각적으로 조립 → 미리보기 → 단일 config 파일로 출력.** 생성된 파일은 전적으로 사용자 소유이며, 도구가 종료되어도 설정은 그대로 살아남습니다.
+<p align="center">
+  <img src="./public/og.svg" alt="BusTerminal preview banner" width="100%" />
+</p>
 
 ---
 
-## Product Preview
+## BusTerminal이 해결하는 일
 
-### Dashboard — 7개 승강장 한눈에
+개발 환경은 대부분 텍스트 파일 몇 개로 이루어져 있습니다. 문제는 그 파일들이 모두 다른 문법을 쓴다는 점입니다.
 
-![Dashboard](docs/images/preview-dashboard.png)
+- Ghostty는 `key = value`
+- Warp는 theme YAML
+- iTerm2는 `.itermcolors`와 Dynamic Profile JSON
+- Neovim은 Lua
+- Helix는 TOML
+- Zsh는 shell script
+- tmux는 자체 config 문법
 
-운행 중인 플랫폼, 적용된 테마, 보관된 라우트 수가 단일 보드에서 보입니다.
+BusTerminal은 이 차이를 하나의 작업 흐름으로 묶습니다.
 
-### Theme Transfer Center — 환승 센터
+1. **승강장을 고릅니다.** 지금 설정하려는 도구를 선택합니다.
+2. **옵션을 만집니다.** 폰트, 색상, 키맵, 플러그인, 상태바, alias를 UI에서 조정합니다.
+3. **미리 봅니다.** 변경 결과를 터미널/에디터 느낌으로 확인합니다.
+4. **내보냅니다.** 실제 도구가 읽을 수 있는 config 파일로 다운로드합니다.
 
-![Theme Transfer](docs/images/preview-themes.png)
-
-26개 큐레이트 테마를 검색·비교하고, 한 번의 클릭으로 모든 플랫폼에 동시에 적용합니다.
-
-### Route Management — 보관된 라우트
-
-![Routes](docs/images/preview-routes.png)
-
-자주 쓰는 환경 조합을 "Route"로 저장하고, 머신을 옮길 때 그대로 복원합니다.
-
-### Config Generator — 설정 파일 생성
-
-![Config Generator](docs/images/preview-export.png)
-
-플랫폼별 정확한 문법으로 직렬화. Ghostty config, .zshrc, init.lua, .tmux.conf까지 즉시 다운로드.
-
-### Departure Flow — 출발
-
-![Departure](docs/images/preview-departure.png)
-
-조립이 끝난 환경을 단일 zip 묶음으로 내보냅니다. 머신에 가져가서 그대로 풀면 끝.
+핵심은 단순합니다. BusTerminal은 설정을 대신 보관하는 서비스가 아니라, **좋은 설정 파일을 빠르게 만들기 위한 작업대**입니다.
 
 ---
 
-## Features
+## 왜 쓸 만한가
 
-### Visual Configuration · `Implemented`
-- 폼/슬라이더/토글로 모든 옵션 조작
-- 변경 사항은 실시간 미리보기 영역에 즉시 반영
-- 50+ Ghostty expert 설정을 그룹으로 분류
+### Export-first
 
-### Theme Management · `Implemented`
-- 26개 큐레이트 테마 (Tokyo Night / Solarized / Catppuccin / Gruvbox 외)
-- popular / dark / light / warm / cool 태그 필터
-- 두 테마를 나란히 비교하는 `/themes/compare`
+결과물은 데이터베이스에 갇히지 않습니다. `config`, `.zshrc`, `init.lua`, `.tmux.conf` 같은 평범한 파일로 나옵니다. dotfiles 저장소에 커밋해도 되고, 직접 고쳐도 되고, 다른 머신으로 옮겨도 됩니다.
 
-### Route Management · `Implemented`
-- 현재 설정을 명명된 Route로 저장
-- 클라우드 동기화 (Supabase 연결 시, optional)
-- 익명 로컬 저장 — 계정 없이도 동작
-- URL 한 줄 공유 — 서버 없이 해시에 인코딩, 받는 쪽이 열면 자동으로 차고에 보관
-- 시작 프리셋 — 각 플랫폼 헤더의 "프리셋" 버튼으로 입문자 추천/야간용/미니멀 즉시 적용
+### Local-first
 
-### Export System · `Implemented`
-- 플랫폼별 native 문법으로 직렬화
-- 단일 파일 다운로드 / 전체 환경 zip
-- export 직전 diff 보기
+로그인 없이 바로 사용할 수 있습니다. 기본 저장소는 브라우저 `localStorage`이며, Supabase 클라우드 동기화는 사용자가 연결했을 때만 켜집니다.
 
-### Developer Workflow · `Experimental`
-- Plausible 기반 익명 사용 패턴 분석 (자체 호스팅)
-- 자동 로컬 저장 (`autosaveHint`)
-- 키보드 단축키 기반 탐색
+### 도구별 문법 존중
 
-> 상태 표기: `Implemented` 메인 브랜치에서 동작 · `Experimental` 동작하지만 변경 가능 · `Planned` 로드맵에 있음, 아직 미구현
+하나의 추상 설정을 억지로 모든 도구에 끼워 맞추지 않습니다. 각 승강장은 해당 도구가 실제로 이해하는 출력 형식을 기준으로 설계되어 있습니다.
+
+### 환승하기
+
+기존 설정이 있다면 붙여넣거나 업로드해서 가져올 수 있습니다. 인식한 값은 화면에 적용하고, 모르는 줄은 사용자가 확인할 수 있게 남깁니다.
+
+### 일관된 시작점
+
+처음 쓰는 사람도 길을 잃지 않도록 모든 플랫폼 페이지에 3단계 안내가 있습니다. 어떤 도구든 "선택 → 조정 → 내보내기" 흐름은 같습니다.
 
 ---
 
-## Supported Platforms
+## 지원 플랫폼
 
-| Platform   | Theme | Font | Import | Export | Live Preview |
-|------------|:-----:|:----:|:------:|:------:|:------------:|
-| **Ghostty** |  ✓   |  ✓  |  Exp.  |   ✓   |      ✓       |
-| **Warp**    |  ✓   |  ✓  |  Exp.  |   ✓   |      ✓       |
-| **iTerm2**  |  ✓   |  ✓  |   —    |   ✓   |      ✓       |
-| **tmux**    |  —   |  —  |  Exp.  |   ✓   |      ✓       |
-| **Neovim**  |  ✓   |  —  |  Exp.  |   ✓   |      ✓       |
-| **Helix**   |  ✓   |  —  |  Exp.  |   ✓   |      ✓       |
-| **Zsh**     |  —   |  —  |  Exp.  |   ✓   |      ✓       |
+| 승강장 | 설정할 수 있는 것 | 가져오기 | 내보내기 |
+|---|---|---|---|
+| **Ghostty** | 폰트, 색상, 창 여백, 커서, 키바인딩, expert 옵션 | Ghostty config snippet | `~/.config/ghostty/config` |
+| **Warp** | 테마, 터미널 색상, 폰트, 워크플로우, AI 옵션 | Warp theme YAML | `~/.warp/themes/*.yaml` |
+| **iTerm2** | 프로파일, 폰트, 창 투명도, ANSI 팔레트, 핫키 윈도우 | `.itermcolors` | `.itermcolors`, Dynamic Profile JSON |
+| **Neovim** | 기본 옵션, UI, 컬러스킴, lazy.nvim 플러그인, LSP, 키맵 | `init.lua` 일부 파싱 | `~/.config/nvim/init.lua` |
+| **Helix** | 테마, editor 옵션, LSP, file picker, keymap | `config.toml`, `languages.toml` 일부 파싱 | `config.toml`, `languages.toml` |
+| **Zsh** | 프롬프트, 히스토리, 플러그인, alias, PATH, env, completion | `.zshrc` 일부 파싱 | `~/.zshrc`, optional `starship.toml` |
+| **tmux** | prefix, 상태바, pane/window 동작, TPM 플러그인, 키바인딩 | `.tmux.conf` 일부 파싱 | `~/.tmux.conf` |
 
-> Import (기존 dotfile 역방향 파싱)은 플랫폼별로 Experimental 단계로 제공됩니다. 인식하지 못한 줄은 사용자에게 표시되어 직접 확인할 수 있습니다. iTerm2 import는 아직 Planned입니다. 자세한 일정은 [Roadmap](#roadmap) 참고.
+> Import는 플랫폼별로 지원 범위가 다릅니다. 현재는 안전한 범위 안에서 값을 인식하고, 확실하지 않은 줄은 사용자가 직접 검토할 수 있게 남기는 방향입니다.
 
 ---
 
-## Architecture
+## 주요 기능
 
-BusTerminal은 100% 클라이언트 사이드로 동작하며, 클라우드 동기화는 명시적 opt-in입니다.
+### Visual config builder
 
+폼, 토글, 슬라이더, 색상 입력으로 설정을 조립합니다. config 문법을 외우기 전에 먼저 결과를 만져볼 수 있습니다.
+
+### Theme transfer center
+
+Tokyo Night, Catppuccin, Gruvbox, Nord, Solarized 계열을 포함한 26개 테마를 탐색하고 비교합니다. 선택한 테마는 여러 도구의 색상 설정으로 환승할 수 있습니다.
+
+### Font center
+
+개발자용 폰트를 미리 보고, 터미널/에디터 설정에 반영합니다. 폰트는 취향이 아니라 가독성의 일부라서 별도 센터로 다룹니다.
+
+### Route storage
+
+완성한 설정 조합은 "노선"으로 저장할 수 있습니다. 로컬 보관이 기본이며, 계정을 연결하면 선택한 스냅샷을 클라우드에 보관할 수 있습니다.
+
+### Diff and diagnostics
+
+내보내기 전에 기본값과의 차이, 잠재 충돌, 누락된 선택을 점검합니다. 다운로드 직전에 한 번 더 볼 수 있는 출발 전 점검판입니다.
+
+### Install script
+
+고급 사용자를 위해 선택한 파일을 대상 경로에 배치하는 shell script를 생성합니다. 기본 흐름은 여전히 수동 다운로드와 직접 적용입니다.
+
+---
+
+## 작동 방식
+
+```txt
+┌─────────────────────────────────────────────────────────┐
+│ React UI                                                │
+│ 승강장 · 환승센터 · 폰트센터 · 출발 전 점검              │
+├─────────────────────────────────────────────────────────┤
+│ Zustand stores                                          │
+│ 플랫폼별 독립 상태 + localStorage persistence           │
+├─────────────────────────────────────────────────────────┤
+│ Parsers / serializers                                   │
+│ 기존 설정 가져오기 + 플랫폼별 native config 출력         │
+├─────────────────────────────────────────────────────────┤
+│ Optional cloud sync                                     │
+│ Supabase auth/snapshots, 연결하지 않으면 완전 로컬 동작   │
+└─────────────────────────────────────────────────────────┘
 ```
- ┌─────────────────────────────────────────────┐
- │  UI       React 18 · Framer Motion · CSS    │  ← 단일 페이지, 라우트별 코드 분할
- ├─────────────────────────────────────────────┤
- │  State    Zustand + persist middleware      │  ← 플랫폼별 store, localStorage 직렬화
- ├─────────────────────────────────────────────┤
- │  Export   Pure serializers (per platform)   │  ← 입력 → 정확한 config 문자열 변환
- ├─────────────────────────────────────────────┤
- │  Storage  localStorage  ·  Supabase (opt-in)│  ← 로컬 우선, 클라우드는 선택적 백업
- └─────────────────────────────────────────────┘
-```
 
-- **UI** — 라우트 단위 lazy import, 번들 초기 진입 ~350KB
-- **State** — 플랫폼별 store는 서로 독립. 한 플랫폼 변경이 다른 store를 깨지 않음
-- **Export** — serializer는 순수 함수, 테스트 70+ 케이스로 검증
-- **Storage** — Supabase env가 비어 있으면 클라우드 코드 경로는 fail-fast 차단
+설정 생성 로직은 가능한 한 순수 함수에 가깝게 유지합니다. UI가 바뀌어도 serializer 테스트가 통과하면 출력 파일의 기본 신뢰도를 지킬 수 있습니다.
 
 ---
 
-## Installation
+## 빠른 시작
 
-### Run locally
+### 요구 사항
+
+- Node.js 20 이상 권장
+- npm, bun, pnpm, yarn 중 하나
+
+### 로컬 실행
 
 ```bash
-bun install
-bun dev
+npm install
+npm run dev
 ```
 
-`http://localhost:5173` 에서 확인합니다.
+브라우저에서 `http://localhost:5173`을 엽니다.
 
-### Production build
+### 빌드
 
 ```bash
-bun run build
-bun run preview
+npm run build
+npm run preview
 ```
 
-### Optional environment variables
+### 테스트
 
 ```bash
-# .env.local
-VITE_SUPABASE_URL=...        # 클라우드 동기화 활성화 시
-VITE_SUPABASE_ANON_KEY=...
-VITE_PLAUSIBLE_DOMAIN=...    # 자체 호스팅 analytics
+npm run lint
+npm run test
 ```
 
-세 값 모두 **선택**입니다. 비워두면 BusTerminal은 100% 로컬로 동작합니다.
-
-> npm / pnpm / yarn도 동일하게 동작합니다. `bun`은 권장 기본값일 뿐 강제는 아닙니다.
+`bun`을 쓴다면 같은 스크립트를 `bun run dev`, `bun run build`, `bun run test`처럼 실행하면 됩니다.
 
 ---
 
-## Philosophy
+## 환경 변수
 
-> **BusTerminal은 dotfiles를 대체하지 않습니다.**
+BusTerminal은 환경 변수가 없어도 로컬 도구로 동작합니다. 아래 값은 선택 기능을 켤 때만 필요합니다.
 
-BusTerminal은 dotfiles의 *작성 시점*을 돕는 도구이지, 운영 시점의 source of truth가 아닙니다.
+```bash
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_PLAUSIBLE_DOMAIN=
+```
 
-- **Generated configs are yours** — 내보낸 config는 사용자 소유의 파일입니다. BusTerminal이 어디선가 죽어도 파일은 그대로 동작합니다.
-- **Export-first** — DB나 클라우드가 아니라 *파일*이 1차 산출물입니다. git에 커밋하고, 다른 사람에게 보내고, 직접 손으로 고쳐도 됩니다.
-- **Manual editing is respected** — 손으로 편집한 부분을 GUI가 침범해서 덮어쓰는 일은 없습니다. UI는 항상 새 파일을 생성하고, 기존 파일과의 머지는 사용자가 결정합니다.
-- **No lock-in** — 계정도, 클라우드도, 구독도 필요 없습니다. 브라우저 하나만 있으면 됩니다.
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`: 로그인과 클라우드 스냅샷
+- `VITE_PLAUSIBLE_DOMAIN`: Plausible 이벤트 분석
 
-dotfiles 레포가 이미 잘 굴러간다면, BusTerminal은 *시작점*과 *새 설정 탐색*에만 쓰면 충분합니다.
-
----
-
-## Roadmap
-
-### Now — 2026 Q2
-- Stabilize 7 platforms (Ghostty / Warp / iTerm2 / tmux / Neovim / Helix / Zsh)
-- Theme compare & diff 정리
-- Route 클라우드 동기화 신뢰성 검증
-
-### Next — 2026 Q3
-- **Import 안정화** — 기존 dotfile 역방향 파싱 커버리지 확대, 인식 실패 줄 표시 UX 개선, iTerm2 import 추가
-- **Snapshot restore** — 시점별 환경 스냅샷, 1-click 롤백
-- **Cheat sheet generation** — 현재 설정 기반 단축키/키맵 인쇄용 시트 생성
-
-### Future
-- **Theme ecosystem** — 사용자가 제출한 테마 갤러리, 검증 & 큐레이션
-- **Plugin ecosystem** — Neovim plugin / tmux plugin / zsh framework를 GUI에서 토글
-- **Team sharing** — Route를 팀 단위로 공유, "회사 표준 환경" 1-click 적용
-
-> 우선순위는 GitHub Issues의 `roadmap` 라벨에서 투표 가능합니다.
+배포 환경에서는 Google Tag Manager와 Cloudflare Web Analytics를 함께 사용할 수 있도록 CSP가 설정되어 있습니다.
 
 ---
 
-## Screenshots
+## 프로젝트 구조
 
-| | |
-|---|---|
-| ![Home](docs/images/screenshot-home.png) | ![Ghostty](docs/images/screenshot-ghostty.png) |
-| **Home** — 7개 승강장 진입점 | **Ghostty** — 50+ expert 설정 |
-| ![Themes](docs/images/screenshot-themes.png) | ![Routes](docs/images/screenshot-routes.png) |
-| **Themes** — 26개 테마 비교 | **Routes** — 보관된 환경 |
-| ![Export](docs/images/screenshot-export.png) | ![Mobile](docs/images/screenshot-mobile.png) |
-| **Export** — 단일 zip 출력 | **Mobile** — 375px 대응 |
+```txt
+src/
+  components/     공통 UI, shell, platform helper
+  data/           테마, 폰트, preset, 플랫폼 option catalog
+  lib/            parser, serializer, diagnostics, analytics
+  pages/          Home, Guide, 플랫폼 승강장, Export, Settings
+  stores/         Zustand stores
 
----
+public/
+  logo.png
+  og.svg
+  _headers
+  sitemap.xml
 
-## FAQ
-
-**왜 GUI인가요? config 파일을 직접 쓰는 게 빠르지 않나요?**
-빠르지만, 처음이 비쌉니다. Ghostty 옵션 200개, tmux 변수 100개를 모두 알기 전까지는 GUI가 *탐색 비용*을 줄여줍니다. 익숙해진 다음에는 GUI 없이 직접 쓰셔도 됩니다 — 생성된 파일이 그대로 동작하니까요.
-
-**dotfiles 레포랑 뭐가 다른가요?**
-dotfiles는 *저장*과 *동기화*에 강합니다. BusTerminal은 *작성*과 *탐색*에 강합니다. 둘은 경쟁하지 않습니다 — BusTerminal로 만들고, 결과를 dotfiles에 커밋하는 흐름이 권장됩니다.
-
-**왜 하필 "버스터미널"인가요?**
-설정 도구가 *플랫폼 사이를 옮겨 다니는 일*이라는 게 핵심 아이디어입니다. Ghostty에서 Warp로, macOS에서 Linux로, 회사 머신에서 개인 머신으로. 그 환승의 허브 — 그게 BusTerminal입니다.
-
-**제 기존 설정을 덮어쓰나요?**
-아니요. BusTerminal은 *새 파일을 생성*만 합니다. 기존 파일을 읽거나 수정하지 않습니다. 다운로드한 파일을 어디에 두고 어떻게 머지할지는 전적으로 사용자가 결정합니다.
-
-**오프라인에서도 동작하나요?**
-네. 최초 로드 후에는 100% 로컬에서 동작합니다. 클라우드 동기화(Supabase)는 명시적으로 활성화한 경우에만 네트워크를 사용합니다.
+docs/
+  ROADMAP.md
+  SUPABASE.md
+  CHANGELOG.md
+  SUGGESTIONS.md
+```
 
 ---
 
-## Contributing
+## 원칙
 
-기여를 환영합니다. 시작하기 전에 짧게 이슈를 열어 방향을 맞추는 것을 권장합니다.
+### 파일이 최종 산출물입니다
 
-1. Issue를 열어 변경 의도를 공유합니다 (`feature` / `bug` / `docs` 중 하나).
-2. Fork → feature branch → PR. 가능한 한 작게 쪼개주세요.
-3. 새 기능에는 Vitest 케이스를, UI 변경에는 스크린샷을 함께 올려주세요.
-4. 모든 PR은 `bun run lint && bun run test`를 통과해야 합니다.
+BusTerminal의 목적은 사용자를 앱 안에 묶는 것이 아닙니다. 좋은 설정을 만들고, 그것을 사용자가 소유하는 파일로 넘겨주는 것이 목적입니다.
 
-코드 스타일, 커밋 컨벤션, 리뷰 프로세스는 [`CONTRIBUTING.md`](CONTRIBUTING.md)를 참고하세요.
+### 기존 설정을 함부로 덮어쓰지 않습니다
 
-### 좋은 첫 기여 영역
-- 새 theme 큐레이션 (검증 가이드 포함)
-- 플랫폼별 expert 설정 보강 (Ghostty / Neovim 우선)
-- 한국어 외 언어 추가 (i18n 인프라는 준비 중)
-- 문서화 (FAQ, 가이드, 스크린샷 갱신)
+앱은 다운로드 가능한 파일을 생성합니다. 실제 적용, 백업, merge는 사용자가 명시적으로 결정합니다.
+
+### 브랜드 언어는 쓰되, 기능은 분명하게 설명합니다
+
+승강장, 환승하기, 차고 보관, 출발권 같은 메타포를 유지하지만, 각 화면에는 실제 의미를 같이 적습니다.
+
+### 하나의 도구를 기준으로 삼지 않습니다
+
+Ghostty, Warp, iTerm2, Neovim, Helix, Zsh, tmux는 모두 같은 레벨의 승강장입니다. 사용자는 자기 도구에서 시작하면 됩니다.
 
 ---
 
-## Discord Issue Notifications
+## 로드맵
 
-새 GitHub Issue가 열리거나 다시 열리면 Discord로 요약 알림을 보낼 수 있습니다. Webhook URL은 코드에 넣지 않고 GitHub Actions secret으로만 보관합니다.
+자세한 계획은 [docs/ROADMAP.md](./docs/ROADMAP.md)를 확인하세요.
 
-1. Discord 채널 설정 → Integrations → Webhooks → New Webhook에서 URL을 복사합니다.
-2. GitHub repository → Settings → Secrets and variables → Actions → New repository secret으로 이동합니다.
-3. 이름은 `DISCORD_WEBHOOK_URL`, 값은 복사한 Discord webhook URL로 저장합니다.
-4. 이후 `/feedback`에서 생성된 Issue는 `.github/workflows/discord-issue-notify.yml`을 통해 Discord에 제목, 라벨, 작성자, 링크만 전송됩니다.
+현재 우선순위는 다음과 같습니다.
 
-Issue 본문 전체는 설정 파일 조각이나 환경 정보가 포함될 수 있어 Discord로 보내지 않습니다.
+- import 파서 안정화와 커버리지 확대
+- export 이후 적용 안내 강화
+- route snapshot 복원 UX
+- 갤러리/공유 노선 실험
+- i18n 기반 정리
+
+---
+
+## 기여
+
+기여는 작고 검증 가능한 단위가 가장 좋습니다.
+
+1. Issue를 열어 변경 의도와 영향을 짧게 공유합니다.
+2. 기능 변경은 가능한 한 한 플랫폼 또는 한 흐름에만 집중합니다.
+3. parser/serializer 변경에는 Vitest 케이스를 추가합니다.
+4. UI 변경은 모바일과 데스크톱에서 확인합니다.
+5. PR 전에 아래 명령을 실행합니다.
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
+
+좋은 첫 기여 후보:
+
+- 플랫폼별 import 인식 범위 확대
+- 테마/폰트 큐레이션 보강
+- README와 Guide의 영어 버전
+- 설정 적용 후 OS별 배치 안내
+- 접근성 점검과 키보드 흐름 개선
 
 ---
 
 ## License
 
-[MIT](LICENSE) © BusTerminal Contributors
-
-생성된 config 파일에는 어떤 라이선스도 부여되지 않습니다. 사용자 본인의 결과물입니다.
+[MIT](./LICENSE)
