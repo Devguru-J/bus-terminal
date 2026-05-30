@@ -37,6 +37,7 @@
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.31.10",
+    "esbuild": "^0.28.0",
     "jsdom": "^29.1.1",
     "pg": "^8.21.0",
     "postcss": "^8.4.49",
