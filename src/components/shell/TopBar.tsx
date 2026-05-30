@@ -78,18 +78,29 @@ export function TopBar() {
                 >
                     <Icon name="settings" className="text-[18px]" />
                 </Link>
-                <button
-                    type="button"
-                    onClick={handleAccountClick}
-                    className="relative p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
-                    aria-label={status === "signed-in" ? "프로필" : "계정 연결"}
-                    title={status === "signed-in" ? user?.email ?? "프로필" : "계정 연결"}
-                >
-                    <Icon name="account_circle" className="text-[18px]" />
-                    {status === "signed-in" && (
+                {status === "signed-in" ? (
+                    <button
+                        type="button"
+                        onClick={handleAccountClick}
+                        className="relative p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
+                        aria-label="프로필"
+                        title={user?.email ?? "프로필"}
+                    >
+                        <Icon name="account_circle" className="text-[18px]" />
                         <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-fixed-dim" />
-                    )}
-                </button>
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={handleAccountClick}
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-semibold font-mono tracking-wider text-primary-fixed-dim bg-primary-fixed-dim/[0.08] hover:bg-primary-fixed-dim/[0.18] border border-primary-fixed-dim/20 hover:border-primary-fixed-dim/40 rounded-full transition active:scale-[0.97] duration-200"
+                        aria-label="로그인"
+                        title="로그인"
+                    >
+                        <Icon name="login" className="text-[14px]" />
+                        <span>로그인</span>
+                    </button>
+                )}
             </div>
         </header>
     );
