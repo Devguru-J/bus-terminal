@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {DepartureComplete} from "@/components/export/DepartureComplete";
+import {ApplyGuide} from "@/components/export/ApplyGuide";
 import {Badge} from "@/components/ui/Badge";
 import {Icon} from "@/components/ui/Icon";
 import {Button} from "@/components/ui/Button";
@@ -266,13 +267,14 @@ export function ExportPage() {
     // === 빈 상태 — 아무것도 수정되지 않은 경우 ===
     if (!anyModified) {
         return (
-            <div className="max-w-3xl mx-auto py-6 space-y-6">
+            <div className="max-w-5xl mx-auto py-6 space-y-6">
                 <StationHeader
                     title="출발권 만들기"
                     eyebrow="Departure"
                     subtitle="아직 점검할 설정이 없습니다. 먼저 승강장에서 설정을 바꿔 주세요."
                 />
                 <EmptyExportState />
+                <ApplyGuide selected={selectNoPlatforms()} />
             </div>
         );
     }
@@ -309,6 +311,8 @@ export function ExportPage() {
                 onSelectNone={selectNone}
                 fileList={fileList}
             />
+
+            <ApplyGuide selected={selected} />
 
             <AdvancedInstall
                 selectedCount={selectedCount}
@@ -428,9 +432,8 @@ function PlatformSelector({
                     적용 안내
                 </div>
                 <p className="text-body-sm text-on-surface-variant leading-relaxed">
-                    다운로드한 파일은 바로 적용되지 않습니다. 기존 설정을 백업한 뒤
-                    각 도구의 설정 경로(카드 하단의 경로)에 직접 옮겨 주세요.
-                    설치 스크립트는 고급 사용자용입니다.
+                    아래의 “다운로드 후 적용” 안내에서 선택한 도구별 파일 이름, 실제 위치,
+                    복사 명령, 확인 방법을 볼 수 있어요. 설치 스크립트는 고급 사용자용입니다.
                 </p>
             </div>
         </section>

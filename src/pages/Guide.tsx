@@ -4,6 +4,7 @@ import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
 import {Badge} from "@/components/ui/Badge";
+import {APPLY_GUIDES, APPLY_GUIDE_ORDER} from "@/lib/applyGuide";
 
 const TERM_GLOSSARY: Array<{term: string; meaning: string; example: string}> = [
     {
@@ -114,16 +115,92 @@ export function GuidePage() {
                     <Step
                         n={3}
                         title="출발권 만들기"
-                        desc="완성됐다면 '출발권 만들기' → '출발 전 점검' 페이지에서 설정 파일을 다운로드하세요."
+                        desc="완성됐다면 '출발권 만들기'에서 설정 파일을 다운로드하고, 바로 아래 적용 안내를 따라 실제 위치에 넣으세요."
                         cta="출발권 만들기"
                         to="/export"
                     />
                 </ol>
             </ConfigPanel>
 
-            {/* 3. 추천 시작 경로 — 행동 가이드 우선 */}
+            {/* 3. 다운로드 후 적용 안내 */}
             <ConfigPanel
-                title="③ 어떻게 시작하는 게 좋을까요?"
+                title="③ 다운로드한 파일은 이렇게 적용해요"
+                actions={<Badge tone="active">적용 안내</Badge>}
+            >
+                <div className="grid grid-cols-1 md:grid-cols-[0.9fr_1.1fr] gap-4">
+                    <div className="rounded-lg border border-primary-fixed-dim/25 bg-primary-fixed-dim/[0.04] p-4">
+                        <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-primary-fixed-dim">
+                            기본 원칙
+                        </div>
+                        <ol className="mt-3 space-y-3">
+                            <ApplyPrinciple
+                                n={1}
+                                icon="download"
+                                title="파일을 받는다"
+                                desc="버스터미널은 설정 파일을 만드는 곳이고, 다운로드된 파일은 아직 내 도구에 적용된 상태가 아닙니다."
+                            />
+                            <ApplyPrinciple
+                                n={2}
+                                icon="backup"
+                                title="기존 설정을 백업한다"
+                                desc="이미 쓰던 설정이 있으면 .bak 복사본을 먼저 만들어 둡니다."
+                            />
+                            <ApplyPrinciple
+                                n={3}
+                                icon="folder"
+                                title="정해진 위치에 넣는다"
+                                desc="도구마다 읽는 파일 이름과 폴더가 다릅니다. 특히 ghostty-config처럼 이름을 바꿔야 하는 파일이 있어요."
+                            />
+                            <ApplyPrinciple
+                                n={4}
+                                icon="restart_alt"
+                                title="도구를 다시 읽는다"
+                                desc="터미널이나 에디터를 새로 열거나 source/reload 명령을 실행해야 반영됩니다."
+                            />
+                        </ol>
+                    </div>
+
+                    <div className="rounded-lg border border-white/[0.06] bg-surface-container-lowest p-4">
+                        <div className="flex items-center justify-between gap-3 mb-3">
+                            <div className="font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant">
+                                주요 위치
+                            </div>
+                            <Link
+                                to="/export"
+                                className="inline-flex items-center gap-1 font-mono text-label-xs uppercase tracking-[0.14em] text-primary-fixed-dim hover:underline"
+                            >
+                                적용 안내 열기
+                                <Icon name="arrow_forward" className="text-[14px]" />
+                            </Link>
+                        </div>
+                        <div className="divide-y divide-white/[0.05]">
+                            {APPLY_GUIDE_ORDER.map(id => {
+                                const guide = APPLY_GUIDES[id];
+                                return (
+                                    <div key={id} className="py-2 grid grid-cols-1 sm:grid-cols-[92px_1fr] gap-1 sm:gap-3">
+                                        <div className="font-display text-title-sm text-on-surface">
+                                            {guide.label}
+                                        </div>
+                                        <div className="min-w-0 space-y-1">
+                                            {guide.files.slice(0, 2).map(file => (
+                                                <div key={`${file.downloaded}-${file.destination}`} className="font-mono text-[11px] text-on-surface-variant">
+                                                    <span className="text-primary-fixed-dim">{file.downloaded}</span>
+                                                    <span className="text-on-surface-variant/60"> → </span>
+                                                    <span>{file.destination}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </ConfigPanel>
+
+            {/* 4. 추천 시작 경로 — 행동 가이드 우선 */}
+            <ConfigPanel
+                title="④ 어떻게 시작하는 게 좋을까요?"
                 actions={<Badge tone="info">추천 경로</Badge>}
             >
                 <div className="space-y-3">
@@ -151,9 +228,9 @@ export function GuidePage() {
                 </div>
             </ConfigPanel>
 
-            {/* 4. 용어 안내 — 행동 가이드 뒤로 */}
+            {/* 5. 용어 안내 — 행동 가이드 뒤로 */}
             <ConfigPanel
-                title="④ 이 단어들이 자주 나와요"
+                title="⑤ 이 단어들이 자주 나와요"
                 actions={<Badge tone="muted">용어집</Badge>}
             >
                 <p className="text-[12px] text-on-surface-variant mb-3">
@@ -178,9 +255,9 @@ export function GuidePage() {
                 </div>
             </ConfigPanel>
 
-            {/* 5. 데이터 저장 안내 */}
+            {/* 6. 데이터 저장 안내 */}
             <ConfigPanel
-                title="⑤ 내 설정은 어디에 저장되나요?"
+                title="⑥ 내 설정은 어디에 저장되나요?"
                 actions={<Badge tone="warn">중요</Badge>}
             >
                 <ul className="space-y-2 text-body-md text-on-surface-variant">
@@ -291,5 +368,34 @@ function Recommend({
             </div>
             <p className="text-[12px] text-on-surface-variant mt-2">{detail}</p>
         </div>
+    );
+}
+
+function ApplyPrinciple({
+    n,
+    icon,
+    title,
+    desc
+}: {
+    n: number;
+    icon: string;
+    title: string;
+    desc: string;
+}) {
+    return (
+        <li className="flex gap-3">
+            <span className="mt-0.5 h-7 w-7 shrink-0 rounded-full border border-primary-fixed-dim/40 bg-primary-fixed-dim/10 grid place-items-center font-mono text-[11px] text-primary-fixed-dim">
+                {n}
+            </span>
+            <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                    <Icon name={icon} className="text-[15px] text-primary-fixed-dim" />
+                    <div className="font-display text-title-sm text-on-surface">{title}</div>
+                </div>
+                <p className="mt-1 text-[12px] leading-relaxed text-on-surface-variant">
+                    {desc}
+                </p>
+            </div>
+        </li>
     );
 }
