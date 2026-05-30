@@ -3,6 +3,7 @@ name: Discord Issue Notify
 on:
   issues:
     types: [opened, reopened]
+  workflow_dispatch:
 
 permissions:
   issues: read
@@ -11,18 +12,24 @@ jobs:
   notify:
     name: Send issue summary to Discord
     runs-on: ubuntu-latest
-    if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
 
     steps:
+      - name: Verify Discord webhook secret
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "::error::Missing repository secret DISCORD_WEBHOOK_URL"
+            exit 1
+          fi
+
       - name: Send Discord notification
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
-          ISSUE_USER: ${{ github.event.issue.user.login }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
-          REPOSITORY: ${{ github.repository }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
         run: |
           python3 - <<'PY'
           import json
@@ -30,12 +37,30 @@ jobs:
           import urllib.request
 
           webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
-          labels = os.environ.get("ISSUE_LABELS") or "no label"
-          title = os.environ["ISSUE_TITLE"]
-          issue_url = os.environ["ISSUE_URL"]
-          issue_user = os.environ["ISSUE_USER"]
-          issue_number = os.environ["ISSUE_NUMBER"]
-          repository = os.environ["REPOSITORY"]
+          repository = os.environ["GITHUB_REPOSITORY"]
+          event_path = os.environ["GITHUB_EVENT_PATH"]
+
+          with open(event_path, encoding="utf-8") as f:
+              event = json.load(f)
+
+          issue = event.get("issue")
+          sender = event.get("sender", {}).get("login", "unknown")
+
+          if issue:
+              labels = ", ".join(label["name"] for label in issue.get("labels", [])) or "no label"
+              title = issue["title"]
+              issue_url = issue["html_url"]
+              issue_user = issue.get("user", {}).get("login", sender)
+              issue_number = issue["number"]
+          else:
+              labels = "manual test"
+              title = "Discord issue notification test"
+              issue_url = (
+                  f'{os.environ["GITHUB_SERVER_URL"]}/{repository}/actions/runs/'
+                  f'{os.environ["GITHUB_RUN_ID"]}'
+              )
+              issue_user = sender
+              issue_number = "test"
 
           payload = {
               "username": "BusTerminal Feedback",
