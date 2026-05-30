@@ -64,7 +64,19 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        trackPageview(location.pathname + location.search);
+        const path = location.pathname + location.search;
+        trackPageview(path);
+
+        // GTM: SPA(싱글 페이지 애플리케이션) 라우팅 전환 시 GTM에 페이지뷰 이벤트를 전송합니다.
+        if (typeof window !== "undefined") {
+            const w = window as any;
+            w.dataLayer = w.dataLayer || [];
+            w.dataLayer.push({
+                event: "pageview",
+                page_path: path,
+                page_title: document.title
+            });
+        }
     }, [location.pathname, location.search]);
 
     return (
