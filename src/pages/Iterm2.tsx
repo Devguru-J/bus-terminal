@@ -1,6 +1,7 @@
 import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {PresetModal} from "@/components/ui/PresetModal";
@@ -119,6 +120,16 @@ export function Iterm2Page() {
                         </Button>
                     </>
                 }
+            />
+
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-iterm2"
+                title="iTerm2 프로파일 설정"
+                steps={[
+                    {title: "프로파일 / 폰트 고르기", detail: "Profile / Font 패널에서 이름·폰트·간격 조정"},
+                    {title: "색상 가져오거나 조정", detail: ".itermcolors를 가져오거나 컬러 패널에서 직접 수정"},
+                    {title: "출발권 만들기", detail: ".itermcolors와 Dynamic Profile 파일 다운로드"}
+                ]}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">

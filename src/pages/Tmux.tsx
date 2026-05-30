@@ -1,6 +1,7 @@
 import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {FormPromptModal} from "@/components/ui/FormPromptModal";
@@ -138,6 +139,16 @@ export function TmuxPage() {
                         </Button>
                     </>
                 }
+            />
+
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-tmux"
+                title="tmux .tmux.conf 설정"
+                steps={[
+                    {title: "상태바 / Prefix 정하기", detail: "Status Bar와 Layout 패널에서 조작 기준 설정"},
+                    {title: "플러그인 / 키바인딩 고르기", detail: "TPM 플러그인과 pane/window 단축키 구성"},
+                    {title: "출발권 만들기", detail: "헤더의 '출발권 만들기'로 .tmux.conf 다운로드"}
+                ]}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">

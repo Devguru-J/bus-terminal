@@ -47,9 +47,9 @@ export function GuidePage() {
                 eyebrow="User Guide"
                 subtitle="버스터미널을 처음 써보는 분을 위한 5분짜리 사용 설명서. 핵심 동선과 용어만 정리했어요."
                 actions={
-                    <Button size="sm" onClick={() => navigate("/ghostty")}>
-                        <Icon name="play_arrow" className="text-[16px]" />
-                        바로 시작하기
+                    <Button size="sm" onClick={() => navigate("/tools")}>
+                        <Icon name="route" className="text-[16px]" />
+                        도구 고르기
                     </Button>
                 }
             />
@@ -101,8 +101,8 @@ export function GuidePage() {
                         n={1}
                         title="승강장 선택"
                         desc="설정하고 싶은 도구의 페이지로 이동합니다. 사이드바에서 골라요."
-                        cta="Ghostty 승강장으로"
-                        to="/ghostty"
+                        cta="툴 소개 보기"
+                        to="/tools"
                     />
                     <Step
                         n={2}
@@ -129,17 +129,17 @@ export function GuidePage() {
                 <div className="space-y-3">
                     <Recommend
                         title="처음이라 막막하다"
-                        steps="Ghostty 승강장 → 테마 센터 → 폰트 센터 → 출발 전 점검"
-                        detail="가장 기본인 터미널 외관부터 정리한 뒤 색·폰트 취향을 입히고, 마지막에 파일을 받는 흐름이에요."
-                        primaryTo="/ghostty"
-                        primaryLabel="Ghostty부터 시작"
+                        steps="툴 소개 → 쓰는 도구 선택 → 테마 센터 → 폰트 센터 → 출발 전 점검"
+                        detail="먼저 내가 쓰는 터미널·에디터·셸을 고르고, 필요한 색·폰트만 입힌 뒤 마지막에 파일을 받는 흐름이에요."
+                        primaryTo="/tools"
+                        primaryLabel="도구부터 고르기"
                     />
                     <Recommend
                         title="이미 쓰던 설정이 있다"
                         steps="해당 승강장 → '환승하기' → 기존 파일 붙여넣기"
                         detail="기존 .zshrc / .tmux.conf / init.lua / .itermcolors / 테마 YAML을 통째로 가져와요. 인식 못한 줄은 그대로 보존됩니다."
-                        primaryTo="/ghostty"
-                        primaryLabel="환승부터 시도"
+                        primaryTo="/tools"
+                        primaryLabel="내 도구 찾기"
                     />
                     <Recommend
                         title="여러 테마를 비교하고 싶다"
@@ -221,16 +221,16 @@ export function GuidePage() {
                         준비됐다면 출발해 볼까요?
                     </div>
                     <div className="text-[12px] text-on-surface-variant mt-1">
-                        Ghostty 승강장에서 첫 설정을 시작하는 게 가장 무난한 경로예요.
+                        원하는 승강장을 골라 첫 설정을 시작하면 됩니다.
                     </div>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => navigate("/")}>
                         <Icon name="home" className="text-[14px]" />홈으로
                     </Button>
-                    <Button size="sm" onClick={() => navigate("/ghostty")}>
-                        <Icon name="play_arrow" className="text-[14px]" />
-                        Ghostty 승강장
+                    <Button size="sm" onClick={() => navigate("/tools")}>
+                        <Icon name="route" className="text-[14px]" />
+                        도구 고르기
                     </Button>
                 </div>
             </div>

@@ -25,7 +25,7 @@ const PLATFORMS = [
         to: "/ghostty",
         icon: "terminal",
         snippet: "~/.config/ghostty/config",
-        status: "active" as const
+        status: "ready" as const
     },
     {
         platformNo: "02",
@@ -85,6 +85,10 @@ const PLATFORMS = [
 
 export function HomePage() {
     const routes = useRoutesStore(s => s.routes);
+    function scrollToPlatforms() {
+        document.getElementById("platforms")?.scrollIntoView({behavior: "smooth", block: "start"});
+    }
+
     return (
         <div className="max-w-6xl mx-auto space-y-12">
             {/* Hero — 절제된 단일 메시지 */}
@@ -122,11 +126,9 @@ export function HomePage() {
                         7개 도구의 설정 파일을 시각적으로 만들고, 한 번에 내려받습니다.
                     </p>
                     <div className="flex flex-wrap items-center gap-3 pt-1">
-                        <Link to="/ghostty">
-                            <Button size="lg">
-                                <Icon name="play_arrow" className="text-[16px]" /> Ghostty로 시작하기
-                            </Button>
-                        </Link>
+                        <Button size="lg" onClick={scrollToPlatforms}>
+                            <Icon name="route" className="text-[16px]" /> 내 도구 고르기
+                        </Button>
                         <Link to="/guide">
                             <Button size="lg" variant="outline">
                                 사용 안내
@@ -157,7 +159,7 @@ export function HomePage() {
                 </div>
                 <ol className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
-                        {n: 1, title: "터미널 선택", desc: "쓰는 터미널/에디터의 페이지로 이동.", to: "/ghostty", cta: "Ghostty로"},
+                        {n: 1, title: "도구 선택", desc: "쓰는 터미널·에디터·셸의 승강장으로 이동.", to: "/tools", cta: "도구 고르기"},
                         {n: 2, title: "테마·폰트 적용", desc: "테마/폰트 센터에서 취향을 입혀요.", to: "/themes", cta: "테마 센터"},
                         {n: 3, title: "설정 파일 다운로드", desc: "Export 페이지에서 한 번에.", to: "/export", cta: "Export"}
                     ].map(step => (
@@ -197,7 +199,7 @@ export function HomePage() {
             </section>
 
             {/* Platforms grid */}
-            <section>
+            <section id="platforms" className="scroll-mt-20">
                 <div className="flex items-end justify-between mb-5">
                     <div>
                         <div className="font-mono text-label-xs uppercase tracking-[0.16em] text-on-surface-variant/70">

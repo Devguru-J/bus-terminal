@@ -37,9 +37,9 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
                         </p>
                     </div>
                 </div>
-                <Button size="sm" className="w-full mt-4" onClick={() => go("/ghostty")}>
-                    <Icon name="add" className="text-[16px]" />
-                    새 설정 만들기
+                <Button size="sm" className="w-full mt-4" onClick={() => go("/tools")}>
+                    <Icon name="route" className="text-[16px]" />
+                    도구 고르기
                 </Button>
             </div>
 

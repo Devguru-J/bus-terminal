@@ -2,6 +2,7 @@ import {useState} from "react";
 import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {PresetModal} from "@/components/ui/PresetModal";
@@ -91,6 +92,16 @@ export function ZshPage() {
                         </Button>
                     </>
                 }
+            />
+
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-zsh"
+                title="Zsh .zshrc 설정"
+                steps={[
+                    {title: "프롬프트 / 히스토리 고르기", detail: "프롬프트 스타일과 명령 기록 보관 방식 설정"},
+                    {title: "플러그인 / alias 정리", detail: "자주 쓰는 플러그인과 별칭을 필요한 만큼 추가"},
+                    {title: "탑승 완료", detail: "헤더의 '탑승 완료'로 노선 저장 후 다운로드"}
+                ]}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6">

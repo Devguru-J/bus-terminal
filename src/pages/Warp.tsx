@@ -1,6 +1,7 @@
 import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {FormPromptModal} from "@/components/ui/FormPromptModal";
@@ -116,6 +117,16 @@ export function WarpPage() {
                         </Button>
                     </>
                 }
+            />
+
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-warp"
+                title="Warp 터미널 설정"
+                steps={[
+                    {title: "테마 만들기", detail: "Theme 패널에서 이름·강조색·배경색 조정"},
+                    {title: "워크플로우 / AI 정리", detail: "Workflow와 AI 옵션을 필요한 만큼만 켜기"},
+                    {title: "출발권 만들기", detail: "헤더의 '출발권 만들기'로 파일 다운로드"}
+                ]}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">

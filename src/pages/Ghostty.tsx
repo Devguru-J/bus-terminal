@@ -166,7 +166,7 @@ export function GhosttyPage() {
                     </span>
                 }
                 eyebrow="Platform 1 Active"
-                subtitle="가장 먼저 만지는 터미널 설정입니다. 폰트, 색상, 창 여백을 슬라이더로 조정하고, 미리보기로 확인한 뒤 Ghostty 설정 파일로 내보냅니다."
+                subtitle="Ghostty 터미널 앱 설정입니다. 폰트, 색상, 창 여백을 슬라이더로 조정하고, 미리보기로 확인한 뒤 Ghostty 설정 파일로 내보냅니다."
                 actions={
                     <>
                         <Button variant="outline" size="md" onClick={() => setPresetOpen(true)} title="시작 프리셋 적용">
@@ -189,9 +189,9 @@ export function GhosttyPage() {
                 storageKey="bus-terminal:guide-card-ghostty"
                 title="Ghostty 터미널 설정"
                 steps={[
-                    {title: "1. 폰트 고르기", detail: "왼쪽 패널 상단의 폰트 패밀리·사이즈"},
-                    {title: "2. 테마 / 색 고르기", detail: "테마 센터로 가거나 컬러 패널에서 직접"},
-                    {title: "3. 출발권 만들기", detail: "헤더의 '출발권 만들기'로 파일 다운로드"}
+                    {title: "폰트 고르기", detail: "왼쪽 패널 상단의 폰트 패밀리·사이즈"},
+                    {title: "테마 / 색 고르기", detail: "테마 센터로 가거나 컬러 패널에서 직접"},
+                    {title: "출발권 만들기", detail: "헤더의 '출발권 만들기'로 파일 다운로드"}
                 ]}
             />
 

@@ -1,6 +1,7 @@
 import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {PresetModal} from "@/components/ui/PresetModal";
@@ -84,6 +85,16 @@ export function NeovimPage() {
                         </Button>
                     </>
                 }
+            />
+
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-neovim"
+                title="Neovim init.lua 설정"
+                steps={[
+                    {title: "기본 옵션 정리", detail: "Leader key, 줄 번호, 들여쓰기, 마우스 설정"},
+                    {title: "테마 / 플러그인 / 키맵 선택", detail: "UI와 lazy.nvim 플러그인 구성을 화면에서 조립"},
+                    {title: "탑승 완료", detail: "헤더의 '탑승 완료'로 노선 저장 후 다운로드"}
+                ]}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6">

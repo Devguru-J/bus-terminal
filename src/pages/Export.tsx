@@ -329,14 +329,14 @@ function EmptyExportState() {
                     아직 변경된 설정이 없어요
                 </h2>
                 <p className="mt-2 text-body-md text-on-surface-variant">
-                    먼저 승강장에서 설정을 만져야 다운로드할 파일이 생겨요. 가장 많이 쓰는 순서는 Ghostty → 테마 센터 → 폰트 센터입니다.
+                    먼저 원하는 승강장에서 설정을 만져야 다운로드할 파일이 생겨요. 잘 모르겠다면 툴 소개에서 내 도구를 고른 뒤 시작하세요.
                 </p>
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
-                <Link to="/ghostty">
+                <Link to="/tools">
                     <Button size="sm">
-                        <Icon name="play_arrow" className="text-[14px]" />
-                        Ghostty 승강장
+                        <Icon name="route" className="text-[14px]" />
+                        도구 고르기
                     </Button>
                 </Link>
                 <Link to="/themes">

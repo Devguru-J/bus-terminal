@@ -1,6 +1,7 @@
 import {useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
+import {PageGuideCard} from "@/components/shell/PageGuideCard";
 import {Button} from "@/components/ui/Button";
 import {SaveNameModal} from "@/components/ui/SaveNameModal";
 import {FormPromptModal} from "@/components/ui/FormPromptModal";
@@ -109,6 +110,16 @@ export function HelixPage() {
                         </Button>
                     </>
                 }
+            />
+
+            <PageGuideCard
+                storageKey="bus-terminal:guide-card-helix"
+                title="Helix config.toml 설정"
+                steps={[
+                    {title: "테마 / 에디터 조정", detail: "Theme & Editor 패널에서 줄 번호·커서·버퍼라인 설정"},
+                    {title: "언어 서버 / 키맵 선택", detail: "languages.toml과 모드별 키맵 구성"},
+                    {title: "출발권 만들기", detail: "config.toml과 languages.toml 파일 다운로드"}
+                ]}
             />
 
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
