@@ -23,6 +23,7 @@ import {ITERM_FONT_FAMILIES} from "@/data/iterm2";
 import {useIterm2Store} from "@/stores/iterm2Store";
 import {useRoutesStore} from "@/stores/routesStore";
 import {toast} from "@/stores/toastStore";
+import {parseItermColors} from "@/lib/importers";
 
 export function Iterm2Page() {
     const {profile, setField, setAnsi, exportColors, exportProfile} = useIterm2Store();
@@ -540,43 +541,4 @@ export function Iterm2Page() {
             />
         </div>
     );
-}
-
-/** .itermcolors plist XML 파서 (느슨한 정규식 기반 — 폼/색 키만 추출). */
-function parseItermColors(xml: string): Record<string, string> | null {
-    try {
-        const result: Record<string, string> = {};
-        const dictRe =
-            /<key>([^<]+)<\/key>\s*<dict>([\s\S]*?)<\/dict>/g;
-        let m: RegExpExecArray | null;
-        while ((m = dictRe.exec(xml))) {
-            const [, key, body] = m;
-            const r = extractReal(body, "Red Component");
-            const g = extractReal(body, "Green Component");
-            const b = extractReal(body, "Blue Component");
-            if (r != null && g != null && b != null) {
-                result[key] = `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-            }
-        }
-        return Object.keys(result).length ? result : null;
-    }
-    catch {
-        return null;
-    }
-}
-
-function extractReal(body: string, key: string): number | null {
-    const re = new RegExp(
-        `<key>${key}<\\/key>\\s*<real>([0-9eE.+\\-]+)<\\/real>`
-    );
-    const m = body.match(re);
-    if (!m) return null;
-    const n = Number(m[1]);
-    return isNaN(n) ? null : n;
-}
-
-function toHex(v: number): string {
-    return Math.round(Math.max(0, Math.min(1, v)) * 255)
-        .toString(16)
-        .padStart(2, "0");
 }

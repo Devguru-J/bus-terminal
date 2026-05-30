@@ -259,6 +259,19 @@ dotfiles는 *저장*과 *동기화*에 강합니다. BusTerminal은 *작성*과 
 
 ---
 
+## Discord Issue Notifications
+
+새 GitHub Issue가 열리거나 다시 열리면 Discord로 요약 알림을 보낼 수 있습니다. Webhook URL은 코드에 넣지 않고 GitHub Actions secret으로만 보관합니다.
+
+1. Discord 채널 설정 → Integrations → Webhooks → New Webhook에서 URL을 복사합니다.
+2. GitHub repository → Settings → Secrets and variables → Actions → New repository secret으로 이동합니다.
+3. 이름은 `DISCORD_WEBHOOK_URL`, 값은 복사한 Discord webhook URL로 저장합니다.
+4. 이후 `/feedback`에서 생성된 Issue는 `.github/workflows/discord-issue-notify.yml`을 통해 Discord에 제목, 라벨, 작성자, 링크만 전송됩니다.
+
+Issue 본문 전체는 설정 파일 조각이나 환경 정보가 포함될 수 있어 Discord로 보내지 않습니다.
+
+---
+
 ## License
 
 [MIT](LICENSE) © BusTerminal Contributors

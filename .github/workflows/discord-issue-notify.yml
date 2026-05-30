@@ -1,0 +1,68 @@
+name: Discord Issue Notify
+
+on:
+  issues:
+    types: [opened, reopened]
+
+permissions:
+  issues: read
+
+jobs:
+  notify:
+    name: Send issue summary to Discord
+    runs-on: ubuntu-latest
+    if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
+          labels = os.environ.get("ISSUE_LABELS") or "no label"
+          title = os.environ["ISSUE_TITLE"]
+          issue_url = os.environ["ISSUE_URL"]
+          issue_user = os.environ["ISSUE_USER"]
+          issue_number = os.environ["ISSUE_NUMBER"]
+          repository = os.environ["REPOSITORY"]
+
+          payload = {
+              "username": "BusTerminal Feedback",
+              "embeds": [
+                  {
+                      "title": f"새 의견 #{issue_number}",
+                      "url": issue_url,
+                      "description": title,
+                      "color": 0x00E55B,
+                      "fields": [
+                          {"name": "Repository", "value": repository, "inline": True},
+                          {"name": "Labels", "value": labels, "inline": True},
+                          {"name": "Author", "value": issue_user, "inline": True},
+                          {"name": "Open", "value": issue_url, "inline": False},
+                      ],
+                  }
+              ],
+          }
+
+          data = json.dumps(payload).encode("utf-8")
+          req = urllib.request.Request(
+              webhook_url,
+              data=data,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=10) as res:
+              if res.status >= 300:
+                  raise SystemExit(f"Discord webhook failed with HTTP {res.status}")
+          PY

@@ -2,10 +2,11 @@
  * Ghostty config 파서. 레퍼런스 구현을 참고하되 React/TS 환경에 맞게 재작성.
  * - `key = value` 라인 추출
  * - palette / keybind는 배열로 누적
+ * - 따옴표 밖 인라인 주석과 quoted value를 처리
  * - 알 수 없는 키도 폐기하지 않고 raw 맵에 보존 (사용자 입력 보호)
  */
 
-const LINE_RE = /^\s*([a-z][a-z0-9-]*)\s*=\s*(.*?)\s*$/;
+const LINE_RE = /^\s*([a-z][a-z0-9-]*)\s*=\s*(.*?)\s*$/i;
 const COLOR_KEYS = new Set([
     "background",
     "foreground",
@@ -19,6 +20,7 @@ export interface ParsedGhosttyConfig {
     keybind: string[];
     raw: Record<string, string>;
     unknownLines: string[];
+    warnings: string[];
 }
 
 export function parseGhosttyConfig(input: string): ParsedGhosttyConfig {
@@ -26,35 +28,35 @@ export function parseGhosttyConfig(input: string): ParsedGhosttyConfig {
         palette: Array<string | "">(256).fill(""),
         keybind: [],
         raw: {},
-        unknownLines: []
+        unknownLines: [],
+        warnings: []
     };
 
     for (const lineRaw of input.split(/\r?\n/)) {
-        const line = lineRaw.trim();
+        const line = stripInlineComment(lineRaw).trim();
         if (!line || line.startsWith("#")) continue;
         const m = LINE_RE.exec(line);
         if (!m) {
-            result.unknownLines.push(line);
+            result.unknownLines.push(lineRaw);
             continue;
         }
-        const key = m[1];
-        let value = m[2];
+        const key = m[1].toLowerCase();
+        let value = unquote(m[2].trim());
 
         if (key === "palette") {
             const eq = value.indexOf("=");
             if (eq < 0) continue;
             const idx = parseInt(value.slice(0, eq).trim(), 10);
-            const color = value.slice(eq + 1).trim();
+            const color = normalizeColor(value.slice(eq + 1).trim()) ?? value.slice(eq + 1).trim();
             if (idx >= 0 && idx < 256) result.palette[idx] = color;
+            else result.warnings.push(`palette index out of range: ${lineRaw.trim()}`);
             continue;
         }
         if (key === "keybind") {
             result.keybind.push(value);
             continue;
         }
-        if (COLOR_KEYS.has(key) && /^[0-9a-fA-F]{6}$/.test(value)) {
-            value = `#${value}`;
-        }
+        if (COLOR_KEYS.has(key)) value = normalizeColor(value) ?? value;
         result.raw[key] = value;
     }
     return result;
@@ -96,4 +98,46 @@ export function serializeGhosttyConfig(
     }
 
     return out.join("\n") + "\n";
+}
+
+function stripInlineComment(line: string): string {
+    let quote: "'" | "\"" | null = null;
+    let escaped = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (escaped) {
+            escaped = false;
+            continue;
+        }
+        if (ch === "\\") {
+            escaped = true;
+            continue;
+        }
+        if ((ch === "'" || ch === "\"") && !quote) {
+            quote = ch;
+            continue;
+        }
+        if (ch === quote) {
+            quote = null;
+            continue;
+        }
+        if (ch === "#" && !quote && (i === 0 || /\s/.test(line[i - 1]))) {
+            return line.slice(0, i);
+        }
+    }
+    return line;
+}
+
+function unquote(value: string): string {
+    if (value.length < 2) return value;
+    const first = value[0];
+    const last = value[value.length - 1];
+    if (!((first === "\"" && last === "\"") || (first === "'" && last === "'"))) return value;
+    return value.slice(1, -1).replace(/\\"/g, "\"").replace(/\\'/g, "'");
+}
+
+function normalizeColor(value: string): string | null {
+    const clean = unquote(value.trim()).replace(/^0x/i, "#");
+    const m = clean.match(/^#?([0-9a-fA-F]{6})$/);
+    return m ? `#${m[1].toLowerCase()}` : null;
 }

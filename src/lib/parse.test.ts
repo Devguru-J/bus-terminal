@@ -108,6 +108,16 @@ some completely free-form comment without prefix`;
         expect(parsed.palette[4]).toBe("#7aa2f7");
     });
 
+    test("normalizes quoted values, bare colors, and inline comments", () => {
+        const text = `font-family = "JetBrains Mono" # display font
+background = 1a1b26
+keybind = "ctrl+shift+t=new_tab # literal"`;
+        const parsed = parseGhosttyConfig(text);
+        expect(parsed.raw["font-family"]).toBe("JetBrains Mono");
+        expect(parsed.raw.background).toBe("#1a1b26");
+        expect(parsed.keybind).toContain("ctrl+shift+t=new_tab # literal");
+    });
+
     test("comments and blank lines are ignored, not stored as unknown", () => {
         const text = `# comment
 

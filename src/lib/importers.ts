@@ -1,8 +1,8 @@
 /**
  * 환승하기(Import) 파서 모음.
  *
- * 정확한 round-trip이 아니라 "있는 키만 흡수"하는 lossy parser.
- * 알 수 없는 줄은 unknownLines로 반환해 사용자에게 노출.
+ * 정확한 round-trip을 약속하지는 않지만, 실제 설정 파일에서 자주 쓰는 문법은
+ * 최대한 흡수하고 알 수 없는 줄은 unknownLines로 반환해 사용자에게 노출한다.
  *
  * 각 importer는 다음 contract를 따른다:
  *   (text) => { ok, applied, unknownLines, warnings, value }
@@ -10,8 +10,8 @@
  * 호출 측은 value를 받아 해당 스토어의 importPatch / setField 일괄 호출.
  */
 
-import type {TmuxStatusConfig} from "@/data/tmux";
-import type {ZshConfig} from "@/data/zsh";
+import {tmuxPlugins, type TmuxKeyBinding, type TmuxStatusConfig} from "@/data/tmux";
+import {zshPlugins, type ZshConfig} from "@/data/zsh";
 import type {HelixConfig} from "@/data/helix";
 import type {NvimConfig} from "@/data/neovim";
 import type {WarpConfig, WarpTerminalColors} from "@/data/warp";
@@ -34,16 +34,16 @@ function emptyResult<T>(): ImportResult<T> {
 
 export function importTmuxConf(text: string): ImportResult<TmuxStatusConfig> {
     const r = emptyResult<TmuxStatusConfig>();
-    const v: Partial<TmuxStatusConfig> = {plugins: [], customPlugins: []};
+    const v: Partial<TmuxStatusConfig> = {};
 
     const lines = text.split(/\r?\n/);
     for (const raw of lines) {
-        const line = raw.trim();
+        const line = stripShellComment(raw).trim();
         if (!line || line.startsWith("#")) continue;
 
         // set -g option value
         const setMatch = line.match(
-            /^set(?:-option|w|-window-option)?\s+(?:-[a-z]+\s+)*([a-zA-Z0-9-]+)\s+(.+)$/
+            /^set(?:-option|w|-window-option)?\s+(?:-[a-zA-Z]+\s+)*([@a-zA-Z0-9-]+)\s+(.+)$/
         );
         if (setMatch) {
             const [, key, valueRaw] = setMatch;
@@ -103,8 +103,13 @@ export function importTmuxConf(text: string): ImportResult<TmuxStatusConfig> {
                     break;
                 case "@plugin": {
                     const p = value.replace(/^['"]|['"]$/g, "");
-                    if (p && p !== "tmux-plugins/tpm") {
-                        v.customPlugins = [...(v.customPlugins ?? []), p];
+                    const known = tmuxPlugins.find(plugin => plugin.name === p);
+                    if (known) {
+                        v.plugins = unique([...(v.plugins ?? []), known.id]);
+                        r.applied++;
+                    }
+                    else if (p && p !== "tmux-plugins/tpm") {
+                        v.customPlugins = unique([...(v.customPlugins ?? []), p]);
                         r.applied++;
                     }
                     break;
@@ -114,9 +119,30 @@ export function importTmuxConf(text: string): ImportResult<TmuxStatusConfig> {
             }
             continue;
         }
-        if (line.startsWith("unbind ") || line.startsWith("bind ") || line.startsWith("run ")) {
-            // bind/unbind는 보존 (Phase 2에서 keybinding으로 흡수)
-            r.unknownLines.push(raw);
+
+        const unbindMatch = line.match(/^unbind(?:-key)?\s+(?:-[a-zA-Z]+\s+)*(.+)$/);
+        if (unbindMatch) {
+            const key = stripQuotes(unbindMatch[1]);
+            v.keyBindings = [
+                ...(v.keyBindings ?? []),
+                makeTmuxKeyBinding(key, "", false)
+            ];
+            r.applied++;
+            continue;
+        }
+
+        const bindMatch = line.match(/^bind(?:-key)?\s+(?:-[a-zA-Z]+\s+)*(\S+)\s+(.+)$/);
+        if (bindMatch) {
+            const [, key, command] = bindMatch;
+            v.keyBindings = [
+                ...(v.keyBindings ?? []),
+                makeTmuxKeyBinding(stripQuotes(key), command.trim(), true)
+            ];
+            r.applied++;
+            continue;
+        }
+
+        if (line.startsWith("run ") || line.startsWith("run-shell ")) {
             continue;
         }
         r.unknownLines.push(raw);
@@ -130,18 +156,33 @@ export function importTmuxConf(text: string): ImportResult<TmuxStatusConfig> {
 
 export function importZshrc(text: string): ImportResult<ZshConfig> {
     const r = emptyResult<ZshConfig>();
-    const v: Partial<ZshConfig> = {
-        aliases: [],
-        plugins: [],
-        envVars: [],
-        pathEntries: [],
-        functions: []
-    };
+    const v: Partial<ZshConfig> = {};
 
     const lines = text.split(/\r?\n/);
+    let pendingFunction: {name: string; body: string[]} | null = null;
     for (const raw of lines) {
-        const line = raw.trim();
+        const line = stripShellComment(raw).trim();
+        if (pendingFunction) {
+            if (line === "}") {
+                v.functions = [
+                    ...(v.functions ?? []),
+                    {name: pendingFunction.name, body: pendingFunction.body.join("\n").trim()}
+                ];
+                pendingFunction = null;
+                r.applied++;
+            }
+            else {
+                pendingFunction.body.push(raw);
+            }
+            continue;
+        }
         if (!line || line.startsWith("#")) continue;
+
+        const fnMatch = line.match(/^(?:function\s+)?([A-Za-z_][\w-]*)\s*(?:\(\))?\s*\{\s*$/);
+        if (fnMatch) {
+            pendingFunction = {name: fnMatch[1], body: []};
+            continue;
+        }
 
         // ZSH_THEME="..." → 가능한 경우 prompt 매핑
         const themeMatch = line.match(/^ZSH_THEME\s*=\s*(.+)$/);
@@ -149,6 +190,8 @@ export function importZshrc(text: string): ImportResult<ZshConfig> {
             const themeName = stripQuotes(themeMatch[1]);
             if (themeName === "starship") v.prompt = "starship";
             else if (themeName === "pure") v.prompt = "pure";
+            else if (themeName === "robbyrussell") v.prompt = "robbyrussell";
+            else if (themeName === "agnoster") v.prompt = "agnoster";
             else if (themeName === "powerlevel10k" || themeName === "powerlevel10k/powerlevel10k") v.prompt = "powerlevel10k";
             else v.prompt = "default";
             r.applied++;
@@ -159,8 +202,8 @@ export function importZshrc(text: string): ImportResult<ZshConfig> {
         const pluginsMatch = line.match(/^plugins\s*=\s*\(\s*(.*?)\s*\)\s*$/);
         if (pluginsMatch) {
             const names = pluginsMatch[1].split(/\s+/).filter(Boolean);
-            v.plugins = names;
-            r.applied += names.length;
+            v.plugins = names.map(mapZshPlugin).filter((x): x is string => Boolean(x));
+            r.applied += v.plugins.length;
             continue;
         }
 
@@ -203,6 +246,12 @@ export function importZshrc(text: string): ImportResult<ZshConfig> {
             r.applied++;
             continue;
         }
+        const saveHistMatch = line.match(/^SAVEHIST\s*=\s*(\d+)$/);
+        if (saveHistMatch) {
+            v.savehist = Number(saveHistMatch[1]);
+            r.applied++;
+            continue;
+        }
         const histFileMatch = line.match(/^HISTFILE\s*=\s*(.+)$/);
         if (histFileMatch) {
             v.histfile = stripQuotes(histFileMatch[1]);
@@ -210,13 +259,69 @@ export function importZshrc(text: string): ImportResult<ZshConfig> {
             continue;
         }
 
-        // source / setopt — 보존만
-        if (line.startsWith("source ") || line.startsWith("setopt ")) {
+        const setoptMatch = line.match(/^setopt\s+(.+)$/);
+        if (setoptMatch) {
+            const options = setoptMatch[1].split(/\s+/);
+            for (const optionRaw of options) {
+                const option = optionRaw.toUpperCase().replace(/-/g, "_");
+                switch (option) {
+                    case "SHARE_HISTORY":
+                        v.shareHistory = true;
+                        r.applied++;
+                        break;
+                    case "HIST_IGNORE_DUPS":
+                        v.ignoreDups = true;
+                        r.applied++;
+                        break;
+                    case "HIST_IGNORE_ALL_DUPS":
+                        v.ignoreAllDups = true;
+                        r.applied++;
+                        break;
+                    case "HIST_REDUCE_BLANKS":
+                        v.reduceBlanks = true;
+                        r.applied++;
+                        break;
+                    case "INC_APPEND_HISTORY":
+                        v.incAppendHistory = true;
+                        r.applied++;
+                        break;
+                    case "AUTO_CD":
+                        v.autoCd = true;
+                        r.applied++;
+                        break;
+                    default:
+                        r.unknownLines.push(raw);
+                }
+            }
+            continue;
+        }
+
+        if (line === "bindkey -v") {
+            v.viMode = true;
+            r.applied++;
+            continue;
+        }
+
+        if (/^(autoload\s+-Uz\s+compinit|compinit)$/.test(line)) {
+            v.completion = true;
+            r.applied++;
+            continue;
+        }
+
+        if (line.startsWith("source ")) {
             r.unknownLines.push(raw);
             continue;
         }
 
         r.unknownLines.push(raw);
+    }
+    if (pendingFunction) {
+        v.functions = [
+            ...(v.functions ?? []),
+            {name: pendingFunction.name, body: pendingFunction.body.join("\n").trim()}
+        ];
+        r.warnings.push(`${pendingFunction.name} 함수가 닫히지 않았지만 본문을 보존했어요.`);
+        r.applied++;
     }
     return {...r, value: v};
 }
@@ -232,7 +337,7 @@ export function importHelixToml(text: string): ImportResult<HelixConfig> {
     let section = "";
     const lines = text.split(/\r?\n/);
     for (const raw of lines) {
-        const line = raw.replace(/#.*$/, "").trim();
+        const line = stripInlineComment(raw, "#").trim();
         if (!line) continue;
         const sectionMatch = line.match(/^\[([\w.-]+)\]$/);
         if (sectionMatch) {
@@ -396,7 +501,7 @@ export function importHelixToml(text: string): ImportResult<HelixConfig> {
 
 export function importNvimInit(text: string): ImportResult<NvimConfig> {
     const r = emptyResult<NvimConfig>();
-    const v: Partial<NvimConfig> = {plugins: [], keymaps: [], lspServers: []};
+    const v: Partial<NvimConfig> = {};
 
     // vim.g.mapleader = " "
     const leader = text.match(/vim\.g\.mapleader\s*=\s*["'](.+?)["']/);
@@ -450,7 +555,7 @@ export function importNvimInit(text: string): ImportResult<NvimConfig> {
     // lualine
     if (/require\(["']lualine["']\)/.test(text)) {
         v.statusline = "lualine";
-        v.plugins = [...(v.plugins ?? []), "lualine"];
+        v.plugins = addUnique(v.plugins, "lualine");
         r.applied++;
     }
 
@@ -476,10 +581,9 @@ export function importNvimInit(text: string): ImportResult<NvimConfig> {
     };
     for (const [repo, id] of Object.entries(pluginIdByRepo)) {
         if (text.includes(repo)) {
-            if (!v.plugins!.includes(id)) {
-                v.plugins!.push(id);
-                r.applied++;
-            }
+            const before = v.plugins?.length ?? 0;
+            v.plugins = addUnique(v.plugins, id);
+            if (v.plugins.length > before) r.applied++;
         }
     }
 
@@ -591,11 +695,44 @@ export function importWarpTheme(text: string): ImportResult<WarpConfig> {
 }
 
 // ----------------------------------------------------------------------
+// iTerm2: .itermcolors plist XML
+// ----------------------------------------------------------------------
+
+export function parseItermColors(xml: string): Record<string, string> | null {
+    try {
+        const result: Record<string, string> = {};
+        const dictRe = /<key>([^<]+)<\/key>\s*<dict>([\s\S]*?)<\/dict>/g;
+        let m: RegExpExecArray | null;
+        while ((m = dictRe.exec(xml))) {
+            const [, key, body] = m;
+            const r = extractReal(body, "Red Component");
+            const g = extractReal(body, "Green Component");
+            const b = extractReal(body, "Blue Component");
+            if (r != null && g != null && b != null) {
+                result[key] = `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+            }
+        }
+        return Object.keys(result).length ? result : null;
+    }
+    catch {
+        return null;
+    }
+}
+
+// ----------------------------------------------------------------------
 // utils
 // ----------------------------------------------------------------------
 
 function stripQuotes(s: string): string {
-    return s.replace(/^['"]|['"]$/g, "").trim();
+    const value = s.trim();
+    if (value.length >= 2) {
+        const first = value[0];
+        const last = value[value.length - 1];
+        if ((first === "'" && last === "'") || (first === "\"" && last === "\"")) {
+            return value.slice(1, -1).replace(/\\"/g, "\"").replace(/\\'/g, "'");
+        }
+    }
+    return value;
 }
 
 function parseTomlValue(s: string): unknown {
@@ -607,11 +744,120 @@ function parseTomlValue(s: string): unknown {
     if (s.startsWith("[") && s.endsWith("]")) {
         const inner = s.slice(1, -1).trim();
         if (!inner) return [];
-        return inner.split(",").map(x => parseTomlValue(x.trim()));
+        return splitDelimited(inner, ",").map(x => parseTomlValue(x.trim()));
     }
     // 문자열 "..."
     if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
         return s.slice(1, -1);
     }
     return s;
+}
+
+function stripShellComment(line: string): string {
+    return stripInlineComment(line, "#");
+}
+
+function stripInlineComment(line: string, marker: string): string {
+    let quote: "'" | "\"" | null = null;
+    let escaped = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (escaped) {
+            escaped = false;
+            continue;
+        }
+        if (ch === "\\") {
+            escaped = true;
+            continue;
+        }
+        if ((ch === "'" || ch === "\"") && !quote) {
+            quote = ch;
+            continue;
+        }
+        if (ch === quote) {
+            quote = null;
+            continue;
+        }
+        if (ch === marker && !quote && (i === 0 || /\s/.test(line[i - 1]))) {
+            return line.slice(0, i);
+        }
+    }
+    return line;
+}
+
+function splitDelimited(input: string, delimiter: string): string[] {
+    const out: string[] = [];
+    let quote: "'" | "\"" | null = null;
+    let escaped = false;
+    let current = "";
+    for (const ch of input) {
+        if (escaped) {
+            current += ch;
+            escaped = false;
+            continue;
+        }
+        if (ch === "\\") {
+            current += ch;
+            escaped = true;
+            continue;
+        }
+        if ((ch === "'" || ch === "\"") && !quote) {
+            quote = ch;
+            current += ch;
+            continue;
+        }
+        if (ch === quote) {
+            quote = null;
+            current += ch;
+            continue;
+        }
+        if (ch === delimiter && !quote) {
+            out.push(current);
+            current = "";
+            continue;
+        }
+        current += ch;
+    }
+    out.push(current);
+    return out;
+}
+
+function unique<T>(items: T[]): T[] {
+    return Array.from(new Set(items));
+}
+
+function addUnique<T>(items: T[] | undefined, item: T): T[] {
+    return unique([...(items ?? []), item]);
+}
+
+function makeTmuxKeyBinding(key: string, command: string, enabled: boolean): TmuxKeyBinding {
+    const idBase = `${key}-${command || "disabled"}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    return {
+        id: `imported-${idBase}`.replace(/-+$/g, ""),
+        key,
+        command,
+        label: enabled ? `Imported ${key}` : `Disabled ${key}`,
+        category: "custom",
+        enabled,
+        builtin: false
+    };
+}
+
+function mapZshPlugin(name: string): string | null {
+    const found = zshPlugins.find(plugin => plugin.id === name || plugin.name === name || plugin.name.endsWith(`/${name}`));
+    return found?.id ?? name;
+}
+
+function extractReal(body: string, key: string): number | null {
+    const re = new RegExp(`<key>${key}<\\/key>\\s*<real>([0-9eE.+\\-]+)<\\/real>`);
+    const m = body.match(re);
+    if (!m) return null;
+    const n = Number(m[1]);
+    return isNaN(n) ? null : n;
+}
+
+function toHex(v: number): string {
+    return Math.round(Math.max(0, Math.min(1, v)) * 255)
+        .toString(16)
+        .padStart(2, "0");
 }

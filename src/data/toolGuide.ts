@@ -90,7 +90,7 @@ export const TOOL_GUIDE: ToolGuideEntry[] = [
         category: "terminal",
         icon: "bolt",
         platforms: ["macOS", "Linux", "Windows"],
-        what: "명령어 추천 AI와 블록 단위 출력 같은 현대적인 사용성을 갖춘 터미널이에요. 명령어를 잘 몰라도 AI에게 물어보며 작업할 수 있어 입문자에게 친절합니다.",
+        what: "명령어 추천 AI와 블록 단위 출력 같은 현대적인 사용성을 갖춘 터미널이에요. 명령어를 잘 몰라도 AI에게 물어보며 작업할 수 있어 입문자에게 친절합니다. 핵심 터미널 기능은 로그인 없이도 사용할 수 있어요.",
         pros: [
             "AI가 명령어를 추천·설명해 줌",
             "명령과 결과가 블록으로 묶여 보기 쉬움",
@@ -98,9 +98,9 @@ export const TOOL_GUIDE: ToolGuideEntry[] = [
             "macOS · Linux · Windows 모두 지원"
         ],
         cons: [
-            "계정 로그인이 필요 (프라이버시가 신경 쓰일 수 있음)",
+            "AI·동기화 같은 일부 기능은 계정/네트워크 의존성이 있음",
             "일부 고급 기능은 유료",
-            "완전한 오픈소스는 아님",
+            "오픈소스지만 Warp 서비스와 결합된 기능이 있음",
             "기능이 많은 만큼 다소 무거움"
         ],
         bestFor: "AI의 도움을 받으며 편하게 터미널에 입문하고 싶은 분",
@@ -160,9 +160,9 @@ export const TOOL_GUIDE: ToolGuideEntry[] = [
         category: "editor",
         icon: "edit_square",
         platforms: ["macOS", "Linux", "Windows"],
-        what: "Rust로 만든 모달 에디터예요. 코드 자동완성(LSP)과 문법 강조가 기본으로 내장돼 있어서, 복잡한 설정 없이 설치 직후부터 똑똑하게 동작합니다.",
+        what: "Rust로 만든 모달 에디터예요. LSP 클라이언트와 문법 강조 구조가 기본으로 준비되어 있어서, 언어 서버만 설치하면 복잡한 플러그인 설정 없이 똑똑하게 동작합니다.",
         pros: [
-            "설치 즉시 LSP · 문법 강조가 동작 (설정 거의 불필요)",
+            "언어 서버만 준비하면 LSP · 문법 강조를 적은 설정으로 사용",
             "빠르고 가벼움",
             "선택 먼저(selection-first) 방식이 직관적",
             "설정이 config.toml 한 장으로 단순"

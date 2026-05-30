@@ -1,9 +1,24 @@
-import {describe, it, expect} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 import {listCloudSnapshots, saveCloudSnapshot, deleteCloudSnapshot} from "./cloudSync";
 import {SupabaseNotConfiguredError} from "./supabase";
 
-// env가 비어 있는 테스트 환경에서 모든 cloudSync 호출은
-// SupabaseNotConfiguredError로 빠르게 실패해야 한다 (silent 시도 금지).
+vi.mock("./supabase", () => {
+    class SupabaseNotConfiguredError extends Error {
+        constructor() {
+            super("클라우드 동기화가 설정되어 있지 않아요.");
+            this.name = "SupabaseNotConfiguredError";
+        }
+    }
+
+    return {
+        SupabaseNotConfiguredError,
+        requireSupabase: () => {
+            throw new SupabaseNotConfiguredError();
+        }
+    };
+});
+
+// cloudSync는 Supabase 클라이언트가 없을 때 네트워크를 시도하지 않고 빠르게 실패해야 한다.
 
 describe("cloudSync (not configured)", () => {
     it("listCloudSnapshots rejects with SupabaseNotConfiguredError", async () => {

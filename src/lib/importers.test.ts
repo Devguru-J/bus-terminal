@@ -19,6 +19,8 @@ set -g status-position top`;
         expect(r.value.baseIndex).toBe(1);
         expect(r.value.statusPosition).toBe("top");
         expect(r.applied).toBe(4);
+        expect(r.value.keyBindings).toBeUndefined();
+        expect(r.value.plugins).toBeUndefined();
     });
 
     test("preserves unknown lines instead of silently dropping", () => {
@@ -27,8 +29,7 @@ bind r source-file ~/.tmux.conf
 some-arbitrary-line that the parser does not know`;
         const r = importTmuxConf(text);
         expect(r.unknownLines.length).toBeGreaterThan(0);
-        // bind 줄도 unknown으로 보존 (Phase 2에서 흡수 예정)
-        expect(r.unknownLines.some(l => l.includes("bind r"))).toBe(true);
+        expect(r.value.keyBindings?.some(k => k.key === "r" && k.command === "source-file ~/.tmux.conf")).toBe(true);
     });
 
     test("empty input produces ok with zero applied", () => {
@@ -68,11 +69,36 @@ alias gs="git status"`;
         expect(r.value.pathEntries).toContain("/opt/homebrew/bin");
     });
 
-    test("source / setopt lines preserved in unknownLines", () => {
+    test("partial imports do not emit empty arrays that wipe existing config", () => {
+        const r = importZshrc("HISTSIZE=1000");
+        expect(r.value.histsize).toBe(1000);
+        expect(r.value.aliases).toBeUndefined();
+        expect(r.value.plugins).toBeUndefined();
+        expect(r.value.pathEntries).toBeUndefined();
+    });
+
+    test("source lines are preserved and known setopt flags are absorbed", () => {
         const text = `source /opt/zsh/extra.sh
 setopt AUTO_CD`;
         const r = importZshrc(text);
-        expect(r.unknownLines).toHaveLength(2);
+        expect(r.unknownLines).toHaveLength(1);
+        expect(r.value.autoCd).toBe(true);
+    });
+
+    test("extracts history, vi mode, completion, and simple functions", () => {
+        const text = `SAVEHIST=5000
+bindkey -v
+autoload -Uz compinit
+compinit
+mkcd() {
+  mkdir -p "$1"
+  cd "$1"
+}`;
+        const r = importZshrc(text);
+        expect(r.value.savehist).toBe(5000);
+        expect(r.value.viMode).toBe(true);
+        expect(r.value.completion).toBe(true);
+        expect(r.value.functions?.[0].name).toBe("mkcd");
     });
 });
 
@@ -128,6 +154,7 @@ vim.opt.wrap = false`;
         expect(r.value.lineNumbers).toBe(true);
         expect(r.value.relativeNumbers).toBe(false);
         expect(r.value.wrap).toBe(false);
+        expect(r.value.plugins).toBeUndefined();
     });
 
     test("extracts colorscheme call", () => {

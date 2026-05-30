@@ -2,7 +2,7 @@ import {Link} from "react-router-dom";
 import {motion} from "framer-motion";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {Icon} from "@/components/ui/Icon";
-import {Button} from "@/components/ui/Button";
+import {cn} from "@/lib/utils";
 import {
     TOOL_CATEGORIES,
     TOOL_GUIDE,
@@ -25,6 +25,13 @@ const cardItem = {
         transition: {type: "spring" as const, stiffness: 200, damping: 24}
     }
 };
+
+const linkButtonBase =
+    "inline-flex h-8 items-center justify-center gap-2 rounded px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] transition active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-fixed-dim focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+const linkButtonPrimary =
+    "bg-primary-fixed-dim text-on-primary hover:bg-primary-fixed shadow-glow-primary";
+const linkButtonOutline =
+    "border border-white/10 bg-white/[0.02] text-on-surface hover:bg-white/[0.06]";
 
 function ToolCard({tool}: {tool: ToolGuideEntry}) {
     return (
@@ -116,17 +123,18 @@ function ToolCard({tool}: {tool: ToolGuideEntry}) {
 
             {/* 액션 — 공식 홈페이지 + 설정하러 가기 */}
             <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
-                <Link to={tool.to}>
-                    <Button size="sm">
-                        <Icon name="tune" className="text-[15px]" />
-                        BusTerminal에서 설정하기
-                    </Button>
+                <Link to={tool.to} className={cn(linkButtonBase, linkButtonPrimary)}>
+                    <Icon name="tune" className="text-[15px]" />
+                    BusTerminal에서 설정하기
                 </Link>
-                <a href={tool.officialUrl} target="_blank" rel="noopener noreferrer">
-                    <Button size="sm" variant="outline">
-                        공식 홈페이지
-                        <Icon name="open_in_new" className="text-[15px]" />
-                    </Button>
+                <a
+                    href={tool.officialUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(linkButtonBase, linkButtonOutline)}
+                >
+                    공식 홈페이지
+                    <Icon name="open_in_new" className="text-[15px]" />
                 </a>
             </div>
         </motion.article>

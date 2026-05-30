@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from "react";
+import {Link} from "react-router-dom";
 import {StationHeader} from "@/components/shell/StationHeader";
 import {ConfigPanel} from "@/components/platform/ConfigPanel";
 import {Button} from "@/components/ui/Button";
@@ -301,6 +302,21 @@ export function SettingsPage() {
                     onChange={onFile}
                     className="hidden"
                 />
+            </ConfigPanel>
+
+            <ConfigPanel title="의견 / 개선 요청" actions={<Badge tone="info">Feedback</Badge>}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-body-md text-on-surface-variant">
+                        버그, 헷갈리는 문구, 추가했으면 하는 도구를 남길 수 있어요.
+                    </p>
+                    <Link
+                        to="/feedback"
+                        className="inline-flex h-9 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.02] px-3 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-on-surface transition hover:bg-white/[0.06]"
+                    >
+                        <Icon name="campaign" className="text-[15px]" />
+                        의견 보내기
+                    </Link>
+                </div>
             </ConfigPanel>
 
             <ConfigPanel title="Storage 키 목록">

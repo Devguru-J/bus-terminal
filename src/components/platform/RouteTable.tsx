@@ -46,7 +46,7 @@ export function RouteTable({routes, onPlay, onRename, onDuplicate, onShare, onDe
                     아직 차고에 보관된 노선이 없어요.
                 </p>
                 <p className="mt-1 font-mono text-label-xs uppercase tracking-[0.14em] text-on-surface-variant/50">
-                    Ghostty 또는 tmux 승강장에서 노선을 저장하세요
+                    각 도구 승강장에서 노선을 저장하세요
                 </p>
                 <Link
                     to="/ghostty"

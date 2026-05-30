@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {useLocation} from "react-router-dom";
 import {Modal} from "@/components/ui/Modal";
 import {Button} from "@/components/ui/Button";
 import {Icon} from "@/components/ui/Icon";
@@ -30,16 +31,21 @@ const STEPS: Step[] = [
 ];
 
 export function OnboardingModal() {
+    const location = useLocation();
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState(0);
 
     useEffect(() => {
+        if (location.pathname === "/tools" || location.pathname === "/guide") {
+            setOpen(false);
+            return;
+        }
         try {
             if (!localStorage.getItem(STORAGE_KEY)) setOpen(true);
         } catch {
             // localStorage 차단 → 그냥 노쇼
         }
-    }, []);
+    }, [location.pathname]);
 
     function close() {
         setOpen(false);

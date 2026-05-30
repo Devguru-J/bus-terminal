@@ -67,6 +67,7 @@ function SidebarContents({onNavigate}: {onNavigate?: () => void}) {
             <div className="px-2 py-3 border-t border-white/[0.05] flex flex-col gap-0.5">
                 <PlatformNavItem to="/tools" label="툴 소개" icon="lightbulb" />
                 <PlatformNavItem to="/guide" label="처음이라면" icon="help" />
+                <PlatformNavItem to="/feedback" label="의견 보내기" icon="campaign" />
                 <PlatformNavItem to="/my-routes" label="내 노선" icon="bookmark" />
             </div>
         </>

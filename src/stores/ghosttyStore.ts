@@ -17,7 +17,7 @@ interface GhosttyState {
     applyTheme: (t: RouteTheme) => void;
     /** 색·팔레트만 기본값으로 되돌림 (테마 "Default" 선택 시) */
     resetColors: () => void;
-    importText: (text: string) => {ok: boolean; unknownLines: string[]};
+    importText: (text: string) => {ok: boolean; applied: number; unknownLines: string[]; warnings: string[]};
     exportText: () => string;
     resetAll: () => void;
 }
@@ -83,6 +83,7 @@ export const useGhosttyStore = create<GhosttyState>()(
 
             importText: (text) => {
                 const parsed = parseGhosttyConfig(text);
+                let applied = 0;
                 set(s => {
                     const next = {...s.config};
                     const extras = {...s.rawExtras};
@@ -92,19 +93,25 @@ export const useGhosttyStore = create<GhosttyState>()(
                             if (typeof d === "number") next[k] = Number(v);
                             else if (typeof d === "boolean") next[k] = v === "true";
                             else next[k] = v;
+                            applied++;
                         }
                         else {
                             extras[k] = v;
+                            applied++;
                         }
                     }
                     const p = s.palette.slice();
                     parsed.palette.forEach((c, i) => {
-                        if (c) p[i] = c;
+                        if (c) {
+                            p[i] = c;
+                            applied++;
+                        }
                     });
                     const kbs = Array.from(new Set([...s.keybinds, ...parsed.keybind]));
+                    applied += parsed.keybind.filter(kb => !s.keybinds.includes(kb)).length;
                     return {config: next, palette: p, keybinds: kbs, rawExtras: extras};
                 });
-                return {ok: true, unknownLines: parsed.unknownLines};
+                return {ok: true, applied, unknownLines: parsed.unknownLines, warnings: parsed.warnings};
             },
 
             exportText: () => {
