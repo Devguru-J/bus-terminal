@@ -12,6 +12,7 @@ import {NotFoundPage} from "@/pages/NotFound";
 import {lazyWithRetry, clearChunkReloadFlag} from "@/lib/lazyWithRetry";
 import {trackPageview} from "@/lib/analytics";
 import {initAutosaveHint} from "@/lib/autosaveHint";
+import {applySeoMeta, getSeoMeta} from "@/lib/seo";
 
 // 페이지는 lazy-loading. 첫 번들이 작아지고 라우트 단위로 fetch.
 // lazyWithRetry: 배포 후 stale chunk(MIME 에러) 자동 1회 새로고침 복구.
@@ -65,6 +66,8 @@ export default function App() {
 
     useEffect(() => {
         const path = location.pathname + location.search;
+        const seo = getSeoMeta(location.pathname);
+        applySeoMeta(seo);
         trackPageview(path);
 
         // GTM: SPA(싱글 페이지 애플리케이션) 라우팅 전환 시 GTM에 페이지뷰 이벤트를 전송합니다.
@@ -74,18 +77,8 @@ export default function App() {
             w.dataLayer.push({
                 event: "pageview",
                 page_path: path,
-                page_title: document.title
+                page_title: seo.title
             });
-
-            // [SEO 개선] 페이지 경로에 맞춰 동적으로 Canonical URL을 갱신합니다.
-            let canonicalLink = document.querySelector("link[rel='canonical']");
-            if (!canonicalLink) {
-                canonicalLink = document.createElement("link");
-                canonicalLink.setAttribute("rel", "canonical");
-                document.head.appendChild(canonicalLink);
-            }
-            const canonicalUrl = `https://busterminal.dev${location.pathname}`;
-            canonicalLink.setAttribute("href", canonicalUrl);
         }
     }, [location.pathname, location.search]);
 
