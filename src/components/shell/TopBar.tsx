@@ -53,13 +53,13 @@ export function TopBar() {
                     BusTerminal
                 </Link>
             </div>
-            <div className="flex items-center gap-5">
-                <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hidden sm:inline">
+            <div className="flex items-center gap-1.5">
+                <span className="font-mono text-label-xs uppercase tracking-[0.12em] text-on-surface-variant hidden sm:inline mr-3">
                     {t}
                 </span>
                 <Link
                     to="/"
-                    className="hidden lg:inline-flex p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
+                    className="hidden lg:flex items-center justify-center h-9 w-9 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
                     aria-label="메인으로 돌아가기"
                     title="메인으로 돌아가기"
                 >
@@ -67,7 +67,7 @@ export function TopBar() {
                 </Link>
                 <Link
                     to="/export"
-                    className="p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
+                    className="flex items-center justify-center h-9 w-9 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
                     aria-label="출발 전 점검"
                     title="출발 전 점검"
                 >
@@ -75,7 +75,7 @@ export function TopBar() {
                 </Link>
                 <Link
                     to="/settings"
-                    className="p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
+                    className="flex items-center justify-center h-9 w-9 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition"
                     aria-label="설정"
                     title="설정"
                 >
@@ -85,7 +85,7 @@ export function TopBar() {
                     <button
                         type="button"
                         onClick={handleAccountClick}
-                        className="relative p-2 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition flex items-center justify-center"
+                        className="relative h-9 w-9 rounded-full text-on-surface-variant hover:text-primary-fixed-dim hover:bg-white/5 transition flex items-center justify-center"
                         aria-label="프로필"
                         title={user?.email ?? "프로필"}
                     >
@@ -99,13 +99,13 @@ export function TopBar() {
                         ) : (
                             <Icon name="account_circle" className="text-[18px]" />
                         )}
-                        <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-fixed-dim" />
+                        <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary-fixed-dim border border-surface" />
                     </button>
                 ) : (
                     <button
                         type="button"
                         onClick={handleAccountClick}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-semibold font-mono tracking-wider text-primary-fixed-dim bg-primary-fixed-dim/[0.08] hover:bg-primary-fixed-dim/[0.18] border border-primary-fixed-dim/20 hover:border-primary-fixed-dim/40 rounded-full transition active:scale-[0.97] duration-200"
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-semibold font-mono tracking-wider text-primary-fixed-dim bg-primary-fixed-dim/[0.08] hover:bg-primary-fixed-dim/[0.18] border border-primary-fixed-dim/20 hover:border-primary-fixed-dim/40 rounded-full transition active:scale-[0.97] duration-200 ml-1.5"
                         aria-label="로그인"
                         title="로그인"
                     >
