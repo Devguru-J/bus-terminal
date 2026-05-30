@@ -12,3 +12,8 @@ reference/
 # Playwright MCP 임시 파일
 .playwright-mcp/
 .antigravitycli/
+
+# 환경 변수 (anon key 등 실제 값은 .env.example로만 공유)
+.env
+.env.*
+!.env.example
